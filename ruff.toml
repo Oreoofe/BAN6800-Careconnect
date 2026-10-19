@@ -1,5 +1,5 @@
 extend-exclude = ["legacy"]
-target-version = "py311"
+target-version = "py312"
 line-length = 140
 [lint]
 select = ["E9", "F"]

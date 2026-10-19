@@ -42,7 +42,7 @@ services:
     profiles: ["tracking"]
 
   monitoring:
-    image: python:3.11-slim
+    image: python:3.12-slim
     working_dir: /reports
     command: python -m http.server 8090
     ports: ["8090:8090"]

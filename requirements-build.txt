@@ -1,4 +1,4 @@
-# Full build: pipeline, training, XAI, fairness, MLflow, monitoring, tests (Python 3.11)
+# Full build: pipeline, training, XAI, fairness, MLflow, monitoring, tests (Python 3.12; xgboost 3.4.1 needs >= 3.12)
 # Exact versions resolved in CI are saved to requirements-lock.txt by the build workflow.
 -r requirements-api.txt
 pyarrow>=15

@@ -33,7 +33,7 @@ Serving: src/api (FastAPI + explanation store)   Dashboard: src/app.py (Streamli
 ## Run it
 
 ```bash
-python -m venv .venv && source .venv/bin/activate          # Python 3.11
+python -m venv .venv && source .venv/bin/activate          # Python 3.12
 pip install -r requirements-build.txt
 python -m careconnect.run_all          # downloads + verifies data, builds everything into artifacts/
 pytest                                 # tests

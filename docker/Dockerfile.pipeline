@@ -1,5 +1,5 @@
 # Full build: data pipeline -> training (MLflow) -> XAI -> fairness -> monitoring -> model card -> promotion gate
-FROM python:3.11-slim
+FROM python:3.12-slim
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 git && rm -rf /var/lib/apt/lists/*
 COPY requirements-api.txt requirements-build.txt ./
