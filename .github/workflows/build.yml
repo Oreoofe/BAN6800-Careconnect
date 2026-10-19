@@ -25,17 +25,17 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: |
-          pip install -r requirements-build.txt playwright
+          scripts/run_logged.sh pip install -r requirements-build.txt playwright
           python -m playwright install --with-deps chromium
           pip freeze > requirements-lock.txt
       - name: Run pipeline, training, XAI, fairness, monitoring, model card, promotion gate
-        run: python -m careconnect.run_all 2>&1 | tee build_log.txt
+        run: scripts/run_logged.sh python -m careconnect.run_all
       - name: API demo against the new model
-        run: python api_demo.py
+        run: scripts/run_logged.sh python api_demo.py
       - name: Tests against the new artifacts
-        run: pytest -v
+        run: scripts/run_logged.sh pytest -v -x
       - name: MLflow UI screenshots (experiment + model registry)
-        run: python scripts/mlflow_screenshots.py
+        run: scripts/run_logged.sh python scripts/mlflow_screenshots.py
       - uses: actions/upload-artifact@v4
         with:
           name: careconnect-build-${{ github.run_number }}
@@ -52,5 +52,4 @@ jobs:
             docs/evidence/
             mlruns/
             logs/audit.log
-            build_log.txt
             requirements-lock.txt

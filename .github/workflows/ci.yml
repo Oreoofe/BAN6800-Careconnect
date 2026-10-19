@@ -21,19 +21,19 @@ jobs:
           python-version: "3.11"
           cache: pip
       - name: Install dependencies
-        run: pip install -r requirements-build.txt
+        run: scripts/run_logged.sh pip install -r requirements-build.txt
       - name: Lint (syntax errors, undefined names)
-        run: ruff check .
+        run: scripts/run_logged.sh ruff check .
       - name: Verify no data files committed (Module 1 no-PII rule)
         run: |
           if git ls-files | grep -E '\.(csv|parquet|pkl|xlsx)$|^data/raw|^data/processed'; then
             echo "Data file committed - violation of the no-PII rule"; exit 1; fi
       - name: Unit tests (pipeline, fairness, policy, drift, API contract)
-        run: pytest -v
+        run: scripts/run_logged.sh pytest -v -x
       - name: Pipeline smoke test on synthetic data
         run: |
-          python -m tools.make_sample_data
-          python -m careconnect.pipeline.run --sample
+          scripts/run_logged.sh python -m tools.make_sample_data
+          scripts/run_logged.sh python -m careconnect.pipeline.run --sample
 
   docker:
     name: docker compose build + API smoke test
