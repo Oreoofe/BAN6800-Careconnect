@@ -84,8 +84,9 @@ def main():
 `{policy_sha[:16]}...`. Numbers are not edited by hand. This pack presents evidence and options; it does not select a policy.*
 
 ## 1. Decision required
-Which outreach decision policy, if any, may be piloted with the no-show model (v{config.MODEL_VERSION}), given that **No evaluated
-policy reliably met the 0.05 equalized-odds limit across all required groups** (age band, gender, and scholarship as the G3 stand-in).
+Which outreach decision policy, if any, may be piloted with the no-show model (v{config.MODEL_VERSION}), given the finding below.
+
+**No evaluated policy reliably met the 0.05 equalized-odds limit across all required groups** (age band, gender, and scholarship as the G3 stand-in).
 The promotion gate result under the original criteria is: **{G['decision']}**.
 
 ## 2. Original acceptance criteria (as written before results; not changed)
