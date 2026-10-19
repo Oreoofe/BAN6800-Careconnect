@@ -1,0 +1,221 @@
+{
+  "git_sha": "fc9d176",
+  "n_train": 88411,
+  "n_test": 22103,
+  "pos_rate": 0.20188392420869755,
+  "cv_folds": 5,
+  "tuning_rows": 88411,
+  "model_version": "2.0.0",
+  "mlflow": true,
+  "baselines": {
+    "most_frequent": {
+      "threshold": 0.5,
+      "accuracy": 0.7981269510926119,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "roc_auc": 0.5,
+      "pr_auc": 0.20187304890738814,
+      "brier": 0.20187304890738814,
+      "flag_rate": 0.0
+    },
+    "stratified": {
+      "threshold": 0.5,
+      "accuracy": 0.679862462109216,
+      "precision": 0.20825892857142858,
+      "recall": 0.20909905871806364,
+      "f1": 0.20867814806530977,
+      "roc_auc": 0.5040166797473319,
+      "pr_auc": 0.2032083303342258,
+      "brier": 0.32013753789078403,
+      "flag_rate": 0.20268741799755688
+    }
+  },
+  "models": {
+    "logistic_regression": {
+      "best_params": {
+        "C": 0.01,
+        "class_weight": "balanced"
+      },
+      "cv_auc": 0.6784346002018664,
+      "oof_auc": 0.6783612076008335,
+      "at_default_0_5": {
+        "threshold": 0.5,
+        "accuracy": 0.6567434284938696,
+        "precision": 0.31585150265173834,
+        "recall": 0.6006275212909009,
+        "f1": 0.4139955201977292,
+        "roc_auc": 0.6803239245115572,
+        "pr_auc": 0.3166008606797922,
+        "brier": 0.2275168645799843,
+        "flag_rate": 0.38388454056010496
+      },
+      "at_recall_target": {
+        "threshold": 0.48,
+        "accuracy": 0.6299597339727638,
+        "precision": 0.3051273985530041,
+        "recall": 0.6521739130434783,
+        "f1": 0.4157439817129795,
+        "roc_auc": 0.6803239245115572,
+        "pr_auc": 0.3166008606797922,
+        "brier": 0.2275168645799843,
+        "flag_rate": 0.4314798896077456
+      },
+      "secs": 22,
+      "metrics": {
+        "threshold": 0.5,
+        "accuracy": 0.6567434284938696,
+        "precision": 0.31585150265173834,
+        "recall": 0.6006275212909009,
+        "f1": 0.4139955201977292,
+        "roc_auc": 0.6803239245115572,
+        "pr_auc": 0.3166008606797922,
+        "brier": 0.2275168645799843,
+        "flag_rate": 0.38388454056010496
+      },
+      "mlflow": {
+        "run_id": "792d477315c042eeb8edf4a8b88a378d"
+      }
+    },
+    "random_forest": {
+      "best_params": {
+        "class_weight": null,
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "n_estimators": 200
+      },
+      "cv_auc": 0.744979263951506,
+      "oof_auc": 0.7449209127562617,
+      "at_default_0_5": {
+        "threshold": 0.5,
+        "accuracy": 0.7991675338189386,
+        "precision": 0.5966386554621849,
+        "recall": 0.01591214701927387,
+        "f1": 0.030997598777559483,
+        "roc_auc": 0.7426706563097645,
+        "pr_auc": 0.38544385609391696,
+        "brier": 0.14204165278982037,
+        "flag_rate": 0.005383884540560105
+      },
+      "at_recall_target": {
+        "threshold": 0.255,
+        "accuracy": 0.6801791611998371,
+        "precision": 0.3447659878528046,
+        "recall": 0.6488121918422233,
+        "f1": 0.4502682945796718,
+        "roc_auc": 0.7426706563097645,
+        "pr_auc": 0.38544385609391696,
+        "brier": 0.14204165278982037,
+        "flag_rate": 0.3799031805637244
+      },
+      "secs": 408,
+      "metrics": {
+        "threshold": 0.5,
+        "accuracy": 0.7991675338189386,
+        "precision": 0.5966386554621849,
+        "recall": 0.01591214701927387,
+        "f1": 0.030997598777559483,
+        "roc_auc": 0.7426706563097645,
+        "pr_auc": 0.38544385609391696,
+        "brier": 0.14204165278982037,
+        "flag_rate": 0.005383884540560105
+      },
+      "mlflow": {
+        "run_id": "154900ebee9f447ca85912493c17ed43"
+      }
+    },
+    "xgboost": {
+      "best_params": {
+        "learning_rate": 0.05,
+        "max_depth": 8,
+        "n_estimators": 300,
+        "scale_pos_weight": 1
+      },
+      "cv_auc": 0.7433905495945989,
+      "oof_auc": 0.7433220265824511,
+      "at_default_0_5": {
+        "threshold": 0.5,
+        "accuracy": 0.8027869519974664,
+        "precision": 0.6079664570230608,
+        "recall": 0.06499327655759748,
+        "f1": 0.11743267867989471,
+        "roc_auc": 0.7455058393445996,
+        "pr_auc": 0.39857384161423515,
+        "brier": 0.14119991660118103,
+        "flag_rate": 0.021580780889472018
+      },
+      "at_recall_target": {
+        "threshold": 0.25,
+        "accuracy": 0.6766954712030041,
+        "precision": 0.3427835051546392,
+        "recall": 0.6557597489914836,
+        "f1": 0.4502231112478843,
+        "roc_auc": 0.7455058393445996,
+        "pr_auc": 0.39857384161423515,
+        "brier": 0.14119991660118103,
+        "flag_rate": 0.3861919196489164
+      },
+      "secs": 141,
+      "metrics": {
+        "threshold": 0.5,
+        "accuracy": 0.8027869519974664,
+        "precision": 0.6079664570230608,
+        "recall": 0.06499327655759748,
+        "f1": 0.11743267867989471,
+        "roc_auc": 0.7455058393445996,
+        "pr_auc": 0.39857384161423515,
+        "brier": 0.14119991660118103,
+        "flag_rate": 0.021580780889472018
+      },
+      "mlflow": {
+        "run_id": "41a04170a02c46c897b05064b86274f3",
+        "registered_version": 1
+      }
+    }
+  },
+  "best_by_auc": "xgboost",
+  "deployed": "xgboost",
+  "robustness_patient_grouped": {
+    "threshold": 0.25,
+    "accuracy": 0.6756954277622984,
+    "precision": 0.34879705306780245,
+    "recall": 0.6773977196512407,
+    "f1": 0.46048632218844987,
+    "roc_auc": 0.74627683822029,
+    "pr_auc": 0.3852801797410125,
+    "brier": 0.142958864569664,
+    "flag_rate": 0.39679349563787514
+  },
+  "ablation_no_sensitive_inputs": {
+    "features": [
+      "Age",
+      "Neighbourhood",
+      "SMS_received",
+      "lead_time_days",
+      "appointment_dow",
+      "appointment_month",
+      "prior_appointments",
+      "prior_noShows",
+      "prior_noShow_rate"
+    ],
+    "removed": [
+      "Gender",
+      "Scholarship",
+      "Hipertension",
+      "Diabetes",
+      "Alcoholism",
+      "Handcap",
+      "age_band"
+    ],
+    "threshold": 0.25,
+    "accuracy": 0.6771478984753201,
+    "precision": 0.3432590855803048,
+    "recall": 0.6562079784849844,
+    "f1": 0.45073891625615764,
+    "roc_auc": 0.7420517903885683,
+    "pr_auc": 0.3876096446101208,
+    "brier": 0.14201310276985168,
+    "flag_rate": 0.38592046328552687
+  },
+  "total_secs": 605
+}
