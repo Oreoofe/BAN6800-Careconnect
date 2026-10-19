@@ -26,19 +26,24 @@ def gate() -> dict:
         ("ROC-AUC >= 0.70", round(x["roc_auc"], 4), x["roc_auc"] >= 0.70),
         ("recall >= 0.65 (single cut-off)", round(x["recall"], 4), x["recall"] >= 0.65),
         ("F1 >= 0.55", round(x["f1"], 4), x["f1"] >= 0.55),
-        ("adopted policy: age-group equalized-odds gap <= 0.05", round(b["age_band"]["eod"], 4), b["age_band"]["eod"] <= config.FAIRNESS_LIMIT),
-        ("adopted policy: gender gap <= 0.05", round(b["Gender"]["eod"], 4), b["Gender"]["eod"] <= config.FAIRNESS_LIMIT),
-        ("adopted policy: scholarship gap <= 0.05", round(b["Scholarship"]["eod"], 4), b["Scholarship"]["eod"] <= config.FAIRNESS_LIMIT),
+        ("adopted policy: EXPECTED age-group equalized-odds gap <= 0.05", round(b["age_band"]["eod"], 4), b["age_band"]["eod"] <= config.FAIRNESS_LIMIT),
+        ("adopted policy: EXPECTED gender gap <= 0.05", round(b["Gender"]["eod"], 4), b["Gender"]["eod"] <= config.FAIRNESS_LIMIT),
+        ("adopted policy: EXPECTED scholarship gap <= 0.05", round(b["Scholarship"]["eod"], 4), b["Scholarship"]["eod"] <= config.FAIRNESS_LIMIT),
+        ("adopted policy: 95th percentile of realised age gap (200 draws) <= 0.05",
+         round(b["realisation_spread"]["age_band"]["p95"], 4), b["realisation_spread"]["age_band"]["p95"] <= config.FAIRNESS_LIMIT),
         ("patient-grouped AUC within 0.02 of random-split AUC",
          round(R["robustness_patient_grouped"]["roc_auc"], 4), abs(R["robustness_patient_grouped"]["roc_auc"] - x["roc_auc"]) <= 0.02),
     ]
     rows = [{"check": c, "value": v, "passed": bool(p)} for c, v, p in checks]
-    blocking = [r["check"] for r in rows if not r["passed"] and not r["check"].startswith("F1")]
+    non_blocking = ("F1", "adopted policy: 95th percentile")
+    blocking = [r["check"] for r in rows if not r["passed"] and not r["check"].startswith(non_blocking)]
     decision = "eligible for Ethics Committee review" if not blocking else "not eligible - fix blocking checks"
     out = {"generated_utc": datetime.now(timezone.utc).isoformat(), "model_version": config.MODEL_VERSION,
            "checks": rows, "blocking_failures": blocking,
            "non_blocking_notes": ["F1 target (0.55) is reported but treated as non-blocking: at a 20% base rate and "
-                                  "recall >= 0.65, F1 is bounded by precision; the committee decides whether to revise it."],
+                                  "recall >= 0.65, F1 is bounded by precision; the committee decides whether to revise it.",
+                                  "The 95th-percentile check shows how often a single month's randomised decisions could exceed "
+                                  "the limit by chance; it is reported to the committee rather than blocking."],
            "decision": decision, "automatic_promotion": False}
     json.dump(out, open(config.ARTIFACTS / "promotion_decision.json", "w"), indent=1)
     return out

@@ -360,11 +360,15 @@ elif page.startswith("5"):
         mr.append({"Approach": n, "No-shows caught": f"{m['recall']:.0%}", "Flags that are real": f"{m['precision']:.0%}", "Appointments flagged": f"{m['flag_rate']:.0%}",
                    "Age-group gap": round(m["age_band"]["eod"], 3), "Gender gap": round(m["Gender"]["eod"], 3), "Scholarship gap": round(m["Scholarship"]["eod"], 3)})
     st.dataframe(pd.DataFrame(mr), hide_index=True, width="stretch")
+    _sp = MB.get("realisation_spread", {}).get("age_band")
+    spread_txt = (f": across {_sp['n_seeds']} simulated draws the realised age-group gap ran {_sp['p05']:.3f}-{_sp['p95']:.3f} "
+                  f"(5th-95th percentile) and exceeded 0.05 in {_sp['share_above_limit']:.0%} of draws") if _sp else ""
     st.markdown(f"""
 * **Found:** the model flags older patients far less often and catches fewer of their no-shows than younger patients' - the age-group gap is {A['fairness']['age_band']['eod']:.2f} against a 0.05 limit.
 * **Option A** narrows the age gap to {MIT['A_group_thresholds']['age_band']['eod']:.2f} while keeping the catch rate near {MIT['A_group_thresholds']['recall']:.0%}, but does not reach 0.05.
 * **Option B (adopted)** gives age-group, gender and scholarship gaps of {MB['age_band']['eod']:.3f}, {MB['Gender']['eod']:.3f} and {MB['Scholarship']['eod']:.3f}, but flags {MB['flag_rate']:.0%} of appointments instead of {MIT['before']['flag_rate']:.0%}, and part of the rule is randomised.
-* **Why B:** it is the only option that meets the Charter's error-rate limit for every audited group. **What it costs:** more outreach per real no-show, so coordinator capacity (Module 2 assumption A-3) must be confirmed before use.
+* **Option B numbers are expected values.** Because part of the rule is randomised, any single month's decisions scatter around them{spread_txt}.
+* **Why B:** it is the only option whose expected error-rate gaps meet the Charter limit for every audited group. **What it costs:** more outreach per real no-show, so coordinator capacity (Module 2 assumption A-3) must be confirmed before use.
 * **Why not equal flag rates:** older patients genuinely miss fewer visits, so equal *flag rates* (demographic parity) would mean ignoring real differences. The Charter limit is applied to *error rates* instead.
 """)
     if POLICY:

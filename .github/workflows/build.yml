@@ -9,7 +9,7 @@ on:
     - cron: "0 6 1 * *"        # monthly retraining review (1st of each month, 06:00 UTC)
 
 permissions:
-  contents: read
+  contents: write    # only used to publish this run's outputs to a separate build-outputs-<run> branch
 
 jobs:
   build:
@@ -62,3 +62,22 @@ jobs:
             logs/audit.log
             requirements-lock.txt
             test-results.xml
+      - name: Publish outputs to branch build-outputs-${{ github.run_number }} (readable without artifact storage)
+        if: always()
+        run: |
+          set -e
+          OUT=$(mktemp -d)
+          for f in artifacts/*.json artifacts/xgboost.joblib artifacts/xgboost_minimal.joblib docs/model_card.md \
+                   docs/api_demo_output.txt requirements-lock.txt test-results.xml logs/audit.log mlruns/mlflow.db; do
+            [ -e "$f" ] && mkdir -p "$OUT/$(dirname $f)" && cp "$f" "$OUT/$f" || true
+          done
+          for d in artifacts/figures artifacts/pipeline artifacts/monitoring docs/evidence; do
+            [ -d "$d" ] && mkdir -p "$OUT/$d" && cp -r "$d/." "$OUT/$d/" || true
+          done
+          cd "$OUT"
+          git init -q -b "build-outputs-${{ github.run_number }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Build outputs: run ${{ github.run_id }} from ${{ github.ref_name }}@${{ github.sha }}"
+          git push -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/build-outputs-${{ github.run_number }}"

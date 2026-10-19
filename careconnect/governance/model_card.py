@@ -33,6 +33,7 @@ def main():
                      f"{M[k]['Gender']['eod']:.3f} | {M[k]['Scholarship']['eod']:.3f} |"
                      for k, lbl in [("before", "Single cut-off"), ("A_group_thresholds", "A: cut-off per age group"),
                                     ("B_equalized_odds", "**B: equalized odds (adopted)**"), ("C_demographic_parity", "C: demographic parity")])
+    sp = b["realisation_spread"]["age_band"]
     over = [n for n, k in [("age", "age_band"), ("gender", "Gender"), ("scholarship", "Scholarship")]
             if b[k]["eod"] > config.FAIRNESS_LIMIT]
     b_text = ("all three gaps are at or below the limit" if not over
@@ -85,6 +86,9 @@ Under the single cut-off the model flags older patients far less often (age gap 
 Charter Principle 2. Option B is adopted: {b_text}, at the cost of flagging
 {pct(b['flag_rate'])} of appointments instead of {pct(s['flag_rate'])}. {pct(P['verification']['share_randomised'])} of test
 decisions are randomised within an age group's threshold band; the draw is reproducible from the request ID.
+Option B figures are **expected values** over that randomisation. Any one set of decisions scatters around them: over
+{sp['n_seeds']} simulated draws the realised age-group gap ranged {sp['p05']:.3f}-{sp['p95']:.3f} (5th-95th percentile) and exceeded
+0.05 in {pct(sp['share_above_limit'])} of draws, so monthly audits will sometimes show breaches that are chance, not drift.
 Age groups have different true no-show rates, so equal flag rates (demographic parity) are neither required nor expected.
 
 ## Promotion gate (automated; promotion itself is a human decision)

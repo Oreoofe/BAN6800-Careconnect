@@ -149,10 +149,25 @@ def main():
           abs(fair["single_cutoff"]["age_band"]["equalized_odds_difference"] - M["before"]["age_band"]["eod"]) < 1e-9)
     check("exported Option B rule reproduces Fairlearn's probabilities", P["verification"]["max_abs_diff_vs_fairlearn_pmf"] < 1e-9,
           P["verification"]["max_abs_diff_vs_fairlearn_pmf"])
-    for g in groups:
-        e = fair["option_B_seed42"][g]["equalized_odds_difference"]
-        CHECKS.append({"check": f"Option B {g} equalized-odds gap <= 0.05 (point estimate)",
-                       "status": "PASS" if e <= 0.05 else "FAIL", "detail": round(e, 4)})
+    # expected-value fairness of the randomised rule, recomputed independently from the probabilities
+    fair["option_B_expected_by_group"] = {}
+    for g, sf in groups.items():
+        rows = {str(v): {"n": int((sf == v).sum()), "selection": float(pmf[sf == v].mean()),
+                         "tpr": float(pmf[(sf == v) & (y == 1)].mean()), "fpr": float(pmf[(sf == v) & (y == 0)].mean())}
+                for v in np.unique(sf)}
+        tg = max(r["tpr"] for r in rows.values()) - min(r["tpr"] for r in rows.values())
+        fg = max(r["fpr"] for r in rows.values()) - min(r["fpr"] for r in rows.values())
+        sel = [r["selection"] for r in rows.values()]
+        fair["option_B_expected_by_group"][g] = {"eod": max(tg, fg), "dpd": max(sel) - min(sel), "di": min(sel) / max(sel), "groups": rows}
+        e = fair["option_B_expected_by_group"][g]["eod"]
+        check(f"Option B {g}: EXPECTED equalized-odds gap <= 0.05", e <= 0.05, round(e, 4))
+        mk = M["B_equalized_odds"][{"Scholarship": "Scholarship"}.get(g, g)]["eod"]
+        check(f"Option B {g}: expected gap matches mitigation.json", abs(mk - e) < 1e-9, (round(mk, 4), round(e, 4)))
+        r42 = fair["option_B_seed42"][g]["equalized_odds_difference"]
+        CHECKS.append({"check": f"INFO Option B {g}: one realised draw (numpy seed 42) gap", "status": "INFO", "detail": round(r42, 4)})
+        sp = fair["option_B_over_50_random_seeds"][g]
+        CHECKS.append({"check": f"INFO Option B {g}: realised gap over 50 draws min/mean/max", "status": "INFO",
+                       "detail": (round(sp["min"], 4), round(sp["mean"], 4), round(sp["max"], 4))})
 
     # ---------- explanations ----------
     import xgboost as xgb

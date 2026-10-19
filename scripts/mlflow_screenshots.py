@@ -47,12 +47,22 @@ def main():
         with sync_playwright() as p:
             b = p.chromium.launch()
             pg = b.new_page(viewport={"width": 1600, "height": 900})
+            failed = []
             for name, url in pages.items():
-                pg.goto(url, wait_until="networkidle")
-                time.sleep(4)
-                pg.screenshot(path=str(OUT / name), full_page=True)
-                print("saved", OUT / name)
+                try:
+                    # MLflow's UI keeps polling, so "networkidle" may never arrive; wait for load, then for content
+                    pg.goto(url, wait_until="load", timeout=60000)
+                    pg.wait_for_selector(f"text={config.REGISTERED_MODEL}" if "models" in url else "text=xgboost",
+                                         timeout=45000)
+                    time.sleep(3)
+                    pg.screenshot(path=str(OUT / name), full_page=True)
+                    print("saved", OUT / name)
+                except Exception as e:
+                    failed.append(name)
+                    print("FAILED", name, type(e).__name__, str(e)[:200])
             b.close()
+            if failed:
+                raise SystemExit(f"screenshots failed: {failed}")
     finally:
         srv.terminate()
 
