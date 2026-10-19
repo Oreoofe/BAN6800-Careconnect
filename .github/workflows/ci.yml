@@ -46,13 +46,7 @@ jobs:
       - name: Build and start API + dashboard
         run: docker compose up -d --build api dashboard
       - name: Wait for health and score one appointment
-        run: |
-          for i in $(seq 1 40); do curl -sf localhost:8000/health && break; sleep 3; done
-          curl -sf localhost:8000/health
-          curl -sf -X POST localhost:8000/predict -H 'Content-Type: application/json' -d '{"request_id":"ci-smoke","features":{"Gender":"F","Age":26,"Neighbourhood":"JARDIM DA PENHA","Scholarship":0,"SMS_received":1,"lead_time_days":35,"appointment_dow":2,"appointment_month":5,"prior_appointments":4,"prior_noShows":3}}'
-          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8000/predict -H 'Content-Type: application/json' -d '{"features":{"Age":40}}')" = "422"
-          for i in $(seq 1 40); do curl -sf localhost:8501/_stcore/health && break; sleep 3; done
-          curl -sf localhost:8501/_stcore/health
+        run: scripts/run_logged.sh bash scripts/smoke_api.sh
       - name: Show container status
         if: always()
         run: docker compose ps && docker compose logs --tail=50

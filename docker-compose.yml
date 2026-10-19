@@ -23,7 +23,7 @@ services:
       - CARECONNECT_API_KEY=${CARECONNECT_API_KEY:-}
       - RATE_LIMIT_PER_MIN=120
     volumes:
-      - ./logs:/app/logs            # explanation store + audit trail persist outside the container
+      - api_logs:/app/logs          # explanation store persists in a named volume owned by the non-root API user
     restart: unless-stopped
 
   dashboard:
@@ -48,3 +48,6 @@ services:
     ports: ["8090:8090"]
     volumes:
       - ./artifacts/monitoring:/reports:ro
+
+volumes:
+  api_logs:
