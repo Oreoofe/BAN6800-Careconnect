@@ -41,7 +41,7 @@ def main():
         wait(f"{base}/health")
         mlflow.set_tracking_uri(config.MLFLOW_URI)
         exp = mlflow.get_experiment_by_name(config.MLFLOW_EXPERIMENT)
-        pages = {"mlflow_experiment_runs.png": f"{base}/#/experiments/{exp.experiment_id}",
+        pages = {"mlflow_experiment_runs.png": f"{base}/#/experiments/{exp.experiment_id}/runs",
                  "mlflow_model_registry.png": f"{base}/#/models/{config.REGISTERED_MODEL}",
                  "mlflow_registered_models.png": f"{base}/#/models"}
         with sync_playwright() as p:
@@ -52,13 +52,15 @@ def main():
                 try:
                     # MLflow's UI keeps polling, so "networkidle" may never arrive; wait for load, then for content
                     pg.goto(url, wait_until="load", timeout=60000)
-                    pg.wait_for_selector(f"text={config.REGISTERED_MODEL}" if "models" in url else "text=xgboost",
-                                         timeout=45000)
+                    want = config.REGISTERED_MODEL if "models" in url else "xgboost"
+                    # body text check instead of a CSS selector: MLflow renders run names inside a virtualised grid
+                    pg.wait_for_function(f"document.body && document.body.innerText.includes('{want}')", timeout=90000)
                     time.sleep(3)
                     pg.screenshot(path=str(OUT / name), full_page=True)
                     print("saved", OUT / name)
                 except Exception as e:
                     failed.append(name)
+                    pg.screenshot(path=str(OUT / name.replace(".png", "_FAILED_debug.png")), full_page=True)
                     print("FAILED", name, type(e).__name__, str(e)[:200])
             b.close()
             if failed:

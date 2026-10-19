@@ -183,24 +183,72 @@ def main():
     check("SHAP explains the deployed model: sigmoid(margin) == predict_proba", np.max(np.abs(prob_from_margin - m.predict_proba(Xs)[:, 1])) < 1e-5)
     check("analysis.json produced by model version " + config.MODEL_VERSION, E.get("model_version") == config.MODEL_VERSION)
     XP = load("explanations.json")
+    POL = load("fairness_policy.json")
+    from careconnect.fairness.policy import flag_probability
     if XP:
+        allex = {x["tier"]: x for x in E["samples"] + E["samples_documented_cycle1"]}
+        for x in E["samples"]:
+            check(f"example '{x['tier']}' is genuinely in its score tier", x["tier"] == x["score_tier"], round(x["prob"], 4))
         for e in XP["lime"]:
-            s = next(x for x in E["samples"] if x["tier"] == e["tier"])
+            s = allex[e["example"]]
             sc = float(m.predict_proba(pd.DataFrame([s["features"]])[config.FEATURES])[0, 1])
-            check(f"LIME {e['tier']}: explained score equals the model's score", abs(sc - e["model_score"]) < 1e-9, round(sc, 4))
+            check(f"LIME [{e['config']}] {e['example']}: explains the v2 model's score", abs(sc - e["model_score"]) < 1e-9, round(sc, 4))
+            CHECKS.append({"check": f"INFO LIME [{e['config']}] {e['example']}: R2 / |error| / top-3 overlap / fidelity",
+                           "status": "INFO", "detail": (round(e["lime_r2"], 3), round(e["abs_error"], 3), e["top3_overlap"], e["fidelity"])})
         for c in XP["counterfactuals"]:
+            s = allex[c["example"]]
+            sc0 = float(m.predict_proba(pd.DataFrame([s["features"]])[config.FEATURES])[0, 1])
+            pf0 = flag_probability(sc0, str(s["features"]["age_band"]), POL)
+            check(f"counterfactual {c['example']}: original policy flag probability re-computed", abs(pf0 - c["original_policy_flag_probability"]) < 1e-12, round(pf0, 4))
             cf = c["counterfactual"]
             if cf:
-                s = next(x for x in E["samples"] if x["tier"] == c["tier"])
                 row = pd.DataFrame([{**s["features"], "lead_time_days": cf["lead_time_days"], "SMS_received": cf["SMS_received"]}])[config.FEATURES]
                 new = float(m.predict_proba(row)[0, 1])
-                check(f"counterfactual {c['tier']}: re-scored change falls below the cut-off", new < T and abs(new - cf["score"]) < 1e-9, round(new, 4))
-                check(f"counterfactual {c['tier']}: only actionable features changed",
-                      cf["lead_time_days"] <= s["features"]["lead_time_days"] and cf["SMS_received"] >= s["features"]["SMS_received"])
-        rep["explanations"] = {"lime_r2": {e["tier"]: e["lime_r2"] for e in XP["lime"]},
+                pf = flag_probability(new, str(s["features"]["age_band"]), POL)
+                check(f"counterfactual {c['example']}: re-scored change gives policy flag probability 0", pf == 0.0 and abs(new - cf["score"]) < 1e-9, round(new, 4))
+                check(f"counterfactual {c['example']}: feasible (earlier slot >= 0 days, SMS only added)",
+                      0 <= cf["lead_time_days"] <= s["features"]["lead_time_days"] and cf["SMS_received"] >= s["features"]["SMS_received"])
+            else:
+                CHECKS.append({"check": f"INFO counterfactual {c['example']}: none found", "status": "INFO",
+                               "detail": ("not flagged now" if not c["applicable"] else
+                                          f"lowest reachable flag probability {c['lowest_reachable']['policy_flag_probability']:.3f}")})
+        rep["explanations"] = {"lime": [{k: e[k] for k in ["config", "example", "model_score", "lime_local_prediction", "lime_r2",
+                                                            "abs_error", "lime_top3", "shap_top3", "top3_overlap", "fidelity"]} for e in XP["lime"]],
                                "counterfactuals": XP["counterfactuals"], "population": XP["population"]}
     else:
         check("explanations.json exists", False)
+
+    # ---------- policy comparison: recompute the deterministic rules from their stored cut-offs ----------
+    PC = load("policy_comparison.json")
+    if PC:
+        for k, v in PC["policies"].items():
+            if "cutoffs" in v:
+                cut = pd.Series(groups["age_band"]).map(v["cutoffs"]).values.astype(float)
+                yk = (p >= cut).astype(int)
+                rec = float(yk[y == 1].mean())
+                eodk = float(equalized_odds_difference(y, yk, sensitive_features=groups["age_band"]))
+                check(f"policy {k}: recall and age EOD reproduce from stored cut-offs",
+                      abs(rec - v["recall"]) < 1e-9 and abs(eodk - v["age_band"]["eod"]) < 1e-9, (round(rec, 4), round(eodk, 4)))
+        b = PC["policies"]["P4_option_B_equalized_odds"]
+        check("policy comparison Option B equals mitigation.json Option B (age EOD, expected)",
+              abs(b["age_band"]["eod"] - M["B_equalized_odds"]["age_band"]["eod"]) < 1e-9)
+        rep["policy_comparison"] = {k: {x: v[x] for x in ["recall", "precision", "f1", "flag_rate", "share_decisions_randomised"]}
+                                    | {"age_eod": v["age_band"]["eod"], "age_ci": v["age_band"]["eod_bootstrap_95ci"]}
+                                    for k, v in PC["policies"].items()}
+    else:
+        check("policy_comparison.json exists", False)
+
+    # ---------- build identity ----------
+    import hashlib
+    import os
+    sha = os.environ.get("GITHUB_SHA", "")[:7]
+    rep["build"] = {"commit": sha or None, "model_results_git_sha": R.get("git_sha"),
+                    "model_sha256": hashlib.sha256((A / "xgboost.joblib").read_bytes()).hexdigest(),
+                    "policy_sha256": hashlib.sha256((A / "fairness_policy.json").read_bytes()).hexdigest()}
+    if sha:
+        check("model trained from the commit being built (GITHUB_SHA)", R.get("git_sha") == sha, (R.get("git_sha"), sha))
+        audit_shas = {json.loads(line)["git_sha"] for line in open(config.ROOT / "logs" / "audit.log")}
+        check("every pipeline audit event stamped with the commit being built", audit_shas == {sha}, sorted(audit_shas))
 
     # ---------- MLflow ----------
     try:
@@ -230,11 +278,37 @@ def main():
     rep["promotion_gate"] = G
     MON = load("monitoring/monitoring.json")
     if MON:
-        rep["monitoring"] = {"evidently": MON["evidently"],
-                             "weeks": [{k: w[k] for k in ["batch", "n", "auc", "max_feature_psi", "score_psi", "age_eod", "status"]} for w in MON["weeks"]],
-                             "stress_test_status": MON["stress_test"]["status"]}
         check("Evidently HTML report written", (A / "monitoring" / "evidently_drift_report.html").exists(), MON["evidently"])
-        check("stress test raises data-drift alert", MON["stress_test"]["status"]["data_drift"] == "alert")
+        st = {t["name"][:2]: t for t in MON["stress_tests"]}
+        check("S1 stress test (lead-time shift) raises data-drift alert", st["S1"]["status"]["data_drift"] == "alert")
+        check("S2 stress test (older patients' flags removed) raises fairness halt", st["S2"]["fairness"]["status"] == "halt",
+              st["S2"]["fairness"]["status"])
+        check("S3 stress test (25 elderly appointments) leaves elderly unevaluated",
+              "elderly" in st["S3"]["fairness"]["groups_not_evaluated"])
+        check("S4 stress test (300 appointments) returns 'insufficient data'", st["S4"]["fairness"]["status"] == "insufficient data",
+              st["S4"]["fairness"]["status"])
+        # independent recompute of the latest full rolling window's realised gap
+        from careconnect.fairness.policy import apply_policy as _ap
+        last = MON["rolling_28d"][-1]
+        end_ = te["AppointmentDay"].max()
+        win = te[te["AppointmentDay"] > end_ - pd.Timedelta(days=28)]
+        pw = m.predict_proba(win[config.FEATURES])[:, 1]
+        _, yw = _ap(pw, win["age_band"].astype(str).values, POL, seed=100 + len(MON["rolling_28d"]) - 1)
+        gw = win["age_band"].astype(str).values
+        k = np.isin(gw, last["fairness"]["groups_evaluated"])
+        e2 = float(equalized_odds_difference(win[config.TARGET].values[k], yw[k], sensitive_features=gw[k]))
+        check("latest rolling window: realised age gap reproduces", abs(e2 - (last["fairness"]["eod"] or -1)) < 1e-9, round(e2, 4))
+        rep["monitoring"] = {
+            "rule": MON["fairness_rule"], "evidently": MON["evidently"],
+            "rolling_28d": [{"window": r["batch"], "n": r["n"], "auc": r["auc"], "max_psi": r["max_feature_psi"], "max_psi_feature": r["max_psi_feature"],
+                             "fairness_status": r["fairness"]["status"], "eod": r["fairness"]["eod"], "ci95": r["fairness"]["ci95"],
+                             "not_evaluated": list(r["fairness"]["groups_not_evaluated"])} for r in MON["rolling_28d"]],
+            "weeks_cycle1": [{"week": w["batch"], "eod": w["age_eod"], "status": w["status"]["bias_drift"]} for w in MON["weeks_cycle1_rule"]],
+            "weeks_cycle2": [{"week": w["batch"], "status": w["fairness"]["status"], "eod": w["fairness"]["eod"], "ci95": w["fairness"]["ci95"],
+                              "not_evaluated": list(w["fairness"]["groups_not_evaluated"])} for w in MON["weeks_cycle2_rule"]],
+            "months": [{"month": r["batch"], "n": r["n"], "status": r["fairness"]["status"], "eod": r["fairness"]["eod"], "ci95": r["fairness"]["ci95"]}
+                       for r in MON["calendar_months"]],
+            "stress": [{"name": t["name"], "expect": t["expect"], "fairness": t["fairness"]["status"], "status": t["status"]} for t in MON["stress_tests"]]}
     else:
         check("monitoring.json exists", False)
 

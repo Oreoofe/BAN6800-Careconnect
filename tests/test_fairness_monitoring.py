@@ -53,3 +53,39 @@ def test_psi():
     assert psi(ref, rng.normal(0, 1, 5000)) < 0.02
     assert psi(ref, rng.normal(1, 1, 5000)) > 0.2
     assert psi(np.array(["a"] * 50 + ["b"] * 50), np.array(["a"] * 90 + ["b"] * 10)) > 0.2
+
+
+# ---- cycle 2: monitoring rule and deterministic policies (toy data, behaviour only) ----
+def _toy(n, gap, shares, seed=1):
+    rng = np.random.default_rng(seed)
+    g = rng.choice(list(shares), n, p=list(shares.values()))
+    y = (rng.random(n) < 0.2).astype(int)
+    tpr = np.where(g == list(shares)[0], 0.85, 0.85 - gap)
+    yh = np.where(y == 1, rng.random(n) < tpr, rng.random(n) < 0.5).astype(int)
+    return y, yh, g
+
+
+def test_fairness_rule_outcomes():
+    from careconnect.monitoring.monitor import fairness_rule
+    assert fairness_rule(*_toy(20000, 0.0, {"a": .5, "b": .5}))["status"] == "ok"
+    assert fairness_rule(*_toy(20000, 0.20, {"a": .5, "b": .5}))["status"] == "halt"
+    r = fairness_rule(*_toy(300, 0.0, {"a": .5, "b": .5}))
+    assert r["status"] == "insufficient data" and r["eod"] is None      # no conclusion either way
+
+
+def test_small_group_is_not_counted_as_passing():
+    from careconnect.monitoring.monitor import fairness_rule
+    y, yh, g = _toy(6000, 0.0, {"a": .49, "b": .49, "c": .02})
+    r = fairness_rule(y, yh, g)
+    assert "c" in r["groups_not_evaluated"] and "c" not in r["groups_evaluated"]
+
+
+def test_equal_opportunity_cutoffs_equalise_tpr():
+    from careconnect.fairness.policy_comparison import apply_cutoffs, tpr_cutoffs
+    rng = np.random.default_rng(0)
+    g = rng.choice(["x", "y"], 20000)
+    y = (rng.random(20000) < 0.2).astype(int)
+    s = np.clip(rng.normal(np.where(y == 1, .35, .2) + np.where(g == "y", .08, 0), .1), 0, 1)
+    yh = apply_cutoffs(s, g, tpr_cutoffs(y, s, g, 0.75))
+    tprs = [yh[(g == v) & (y == 1)].mean() for v in ["x", "y"]]
+    assert all(abs(t - 0.75) < 0.01 for t in tprs)

@@ -53,7 +53,11 @@ PLAIN = {"lead_time_days": "Days between booking and appointment", "Age": "Patie
          "appointment_month": "Month of appointment", "appointment_dow": "Day of week", "Gender": "Gender",
          "Alcoholism": "Alcoholism flag", "Diabetes": "Diabetes flag", "Hipertension": "Hypertension flag",
          "Handcap": "Disability level"}
-STATE = {"model": None, "op": {"flag_threshold": 0.25, "high_threshold": 0.40}, "policy": None}
+STATE = {"model": None, "op": {"flag_threshold": 0.25, "high_threshold": 0.40}, "policy": None, "hashes": {}}
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 COUNTERS = defaultdict(float)
 HITS: dict = defaultdict(deque)
 
@@ -62,10 +66,12 @@ HITS: dict = defaultdict(deque)
 async def lifespan(app):
     if MODEL_PATH.exists():
         STATE["model"] = joblib.load(MODEL_PATH)
+        STATE["hashes"]["model_sha256"] = _sha256(MODEL_PATH)
     if OP_PATH.exists():
         STATE["op"] = json.load(open(OP_PATH))
     if POLICY_PATH.exists():
         STATE["policy"] = json.load(open(POLICY_PATH))
+        STATE["hashes"]["policy_sha256"] = _sha256(POLICY_PATH)
     yield
 
 
@@ -111,10 +117,12 @@ class PredictionRequest(BaseModel):
 class PredictionResponse(BaseModel):
     request_id: str
     no_show_probability: float
-    risk_tier: Literal["low", "medium", "high"]
-    flagged_for_outreach: bool
-    flag_probability: float
-    decision_randomised: bool
+    score_tier: Literal["low", "medium", "high"] = Field(
+        description="Model risk-score band only (low < flag cut-off <= medium < 0.40 <= high). It is NOT the outreach decision.")
+    flagged_for_outreach: bool = Field(description="Decision of the adopted fairness policy for this request")
+    flag_probability: float = Field(description="Policy's probability of flagging this score in this age group")
+    decision_randomised: bool = Field(description="True when 0 < flag_probability < 1: the decision came from a logged random draw")
+    decision_explanation: str
     policy: str
     reason_codes: List[str] = []
     model_version: str
@@ -168,7 +176,7 @@ def model_info():
     return {"model_name": config.REGISTERED_MODEL, "model_version": config.MODEL_VERSION,
             "model_type": "XGBoost classifier in an sklearn pipeline", "target": config.TARGET,
             "operating_point": STATE["op"], "fairness_policy": pol["name"] if pol else "single cut-off",
-            "policy_status": pol.get("status") if pol else None,
+            "policy_status": pol.get("status") if pol else None, **STATE["hashes"],
             "intended_use": "Identify appointments at higher risk of a missed visit so a person can offer support",
             "non_intended_use": "Deny care, penalise patients, or automate scheduling without human review",
             "fairness_constraint": "Equalized-odds gap <= 0.05 across age groups, gender and scholarship (Charter Principle 2)"}
@@ -189,19 +197,26 @@ def predict(req: PredictionRequest):
     else:
         d = {"flag_probability": float(p >= op["flag_threshold"]), "flagged": p >= op["flag_threshold"], "randomised": False, "draw": None}
     tier = "high" if p >= op["high_threshold"] else ("medium" if p >= op["flag_threshold"] else "low")
+    if d["randomised"]:
+        why = (f"Score tier '{tier}'. In this age group the policy flags this score with probability "
+               f"{d['flag_probability']:.0%}; the logged draw {'fell inside' if d['flagged'] else 'fell outside'} that probability.")
+    else:
+        why = f"Score tier '{tier}'. The policy {'always' if d['flagged'] else 'never'} flags this score in this age group."
     rc = reasons(df) if req.return_reasons else []
     canon = json.dumps(req.features.model_dump(), sort_keys=True)
     store({"ts": datetime.now(timezone.utc).isoformat(), "request_id": rid, "model_version": config.MODEL_VERSION,
-           "policy": pol["name"] if pol else "single cut-off", "score": round(p, 6), "tier": tier,
+           "policy": pol["name"] if pol else "single cut-off", "score": round(p, 6), "score_tier": tier,
+           "model_sha256": STATE["hashes"].get("model_sha256"), "policy_sha256": STATE["hashes"].get("policy_sha256"),
            "flag_probability": d["flag_probability"], "flagged": d["flagged"], "random_draw": d["draw"],
            "reason_codes": rc, "input_sha256": hashlib.sha256(canon.encode()).hexdigest(),
            "age_band": df["age_band"].iloc[0]})
     COUNTERS["predictions"] += 1
     COUNTERS["flags"] += int(d["flagged"])
     COUNTERS["latency_seconds_sum"] += time.time() - t0
-    return PredictionResponse(request_id=rid, no_show_probability=round(p, 4), risk_tier=tier,
+    return PredictionResponse(request_id=rid, no_show_probability=round(p, 4), score_tier=tier,
                               flagged_for_outreach=d["flagged"], flag_probability=round(d["flag_probability"], 4),
-                              decision_randomised=d["randomised"], policy=pol["name"] if pol else "single cut-off",
+                              decision_randomised=d["randomised"], decision_explanation=why,
+                              policy=pol["name"] if pol else "single cut-off",
                               reason_codes=rc, model_version=config.MODEL_VERSION)
 
 

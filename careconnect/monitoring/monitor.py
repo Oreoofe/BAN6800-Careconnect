@@ -16,7 +16,12 @@ Signals and thresholds (Module 4 monitoring hooks):
 Concept drift (a changed relationship between inputs and outcomes) shows up as falling performance
 with little data drift; that pattern is reported separately.
 
-Also writes an Evidently data-drift report (HTML) for the latest replayed week when Evidently is installed.
+Also writes an Evidently data-drift report (HTML) for the last 28 days when Evidently is installed.
+
+Cycle 2 (after verification): the weekly rule halted every week because weekly age groups are too small
+to measure a 0.05 gap. The replay now also applies a rule with minimum group sizes and a bootstrap 95%
+interval, on rolling 28-day windows and calendar months (see FAIR_RULE). The cycle-1 rule and its
+results are kept unchanged alongside, so the change is auditable.
 """
 import json
 import warnings
@@ -126,6 +131,80 @@ def evidently_report(ref, cur, path):
         return f"skipped: {e}"
 
 
+# ---------------------------------------------------------------------------------------------------
+# Cycle-2 fairness rule. The cycle-1 weekly rule (above, kept unchanged in batch_report) halted in all 7
+# replayed weeks: weekly age groups are small, so their error-rate gaps are mostly sampling noise.
+FAIR_RULE = {"window": "rolling 28 days, evaluated weekly", "min_no_shows_per_group": 50,
+             "min_attended_per_group": 50, "bootstrap": 300, "limit": 0.05,
+             "statuses": {"ok": "95% interval for the gap lies wholly at or below the limit",
+                          "halt": "95% interval lies wholly above the limit: suspend flagging, notify Ethics Committee",
+                          "inconclusive": "interval straddles the limit: no conclusion; review at monthly audit, extend window",
+                          "insufficient data": "fewer than 2 groups meet the minimum counts: no fairness conclusion is drawn"}}
+
+
+def fairness_rule(y, yh, groups, seed=0, rule=FAIR_RULE):
+    """Decide ok / halt / inconclusive / insufficient data. Groups below the minimum counts are listed as
+    'not evaluated' and are NEVER counted as passing; insufficient evidence is not evidence of fairness."""
+    y, yh, groups = np.asarray(y), np.asarray(yh), np.asarray(groups)
+    counts = {}
+    for v in np.unique(groups):
+        k = groups == v
+        counts[str(v)] = {"n": int(k.sum()), "no_shows": int(y[k].sum()), "attended": int((y[k] == 0).sum())}
+    elig = [v for v, c in counts.items() if c["no_shows"] >= rule["min_no_shows_per_group"]
+            and c["attended"] >= rule["min_attended_per_group"]]
+    skipped = {v: c for v, c in counts.items() if v not in elig}
+    out = {"groups_evaluated": elig, "groups_not_evaluated": skipped, "counts": counts}
+    if len(elig) < 2:
+        return {**out, "status": "insufficient data", "eod": None, "ci95": None}
+    k = np.isin(groups, elig)
+    yy, hh, gg = y[k], yh[k], groups[k]
+    point = fairness_report(yy, hh, gg)["eod"]
+    rng = np.random.default_rng(seed)
+    bs = []
+    for _ in range(rule["bootstrap"]):
+        i = rng.integers(0, len(yy), len(yy))
+        try:
+            bs.append(fairness_report(yy[i], hh[i], gg[i])["eod"])
+        except ValueError:
+            continue
+    lo, hi = float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5))
+    status = "halt" if lo > rule["limit"] else ("ok" if hi <= rule["limit"] else "inconclusive")
+    return {**out, "status": status, "eod": point, "ci95": [lo, hi],
+            "note": ("not all groups evaluated" if skipped else "all groups evaluated")}
+
+
+def window_report(name, cur, ref, model, policy, T, val_auc, ref_scores, seed, coverage_days=None, override=None):
+    X = cur[config.FEATURES]
+    y = cur[config.TARGET].values
+    s = model.predict_proba(X)[:, 1]
+    g = cur["age_band"].astype(str).values
+    if policy:
+        pmf, yh = apply_policy(s, g, policy, seed=seed)       # realised decisions, as production would see them
+    else:
+        pmf, yh = (s >= T).astype(float), (s >= T).astype(int)
+    if override is not None:
+        yh = override(yh, cur)
+    drift = {f: psi(ref[f], cur[f]) for f in DRIFT_FEATURES}
+    auc = roc_auc_score(y, s) if len(np.unique(y)) > 1 else None
+    fr = fairness_rule(y, yh, g, seed=seed)
+    exp_eod = None
+    if fr["status"] != "insufficient data":
+        k = np.isin(g, fr["groups_evaluated"])
+        exp_eod = max(max(pmf[k & (g == v) & (y == 1)].mean() for v in fr["groups_evaluated"]) -
+                      min(pmf[k & (g == v) & (y == 1)].mean() for v in fr["groups_evaluated"]),
+                      max(pmf[k & (g == v) & (y == 0)].mean() for v in fr["groups_evaluated"]) -
+                      min(pmf[k & (g == v) & (y == 0)].mean() for v in fr["groups_evaluated"]))
+    r = {"batch": name, "n": len(cur), "coverage_days": coverage_days, "no_show_rate": float(y.mean()),
+         "flag_rate": float(yh.mean()), "auc": auc, "recall": float(recall_score(y, yh)) if y.sum() else None,
+         "score_psi": psi(ref_scores, s), "feature_psi": drift, "max_feature_psi": max(drift.values()),
+         "max_psi_feature": max(drift, key=drift.get), "fairness": fr, "expected_age_eod_evaluated_groups": exp_eod}
+    r["status"] = {"data_drift": level(r["max_feature_psi"], TH["psi_warn"], TH["psi_alert"]),
+                   "prediction_drift": level(r["score_psi"], TH["psi_warn"], TH["psi_alert"]),
+                   "performance": "alert" if auc is not None and auc < val_auc - TH["auc_drop_alert"] else "ok",
+                   "bias_drift": fr["status"]}
+    return r
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     m = joblib.load(config.ARTIFACTS / "xgboost.joblib")
@@ -137,27 +216,66 @@ def main():
     val_auc = R["models"]["xgboost"]["cv_auc"]
     ref = tr.sample(20000, random_state=config.RANDOM_STATE)
     ref_scores = m.predict_proba(ref[config.FEATURES])[:, 1]
-
     te = te.copy()
     te["week"] = te["AppointmentDay"].dt.to_period("W-SUN").dt.start_time.dt.strftime("%Y-%m-%d")
-    weeks = []
-    for w, cur in te.groupby("week"):
-        if len(cur) < 500:
-            continue
-        weeks.append(batch_report(f"week of {w}", cur, ref, m, policy, T, val_auc, ref_scores))
-    stress = te.sample(4000, random_state=1).copy()
-    stress["lead_time_days"] = (stress["lead_time_days"] * 1.5 + 7).round().astype(int)
-    stress_r = batch_report("STRESS TEST (synthetic: lead times x1.5 + 7 days)", stress, ref, m, policy, T, val_auc, ref_scores)
-    stress_r["synthetic"] = True
-    latest = te[te["week"] == te["week"].max()] if (te["week"] == te["week"].max()).sum() >= 500 else te
-    ev = evidently_report(ref, latest, OUT / "evidently_drift_report.html")
+
+    # 1) cycle-1 method, unchanged (weekly batches, point estimate, halt > 0.05) - preserved for comparison
+    weeks = [batch_report(f"week of {w}", cur, ref, m, policy, T, val_auc, ref_scores)
+             for w, cur in te.groupby("week") if len(cur) >= 500]
+    # 2) cycle-2 rule applied to the same weekly batches (shows how it behaves with small groups)
+    weeks_new = [window_report(f"week of {w}", cur, ref, m, policy, T, val_auc, ref_scores, seed=i)
+                 for i, (w, cur) in enumerate(te.groupby("week")) if len(cur) >= 500]
+    # 3) cycle-2 rule on rolling 28-day windows stepped weekly
+    start, end = te["AppointmentDay"].min(), te["AppointmentDay"].max()
+    ends = sorted(set(pd.date_range(start + pd.Timedelta(days=6), end, freq="7D").tolist() + [end]))
+    rolling = []
+    for i, e in enumerate(ends):
+        cur = te[(te["AppointmentDay"] > e - pd.Timedelta(days=28)) & (te["AppointmentDay"] <= e)]
+        cov = int((e - max(start, e - pd.Timedelta(days=27))).days) + 1
+        rolling.append(window_report(f"28 days to {e.date()}" + ("" if cov >= 28 else f" (partial: {cov} days)"),
+                                     cur, ref, m, policy, T, val_auc, ref_scores, seed=100 + i, coverage_days=cov))
+    # 4) calendar months
+    months = [window_report(f"calendar month {mth}", cur, ref, m, policy, T, val_auc, ref_scores, seed=200 + i,
+                            coverage_days=int(cur["AppointmentDay"].dt.normalize().nunique()))
+              for i, (mth, cur) in enumerate(te.groupby(te["AppointmentDay"].dt.strftime("%Y-%m")))]
+    # 5) stress tests (synthetic, labelled)
+    last = te[te["AppointmentDay"] > end - pd.Timedelta(days=28)]
+    lead = te.sample(4000, random_state=1).copy()
+    lead["lead_time_days"] = (lead["lead_time_days"] * 1.5 + 7).round().astype(int)
+
+    def drop_older_flags(yh, cur):
+        out = yh.copy()
+        k = cur["age_band"].isin(["senior", "elderly"]).values & (yh == 1)
+        out[k & (np.random.default_rng(7).random(len(yh)) < 0.6)] = 0
+        return out
+    small = pd.concat([last[last["age_band"] != "elderly"], last[last["age_band"] == "elderly"].sample(25, random_state=3)])
+    stress = [
+        {"name": "S1 data drift: lead times x1.5 + 7 days", "expect": "data/prediction drift alerts",
+         **window_report("S1", lead, ref, m, policy, T, val_auc, ref_scores, seed=301)},
+        {"name": "S2 bias drift: 60% of senior/elderly flags removed (last 28 days)", "expect": "fairness halt",
+         **window_report("S2", last, ref, m, policy, T, val_auc, ref_scores, seed=302, override=drop_older_flags)},
+        {"name": "S3 small group: elderly reduced to 25 appointments (last 28 days)", "expect": "elderly not evaluated",
+         **window_report("S3", small, ref, m, policy, T, val_auc, ref_scores, seed=303)},
+        {"name": "S4 tiny batch: 300 random appointments", "expect": "insufficient data",
+         **window_report("S4", te.sample(300, random_state=4), ref, m, policy, T, val_auc, ref_scores, seed=304)}]
+    for st in stress:
+        st["synthetic"] = True
+    ev = evidently_report(ref, last, OUT / "evidently_drift_report.html")
     res = {"generated_utc": datetime.now(timezone.utc).isoformat(), "model_version": config.MODEL_VERSION,
-           "mode": "replay of held-out appointments by week (not live production data)", "thresholds": TH,
-           "validation_auc": val_auc, "policy": policy["name"] if policy else "single cut-off",
-           "weeks": weeks, "stress_test": stress_r, "evidently": ev}
+           "mode": "replay of held-out appointments (not live production data)", "thresholds": TH,
+           "fairness_rule": FAIR_RULE, "validation_auc": val_auc, "policy": policy["name"] if policy else "single cut-off",
+           "weeks_cycle1_rule": weeks, "weeks_cycle2_rule": weeks_new, "rolling_28d": rolling, "calendar_months": months,
+           "stress_tests": stress, "evidently": ev, "evidently_window": "last 28 days of test appointments vs training sample",
+           "weeks": weeks, "stress_test": stress[0]}       # cycle-1 keys kept for backward compatibility
     json.dump(res, open(OUT / "monitoring.json", "w"), indent=1, default=float)
-    for r in weeks + [stress_r]:
-        print(r["batch"], r["n"], round(r["auc"] or 0, 3), round(r["max_feature_psi"], 3), round(r["age_eod"], 3), r["status"])
+    for label, rows in [("cycle1 weekly", weeks)]:
+        for r in rows:
+            print(label, r["batch"], round(r["age_eod"], 3), r["status"]["bias_drift"])
+    for label, rows in [("cycle2 weekly", weeks_new), ("rolling28", rolling), ("month", months), ("stress", stress)]:
+        for r in rows:
+            f = r["fairness"]
+            print(label, r["batch"], r["n"], f["status"], None if f["eod"] is None else round(f["eod"], 3),
+                  f["ci95"] and [round(x, 3) for x in f["ci95"]], list(f["groups_not_evaluated"]), r["status"]["data_drift"])
     print("evidently:", ev)
 
 

@@ -114,17 +114,28 @@ def main():
                    "n_sample": len(Xs)}
     shap_figures(G, Xs)
 
-    ps = p[idx]
-    order = np.argsort(ps)
-    picks = {"high": order[-30], "medium": order[len(order) // 2 + 400], "low": order[40]}
-    samples = []
-    for tier, i in picks.items():
-        contrib = G.iloc[i].to_dict()
-        top = sorted(contrib.items(), key=lambda x: -abs(x[1]))[:4]
-        row = {k: (v.item() if hasattr(v, "item") else v) for k, v in Xs.iloc[i].to_dict().items()}
-        samples.append(dict(tier=tier, prob=float(ps[i]), features=row, top=top, actual=int(yte.values[idx][i]),
-                            test_row=int(idx[i])))
-    out["samples"] = samples
+    def score_tier(s):
+        return "high" if s >= op["high_threshold"] else ("medium" if s >= T else "low")
+
+    def sample(pos, label):
+        Xi = Xte.iloc[[pos]]
+        Gi, _ = tree_contributions(m, Xi)
+        top = sorted(Gi.iloc[0].to_dict().items(), key=lambda x: -abs(x[1]))[:4]
+        row = {k: (v.item() if hasattr(v, "item") else v) for k, v in Xi.iloc[0].to_dict().items()}
+        return dict(tier=label, score_tier=score_tier(float(p[pos])), prob=float(p[pos]), single_cutoff_flag=bool(p[pos] >= T),
+                    features=row, top=top, actual=int(yte.values[pos]), test_row=int(pos))
+
+    # Examples chosen so the label IS the score tier: the median-scored appointment within each tier
+    # (cycle 1 picked by rank position, which labelled a 0.245 score - below the 0.25 cut-off - "medium").
+    tiers = np.array([score_tier(s) for s in p])
+    picks = {}
+    for t in ["high", "medium", "low"]:
+        pos_t = np.where(tiers == t)[0]
+        picks[t] = int(pos_t[np.argsort(p[pos_t])[len(pos_t) // 2]])
+    out["samples"] = [sample(pos, t) for t, pos in picks.items()]
+    # The three examples documented in verification cycle 1 (same split, same test rows), kept for comparison
+    out["samples_documented_cycle1"] = [sample(pos, f"cycle1_{lbl}") for lbl, pos in
+                                        [("high", 14074), ("medium", 20762), ("low", 5547)]]
 
     wi = {}
 

@@ -124,7 +124,8 @@ def main():
     cv = StratifiedKFold(config.CV_FOLDS, shuffle=True, random_state=RS)
     spw = float((ytr == 0).sum() / (ytr == 1).sum())
     trk = Tracker()
-    res = {"n_train": len(Xtr), "n_test": len(Xte), "pos_rate": float(df[config.TARGET].mean()),
+    from careconnect.pipeline.audit import git_sha
+    res = {"git_sha": git_sha(), "n_train": len(Xtr), "n_test": len(Xte), "pos_rate": float(df[config.TARGET].mean()),
            "cv_folds": config.CV_FOLDS, "tuning_rows": len(Xtr), "model_version": config.MODEL_VERSION,
            "mlflow": bool(trk.mlflow), "baselines": {}, "models": {}}
 

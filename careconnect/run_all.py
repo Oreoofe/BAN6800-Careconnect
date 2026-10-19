@@ -52,7 +52,7 @@ def gate() -> dict:
 def main():
     from careconnect.pipeline.run import run
     from careconnect.modeling import train, evaluate
-    from careconnect.fairness import mitigation
+    from careconnect.fairness import mitigation, policy_comparison
     from careconnect.explain import local
     from careconnect.monitoring import monitor
     from careconnect.governance import model_card
@@ -60,6 +60,7 @@ def main():
     train.main()
     evaluate.main()
     mitigation.main()
+    policy_comparison.main()
     local.main()
     monitor.main()
     g = gate()

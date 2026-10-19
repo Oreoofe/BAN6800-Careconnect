@@ -65,3 +65,19 @@ def test_monitoring_page_shows_replay_label():
     at.sidebar.radio[0].set_value(page).run()
     assert not at.exception
     assert "replay" in _text(at).lower()
+
+
+def test_build_identity_and_new_sections():
+    import hashlib
+    at = _app()
+    side = "\n".join(str(c.value) for c in at.sidebar.caption)
+    assert hashlib.sha256((config.ARTIFACTS / "xgboost.joblib").read_bytes()).hexdigest()[:12] in side
+    pages = list(at.sidebar.radio[0].options)
+    if (config.ARTIFACTS / "policy_comparison.json").exists():
+        at.sidebar.radio[0].set_value(next(p for p in pages if p.startswith("5"))).run()
+        assert "Comparison of decision policies" in _text(at)
+    if (config.ARTIFACTS / "explanations.json").exists():
+        at.sidebar.radio[0].set_value(next(p for p in pages if p.startswith("3"))).run()
+        assert not at.exception and "how far to trust it" in _text(at)
+    at.sidebar.radio[0].set_value(next(p for p in pages if p.startswith("4"))).run()
+    assert not at.exception and "Model score tier" in _text(at)
