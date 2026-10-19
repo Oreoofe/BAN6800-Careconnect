@@ -1,0 +1,10 @@
+.git
+data/
+mlruns/
+logs/
+**/__pycache__
+artifacts/*.pkl
+artifacts/*.npy
+artifacts/logistic_regression.joblib
+artifacts/random_forest.joblib
+legacy/

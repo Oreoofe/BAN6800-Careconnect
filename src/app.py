@@ -11,7 +11,6 @@ import warnings
 from pathlib import Path
 
 import joblib
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
@@ -31,12 +30,19 @@ h1,h2,h3 {{color:{TEAL};}}
 </style>""", unsafe_allow_html=True)
 
 
+def _opt(path):
+    try:
+        return json.load(open(path))
+    except FileNotFoundError:
+        return None
+
+
 @st.cache_data
 def load():
     A = json.load(open(ART / "analysis.json"))
     M = json.load(open(ART / "mitigation.json"))
     H = json.load(open(ART / "neighbourhoods.json"))
-    return A, M, H
+    return A, M, H, _opt(ART / "fairness_policy.json"), _opt(ART / "explanations.json"), _opt(ART / "monitoring" / "monitoring.json"), _opt(ART / "promotion_decision.json")
 
 
 @st.cache_resource
@@ -44,11 +50,24 @@ def load_model():
     return joblib.load(ART / "xgboost.joblib")
 
 
-A, MIT, HOODS = load()
+A, MIT, HOODS, POLICY, EXPL, MON, GATE = load()
 model = load_model()
 T = A["threshold"]
 HIGH = json.load(open(ART / "operating_point.json"))["high_threshold"]
 OP = A["operating"]["xgboost"]["at_recall_target"]
+ADOPTED = MIT.get("adopted", "B_equalized_odds")
+MB = MIT[ADOPTED]
+VERSION = A.get("model_version", "1.x")
+FIGS = ART / "figures"
+
+
+def policy_prob(p, group):
+    if not POLICY:
+        return float(p >= T)
+    r = POLICY["groups"].get(group)
+    op = lambda s, o: (s > o[1]) if o[0] == ">" else (s < o[1])
+    inner = r["p0"] * op(p, r["op0"]) + r["p1"] * op(p, r["op1"])
+    return float(r.get("p_ignore", 0) * r.get("prediction_constant", 0) + (1 - r.get("p_ignore", 0)) * inner)
 PLAIN = {"lead_time_days": "Lead time (days from booking to visit)", "Age": "Patient age",
          "prior_noShow_rate": "Share of past visits missed", "prior_noShows": "Number of past missed visits",
          "prior_appointments": "Number of past visits", "SMS_received": "Reminder SMS sent",
@@ -97,11 +116,14 @@ def card(label, value, sub=""):
 # ── Sidebar ──
 st.sidebar.markdown("## 🏥 CareConnect")
 st.sidebar.caption("Predictive Engagement System - CrescentCare Community Hospital Network")
-page = st.sidebar.radio("Navigate", ["1. Overview", "2. Results & insights", "3. What drives predictions",
-                                     "4. Risk explorer & what-if", "5. Ethical compliance (fairness)", "6. Limitations & transparency"])
+page = st.sidebar.radio("Navigate", ["1. Overview", "2. Results & insights", "3. Explainability (XAI)",
+                                     "4. Risk explorer & what-if", "5. Ethical compliance (fairness)", "6. Limitations & transparency",
+                                     "7. Monitoring (drift & fairness)"])
 st.sidebar.markdown("---")
-st.sidebar.caption("BAN 6800 - Module 5. Model trained on the public Kaggle 'Medical Appointment No Shows' data "
+st.sidebar.caption(f"BAN 6800 capstone - model v{VERSION}. Trained on the public Kaggle 'Medical Appointment No Shows' data "
                    "(Brazil, 2016). It has **not** been validated on CrescentCare patients.")
+if POLICY:
+    st.sidebar.caption(f"Outreach rule: **{POLICY['name']}** - {POLICY.get('status', '')}.")
 
 # ═════════ 1 ═════════
 if page.startswith("1"):
@@ -125,13 +147,18 @@ attendance, age and whether a reminder SMS was sent.
 """)
     st.markdown("### Where the model stands against the Module 4 acceptance targets")
     rows = [("ROC-AUC", "≥ 0.70", f"{OP['roc_auc']:.3f}", OP["roc_auc"] >= 0.70),
-            ("Recall", "≥ 0.65", f"{OP['recall']:.3f}", OP["recall"] >= 0.65),
+            ("Recall (single cut-off)", "≥ 0.65", f"{OP['recall']:.3f}", OP["recall"] >= 0.65),
             ("F1 score", "≥ 0.55", f"{OP['f1']:.3f}", OP["f1"] >= 0.55),
-            ("Fairness: Gender gap", "≤ 0.05", f"{A['fairness']['Gender']['eod']:.3f}", A["fairness"]["Gender"]["pass_eod"]),
-            ("Fairness: Age-group gap", "≤ 0.05", f"{A['fairness']['age_band']['eod']:.3f}", A["fairness"]["age_band"]["pass_eod"])]
+            ("Age-group gap, single cut-off", "≤ 0.05", f"{A['fairness']['age_band']['eod']:.3f}", A["fairness"]["age_band"]["pass_eod"]),
+            ("Age-group gap, adopted rule (Option B)", "≤ 0.05", f"{MB['age_band']['eod']:.3f}", MB["age_band"]["eod"] <= 0.05),
+            ("Gender gap, adopted rule", "≤ 0.05", f"{MB['Gender']['eod']:.3f}", MB["Gender"]["eod"] <= 0.05),
+            ("Scholarship gap, adopted rule", "≤ 0.05", f"{MB['Scholarship']['eod']:.3f}", MB["Scholarship"]["eod"] <= 0.05)]
     st.dataframe(pd.DataFrame([{"Measure": a, "Target": b, "Result": c_, "Met?": "✅ Yes" if d else "❌ No"} for a, b, c_, d in rows]),
                  hide_index=True, width="stretch")
-    st.caption("Results are on a 20% hold-out set the model never saw during training. Fairness is measured on the standard flagging rule - see page 5 for the mitigated version.")
+    st.caption("Results are on a 20% hold-out set the model never saw during training. The outreach rule actually applied is "
+               f"Option B (equalized odds by age group), which flags {MB['flag_rate']:.0%} of appointments and catches {MB['recall']:.0%} of no-shows.")
+    if GATE:
+        st.info(f"**Promotion gate:** {GATE['decision']}. Automatic promotion is disabled; the AI Ethics Committee approves every version.")
 
 # ═════════ 2 ═════════
 elif page.startswith("2"):
@@ -198,6 +225,39 @@ These are **associations the model found in past data, not proven causes.** Chan
             "SMS reminders are only sent for visits booked a few days or more ahead, and those are missed more often anyway. "
             f"After the model accounts for lead time, marking everyone as 'SMS sent' changes the average score by {A['whatif_avg_pp']['Everyone marked as SMS received']:+.1f} points. "
             "That is a small, uncertain effect and should not be read as proof that SMS works or fails.")
+    if (FIGS / "shap_summary.png").exists():
+        st.markdown("### SHAP summary (every dot is one appointment)")
+        st.image(str(FIGS / "shap_summary.png"), width=760)
+        st.caption("Right of zero = pushes the risk score up; colour = the feature's value (red high, blue low). "
+                   "Long lead times (red, right) raise risk; same-day bookings (blue, left) lower it.")
+    if EXPL:
+        st.markdown("### Second opinion: LIME explanations for the same three patients")
+        st.caption("LIME fits a simple local model around one prediction. Where LIME and SHAP agree on the main factors, "
+                   "the explanation is more trustworthy; where they differ, treat both with caution.")
+        cols = st.columns(3)
+        for col, e in zip(cols, sorted(EXPL["lime"], key=lambda x: -x["model_score"])):
+            with col:
+                img = FIGS / f"lime_{e['tier']}.png"
+                if img.exists():
+                    st.image(str(img), width="stretch")
+                st.caption(f"{e['tier'].title()} risk, score {e['model_score']:.0%}; LIME local fit R² {e['lime_r2']:.2f}")
+        st.markdown("### Counterfactuals: what would un-flag this appointment?")
+        st.caption("Only changes the hospital controls are searched: offering an earlier slot and sending a reminder. "
+                   "Age, gender, history, neighbourhood and health are never suggested for change.")
+        rows = []
+        for c in EXPL["counterfactuals"]:
+            cf = c["counterfactual"]
+            rows.append({"Example": c["tier"].title(), "Current score": f"{c['original_score']:.0%}",
+                         "Flagged now?": "Yes" if c["flagged"] else "No",
+                         "Smallest change that un-flags it": (f"Book {cf['lead_time_days']} days ahead" + (", send SMS" if cf["SMS_received"] else "")) if cf else ("Already below cut-off" if not c["flagged"] else "No actionable change is enough"),
+                         "New score": f"{cf['score']:.0%}" if cf else "-"})
+        st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+        pop = EXPL.get("population")
+        if pop:
+            st.markdown(f"Across {pop['flagged_sampled']:,} sampled flagged test appointments, an earlier slot or a reminder would move "
+                        f"**{pop['share_unflaggable_by_actionable_change']:.0%}** below the cut-off. These are changes to the model's score, not proof that attendance would change.")
+    st.caption("Explanation store: every API prediction is logged with request id, model version, policy, score, decision and reason codes "
+               "(logs/explanations.jsonl), so any past flag can be explained during an audit.")
 
 # ═════════ 4 ═════════
 elif page.startswith("4"):
@@ -231,7 +291,10 @@ elif page.startswith("4"):
                                    gauge={"axis": {"range": [0, 100]}, "bar": {"color": tier_color(t0)},
                                           "steps": [{"range": [0, T * 100], "color": "#DDF1EE"}, {"range": [T * 100, HIGH * 100], "color": "#FCEBCB"}, {"range": [HIGH * 100, 100], "color": "#F6D5D1"}]}))
         st.plotly_chart(style(g, 260), width="stretch")
-        st.markdown(f"**{t0} risk.** " + ("Above the outreach threshold, so a coordinator would see this appointment flagged." if p0 >= T else "Below the outreach threshold, so it is not flagged."))
+        pf = policy_prob(p0, band(age))
+        st.markdown(f"**{t0} risk.** Under the adopted outreach rule (equalized odds for the *{band(age).replace('_', ' ')}* group) "
+                    + ("this appointment **is flagged** for a coordinator." if pf >= 1 else
+                       ("it is **not flagged**." if pf <= 0 else f"it is flagged with probability **{pf:.0%}** (randomised within this age group's threshold band; the draw is logged).")))
         st.markdown("**Top reasons for this score**")
         for k, v in explain(base_df):
             st.markdown(f"{'🔺' if v > 0 else '🔻'} {PLAIN.get(k, k)} - {'raises' if v > 0 else 'lowers'} risk")
@@ -257,8 +320,13 @@ elif page.startswith("5"):
     st.title("Ethical compliance dashboard")
     st.markdown("The Ethical Charter (Module 1, Principle 2) sets a limit: the gap between any two groups must stay **at or below 0.05 (5 percentage points)**. "
                 "Breaching it is defined as a halt condition.")
-    st.markdown('<div class="warn"><b>Honest status:</b> the standard flagging rule meets the limit for <b>Gender</b> but <b>not</b> for <b>age group</b> or the '
-                '<b>welfare-scholarship</b> socio-economic proxy. A post-processing mitigation brings all three within the limit, at a cost in workload (below).</div>', unsafe_allow_html=True)
+    over = [n for n, k in [("age group", "age_band"), ("gender", "Gender"), ("scholarship", "Scholarship")] if MB[k]["eod"] > 0.05]
+    st.markdown('<div class="warn"><b>Honest status:</b> the single cut-off breaches the limit for <b>age group</b>'
+                + (" and the <b>welfare-scholarship</b> proxy" if not A["fairness"]["Scholarship_grp"]["pass_eod"] else "")
+                + ". The adopted rule, <b>Option B (Fairlearn equalized odds by age group)</b>, "
+                + ("brings all three comparisons within the limit" if not over else f"still leaves {', '.join(over)} above the limit")
+                + f", at the cost of flagging {MB['flag_rate']:.0%} of appointments instead of {MIT['before']['flag_rate']:.0%}. "
+                  "It awaits AI Ethics Committee approval.</div>", unsafe_allow_html=True)
     st.write("")
     names = {"Gender": "Gender", "age_band": "Age group", "Scholarship_grp": "Welfare scholarship (socio-economic proxy)"}
     rows = []
@@ -283,7 +351,9 @@ elif page.startswith("5"):
     f.update_layout(title="Error rates by group", barmode="group", yaxis_title="%")
     c2.plotly_chart(style(f, 380), width="stretch")
     st.markdown("### Bias mitigation: what was tried")
-    lab = {"before": "Standard rule (single threshold)", "A_group_thresholds": "A. Separate threshold per age group", "B_equalized_odds": "B. Fairlearn ThresholdOptimizer (equalized odds)"}
+    lab = {"before": "Standard rule (single threshold)", "A_group_thresholds": "A. Separate threshold per age group",
+           "B_equalized_odds": "B. Fairlearn equalized odds (ADOPTED)", "C_demographic_parity": "C. Fairlearn demographic parity (comparison)"}
+    lab = {k: v for k, v in lab.items() if k in MIT}
     mr = []
     for k, n in lab.items():
         m = MIT[k]
@@ -293,9 +363,71 @@ elif page.startswith("5"):
     st.markdown(f"""
 * **Found:** the model flags older patients far less often and catches fewer of their no-shows than younger patients' - the age-group gap is {A['fairness']['age_band']['eod']:.2f} against a 0.05 limit.
 * **Option A** narrows the age gap to {MIT['A_group_thresholds']['age_band']['eod']:.2f} while keeping the catch rate near {MIT['A_group_thresholds']['recall']:.0%}, but does not reach 0.05.
-* **Option B** brings every gap under 0.05, but flags {MIT['B_equalized_odds']['flag_rate']:.0%} of appointments instead of {MIT['before']['flag_rate']:.0%}, and part of the rule is randomised.
-* This is a trade-off between equity and coordinator workload. It is presented for the Ethics Committee and leadership to weigh; this dashboard does not choose between the options.
+* **Option B (adopted)** gives age-group, gender and scholarship gaps of {MB['age_band']['eod']:.3f}, {MB['Gender']['eod']:.3f} and {MB['Scholarship']['eod']:.3f}, but flags {MB['flag_rate']:.0%} of appointments instead of {MIT['before']['flag_rate']:.0%}, and part of the rule is randomised.
+* **Why B:** it is the only option that meets the Charter's error-rate limit for every audited group. **What it costs:** more outreach per real no-show, so coordinator capacity (Module 2 assumption A-3) must be confirmed before use.
+* **Why not equal flag rates:** older patients genuinely miss fewer visits, so equal *flag rates* (demographic parity) would mean ignoring real differences. The Charter limit is applied to *error rates* instead.
 """)
+    if POLICY:
+        st.markdown("#### The adopted rule, in full (auditable)")
+        pr = [{"Age group": g.replace("_", " "), "Rule": (f"flag if score {r['op0'][0]} {r['op0'][1]:.3f}" if r["p0"] >= 0.999 else
+                                                           f"{r['p0']:.0%}: score {r['op0'][0]} {r['op0'][1]:.3f}; {r['p1']:.0%}: score {r['op1'][0]} {r['op1'][1]:.3f}")}
+              for g, r in POLICY["groups"].items()]
+        st.dataframe(pd.DataFrame(pr), hide_index=True, width="stretch")
+        st.caption("Where two thresholds are shown, the decision between them is a seeded random draw from the request id, logged in the explanation store.")
+
+# ═════════ 7 ═════════
+elif page.startswith("7"):
+    st.title("Monitoring: drift, performance and fairness")
+    if not MON:
+        st.warning("No monitoring run found. Run `python -m careconnect.monitoring.monitor`.")
+        st.stop()
+    st.markdown('<div class="warn"><b>What this is:</b> a weekly <b>replay</b> of held-out appointments, scored as if each week were a new '
+                'production batch. Real outcomes are known for every week, so performance and fairness can be checked. '
+                'CareConnect is not live on hospital data, so this is not production monitoring.</div>', unsafe_allow_html=True)
+    st.write("")
+    W = pd.DataFrame(MON["weeks"])
+    TH = MON["thresholds"]
+    emoji = {"ok": "🟢", "warn": "🟠", "alert": "🔴", "halt": "⛔"}
+    tbl = pd.DataFrame({"Batch": W["batch"], "Appointments": W["n"], "ROC-AUC": W["auc"].round(3),
+                        "Max input PSI": W["max_feature_psi"].round(3), "Score PSI": W["score_psi"].round(3),
+                        "Age fairness gap": W["age_eod"].round(3),
+                        "Data drift": [emoji[s["data_drift"]] for s in W["status"]],
+                        "Performance": [emoji[s["performance"]] for s in W["status"]],
+                        "Bias drift": [emoji[s["bias_drift"]] for s in W["status"]]})
+    st.dataframe(tbl, hide_index=True, width="stretch")
+    st.caption(f"Thresholds: PSI warn ≥ {TH['psi_warn']}, alert ≥ {TH['psi_alert']} (retraining review); AUC alert if more than "
+               f"{TH['auc_drop_alert']} below validation ({MON['validation_auc']:.3f}); age fairness gap warn > {TH['eod_warn']}, halt > {TH['eod_halt']}.")
+    c1, c2 = st.columns(2)
+    f = go.Figure()
+    f.add_scatter(x=W["batch"].str.replace("week of ", ""), y=W["auc"], mode="lines+markers", name="Weekly ROC-AUC", line=dict(color=TEAL, width=3))
+    f.add_hline(y=MON["validation_auc"] - TH["auc_drop_alert"], line_dash="dot", line_color=RED, annotation_text="alert line")
+    f.update_layout(title="Performance by week", yaxis_title="ROC-AUC", yaxis_range=[0.6, 0.85])
+    c1.plotly_chart(style(f, 340), width="stretch")
+    f = go.Figure()
+    f.add_bar(x=W["batch"].str.replace("week of ", ""), y=W["age_eod"], marker_color=[RED if v > TH["eod_halt"] else (AMBER if v > TH["eod_warn"] else GREEN) for v in W["age_eod"]])
+    f.add_hline(y=TH["eod_halt"], line_dash="dot", line_color=RED, annotation_text="halt limit 0.05")
+    f.update_layout(title="Bias drift: age-group equalized-odds gap by week", yaxis_title="gap")
+    c2.plotly_chart(style(f, 340), width="stretch")
+    psi = pd.DataFrame([r["feature_psi"] for r in MON["weeks"]], index=W["batch"].str.replace("week of ", "")).T
+    f = go.Figure(go.Heatmap(z=psi.values, x=psi.columns, y=[PLAIN.get(i, i) for i in psi.index], colorscale=[[0, "#EEF4F5"], [0.1, "#E9A03B"], [1, "#C0392B"]],
+                             zmin=0, zmax=0.5, text=psi.round(2).values, texttemplate="%{text}", colorbar=dict(title="PSI")))
+    f.update_layout(title="Data drift: Population Stability Index per input, by week (vs training data)")
+    st.plotly_chart(style(f, 420), width="stretch")
+    S = MON["stress_test"]
+    stat = ", ".join(k.replace("_", " ") + ": " + v for k, v in S["status"].items())
+    st.markdown(f"**Alert test (synthetic batch, lead times ×1.5 + 7 days):** input PSI {S['max_feature_psi']:.2f}, score PSI {S['score_psi']:.2f}, "
+                f"AUC {S['auc']:.3f} → statuses {stat}. Actions raised: "
+                + ("; ".join(S["actions"]) if S["actions"] else "none") + ".")
+    alerts = [(r["batch"], a) for r in MON["weeks"] for a in r["actions"]]
+    if alerts:
+        st.markdown("**Actions raised in the replay:** " + "; ".join(f"{b}: {a}" for b, a in alerts))
+    ev = ART / "monitoring" / "evidently_drift_report.html"
+    if ev.exists():
+        with st.expander("Evidently AI data-drift report (latest replayed week vs training data)"):
+            import streamlit.components.v1 as components
+            components.html(ev.read_text(), height=900, scrolling=True)
+    st.caption("Drift types: data drift = inputs change; prediction drift = scores change; concept drift = the input-outcome relationship "
+               "changes (performance falls without input drift); bias drift = group error-rate gaps widen.")
 
 # ═════════ 6 ═════════
 else:
@@ -309,7 +441,8 @@ else:
 * **It is often wrong about individuals.** On {sum(cm.values()):,} unseen appointments it correctly flagged {cm['tp']:,} no-shows but also flagged {cm['fp']:,} patients who attended, and still missed {cm['fn']:,} no-shows.
 * **It cannot say why** a patient may miss a visit, and it does not measure transport, childcare, cost or health literacy directly.
 * **It was not trained on CrescentCare patients.** The data are public-health appointments from Brazil in 2016. The hospital's reported no-show rate (28%) is higher than in the data ({A['descriptive']['overall']:.0%}).
-* **It does not meet every Module 4 target:** F1 is {OP['f1']:.2f} against a 0.55 target, and the standard rule fails the age-group fairness limit.
+* **It does not meet every Module 4 target:** F1 is {OP['f1']:.2f} against a 0.55 target, and the single cut-off fails the age-group fairness limit. The adopted fairness rule fixes the gap by flagging more appointments, so more flags are false alarms.
+* **Some decisions are randomised** under the adopted rule. Each draw is reproducible from the logged request id, but staff and patients need this explained.
 * **The Module 1 equity goal (Medicaid vs private insurance) cannot be measured here** because the dataset has no insurance field. Welfare-scholarship status is used as a rough socio-economic stand-in.
 * **Scores are associations, not causes**, and only about six weeks of appointments are covered, so seasonal patterns are not captured.
 """)

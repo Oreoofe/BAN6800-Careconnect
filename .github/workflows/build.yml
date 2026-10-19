@@ -1,0 +1,56 @@
+# Full build / scheduled retraining. Produces the model, MLflow runs, explanations, fairness results,
+# monitoring report, model card and promotion decision as downloadable artifacts.
+# It never commits or promotes a model: a person reviews the outputs and the Ethics Committee approves.
+name: build-and-retrain
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 1 * *"        # monthly retraining review (1st of each month, 06:00 UTC)
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      CARECONNECT_CV_FOLDS: "5"
+      CARECONNECT_SALT: ${{ secrets.CARECONNECT_SALT }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-build.txt playwright
+          python -m playwright install --with-deps chromium
+          pip freeze > requirements-lock.txt
+      - name: Run pipeline, training, XAI, fairness, monitoring, model card, promotion gate
+        run: python -m careconnect.run_all 2>&1 | tee build_log.txt
+      - name: API demo against the new model
+        run: python api_demo.py
+      - name: Tests against the new artifacts
+        run: pytest -v
+      - name: MLflow UI screenshots (experiment + model registry)
+        run: python scripts/mlflow_screenshots.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: careconnect-build-${{ github.run_number }}
+          retention-days: 30
+          path: |
+            artifacts/*.json
+            artifacts/xgboost.joblib
+            artifacts/xgboost_minimal.joblib
+            artifacts/figures/
+            artifacts/pipeline/
+            artifacts/monitoring/
+            docs/model_card.md
+            docs/api_demo_output.txt
+            docs/evidence/
+            mlruns/
+            logs/audit.log
+            build_log.txt
+            requirements-lock.txt

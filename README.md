@@ -1,28 +1,50 @@
-# CareConnect - Module 5: Stakeholder Dashboard & Presentation (BAN 6800)
+# CareConnect Predictive Engagement System
 
-All numbers in the deck and dashboard come from `artifacts/*.json`, produced by the code in `analysis/`
-(Module 3 pipeline -> Module 4 models -> fairness + SHAP + mitigation) run on the real Kaggle file.
+BAN 6800 Data Analytics Capstone - Gladys Izuagbe (ID 160948), Nexford University, October 2026.
+Client case: CrescentCare Community Hospital Network (28% appointment no-show rate).
 
-## Run the dashboard locally
-    pip install -r requirements.txt
-    streamlit run src/app.py
+CareConnect scores each booked appointment for the risk of a missed visit and explains why, so care coordinators can offer **support** (reminder call, transport voucher, earlier slot). It is decision support only: it never denies, delays or penalises care.
 
-## Deploy to Streamlit Cloud (required for grading)
-1. Push this folder to your GitHub repo (keep `artifacts/` - the app reads it).
-2. share.streamlit.io -> New app -> repo, branch, main file `src/app.py`, Python 3.11 or 3.12.
-3. Copy the live URL into slides 1, 15 and A10 of `docs/CareConnect_Module5_Presentation.pptx`.
+## Live links and evidence
 
-## API demo
-    pip install -r requirements-api.txt
-    python api_demo.py          # output saved in docs/api_demo_output.txt
+| Item | Where |
+| --- | --- |
+| Stakeholder + XAI + monitoring dashboard (Streamlit) | https://ban6800-careconnect.streamlit.app/ (pages 3 = explainability, 5 = fairness, 7 = monitoring) |
+| Scoring API (FastAPI `/predict`) | Runs locally or in Docker (`docker compose up api`, docs at http://localhost:8000/docs). **Not publicly hosted.** |
+| CI/CD | `.github/workflows/ci.yml` (lint, tests, Docker build + API smoke test on every push); `.github/workflows/build.yml` (full build / monthly retraining) |
+| MLflow tracking + registry | `mlruns/` from the build workflow; screenshots in `docs/evidence/` |
+| Model Card | `docs/model_card.md` (generated from the build artifacts) |
+| Governance | `docs/governance.md`, `docs/algorithmic_impact_assessment.md`, `docs/regulatory_assessment.md`, `docs/data_governance_privacy.md`, `docs/public_trust_statement.md` |
 
-## Re-run the analysis (needs the Kaggle CSV at data/raw/KaggleVeda_NO_SHOW.csv)
-    python analysis/run_module3_direct.py   # Module 3 stages -> modeling parquet
-    python analysis/run_real.py             # baselines + LR/RF/XGBoost
-    python analysis/analyze.py              # threshold, fairness, SHAP, what-if
-    python analysis/mitigate.py             # fairness mitigation options
-    node analysis/build_deck.js             # rebuild the deck (pptxgenjs)
+## Architecture
 
-## Notes
-- Tuning used a 25k-row training sample (3-fold CV) because of limited compute; final models were refit on the full training set.
-- Module 3's table keeps the raw `No-show` column; it MUST be dropped before training (target leakage). `analysis/run_real.py` does this.
+```
+Kaggle CSV (checksum-pinned)
+   -> careconnect/pipeline   EXTRACT -> VALIDATE (23-check contract) -> CLEAN -> ANONYMIZE (HMAC, k-anon)
+                             -> FEATURES (outcome-known history) -> BIAS_CHECK (gate) -> modelling table
+   -> careconnect/modeling   baselines + LR / RF / XGBoost, 5-fold GridSearchCV, cut-off on training OOF, MLflow
+   -> careconnect/fairness   Fairlearn metrics; options A/B/C; Option B exported to artifacts/fairness_policy.json
+   -> careconnect/explain    exact TreeSHAP (global + reason codes), LIME, actionable counterfactuals
+   -> careconnect/monitoring PSI data/prediction drift, weekly AUC, bias drift, Evidently report
+   -> careconnect/governance Model Card; run_all.py promotion gate (never auto-promotes)
+Serving: src/api (FastAPI + explanation store)   Dashboard: src/app.py (Streamlit)
+```
+
+## Run it
+
+```bash
+python -m venv .venv && source .venv/bin/activate          # Python 3.11
+pip install -r requirements-build.txt
+python -m careconnect.run_all          # downloads + verifies data, builds everything into artifacts/
+pytest                                 # tests
+streamlit run src/app.py               # dashboard
+uvicorn src.api.main:app --port 8000   # API;  python api_demo.py  for a scripted demo
+```
+
+Docker: `docker compose --profile build run --rm pipeline` (full build), then `docker compose up -d` (API :8000, dashboard :8501, monitoring report :8090); `docker compose --profile tracking up mlflow` for the MLflow UI on :5000.
+
+## Repository history and what was rebuilt
+
+Modules 1-4 were submitted as documents; the Module 3 and Module 4 source code was not preserved in any repository. For the capstone the pipeline and modelling code were **rebuilt** in `careconnect/` from the Module 3-5 specifications and the Module 5 scripts (now in `legacy/module5_analysis/`). One correction was made on purpose: Modules 3-4 counted a patient's earlier *scheduled* appointments, including ones that had not yet happened at booking time (29,727 of 110,514 rows). v2.0.0 counts only visits whose outcome was known. `tools/make_sample_data.py` is the original Module 3 smoke-test generator (one bug fixed, noted in the file).
+
+Data: Kaggle "Medical Appointment No Shows" (Vitória, Brazil, 2016). Raw and processed data are never committed (CI check).

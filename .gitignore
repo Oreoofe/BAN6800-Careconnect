@@ -1,4 +1,20 @@
 __pycache__/
 *.pyc
 venv/
+.venv/
 .DS_Store
+# data never leaves the processed zone (Module 1 rule: no patient-level data in Git)
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.pkl
+artifacts/*.npy
+artifacts/logistic_regression.joblib
+artifacts/random_forest.joblib
+# local run outputs
+logs/
+mlruns/
+mlartifacts/
+.pytest_cache/
+.ruff_cache/

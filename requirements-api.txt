@@ -1,9 +1,10 @@
-# only needed to run api_demo.py / the FastAPI service
-fastapi
-uvicorn
-requests
-pydantic
+# Scoring API (src/api) - versions must match the trained model artifact
+fastapi>=0.110
+uvicorn>=0.29
+pydantic>=2.6
+requests>=2.31
+pandas>=2.2
+numpy>=1.26
+joblib>=1.4
 scikit-learn==1.8.0
 xgboost==3.4.1
-pandas
-joblib

@@ -1,0 +1,58 @@
+# Continuous integration: runs on every push and pull request.
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: lint + tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: pip install -r requirements-build.txt
+      - name: Lint (syntax errors, undefined names)
+        run: ruff check .
+      - name: Verify no data files committed (Module 1 no-PII rule)
+        run: |
+          if git ls-files | grep -E '\.(csv|parquet|pkl|xlsx)$|^data/raw|^data/processed'; then
+            echo "Data file committed - violation of the no-PII rule"; exit 1; fi
+      - name: Unit tests (pipeline, fairness, policy, drift, API contract)
+        run: pytest -v
+      - name: Pipeline smoke test on synthetic data
+        run: |
+          python -m tools.make_sample_data
+          python -m careconnect.pipeline.run --sample
+
+  docker:
+    name: docker compose build + API smoke test
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose file
+        run: docker compose config --quiet
+      - name: Build and start API + dashboard
+        run: docker compose up -d --build api dashboard
+      - name: Wait for health and score one appointment
+        run: |
+          for i in $(seq 1 40); do curl -sf localhost:8000/health && break; sleep 3; done
+          curl -sf localhost:8000/health
+          curl -sf -X POST localhost:8000/predict -H 'Content-Type: application/json' -d '{"request_id":"ci-smoke","features":{"Gender":"F","Age":26,"Neighbourhood":"JARDIM DA PENHA","Scholarship":0,"SMS_received":1,"lead_time_days":35,"appointment_dow":2,"appointment_month":5,"prior_appointments":4,"prior_noShows":3}}'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8000/predict -H 'Content-Type: application/json' -d '{"features":{"Age":40}}')" = "422"
+          for i in $(seq 1 40); do curl -sf localhost:8501/_stcore/health && break; sleep 3; done
+          curl -sf localhost:8501/_stcore/health
+      - name: Show container status
+        if: always()
+        run: docker compose ps && docker compose logs --tail=50

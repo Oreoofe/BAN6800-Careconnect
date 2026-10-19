@@ -1,0 +1,50 @@
+# CareConnect multi-container setup
+#   docker compose --profile build run --rm pipeline   # rebuild data, model, explanations, monitoring (writes ./artifacts, ./mlruns)
+#   docker compose up -d                                # API :8000, dashboard :8501, MLflow :5000, monitoring report :8090
+# Set CARECONNECT_API_KEY and CARECONNECT_SALT in a local .env file (never commit it).
+services:
+  pipeline:
+    build: { context: ., dockerfile: docker/Dockerfile.pipeline }
+    profiles: ["build"]
+    environment:
+      - CARECONNECT_SALT=${CARECONNECT_SALT:-change-me}
+      - CARECONNECT_CV_FOLDS=${CARECONNECT_CV_FOLDS:-5}
+    volumes:
+      - ./data:/app/data
+      - ./artifacts:/app/artifacts
+      - ./mlruns:/app/mlruns
+      - ./logs:/app/logs
+      - ./docs:/app/docs
+
+  api:
+    build: { context: ., dockerfile: docker/Dockerfile.api }
+    ports: ["8000:8000"]
+    environment:
+      - CARECONNECT_API_KEY=${CARECONNECT_API_KEY:-}
+      - RATE_LIMIT_PER_MIN=120
+    volumes:
+      - ./logs:/app/logs            # explanation store + audit trail persist outside the container
+    restart: unless-stopped
+
+  dashboard:
+    build: { context: ., dockerfile: docker/Dockerfile.dashboard }
+    ports: ["8501:8501"]
+    depends_on:
+      api: { condition: service_healthy }
+    restart: unless-stopped
+
+  mlflow:
+    build: { context: ., dockerfile: docker/Dockerfile.pipeline }    # same MLflow version that wrote the runs
+    command: mlflow server --backend-store-uri sqlite:////app/mlruns/mlflow.db --host 0.0.0.0 --port 5000
+    ports: ["5000:5000"]
+    volumes:
+      - ./mlruns:/app/mlruns
+    profiles: ["tracking"]
+
+  monitoring:
+    image: python:3.11-slim
+    working_dir: /reports
+    command: python -m http.server 8090
+    ports: ["8090:8090"]
+    volumes:
+      - ./artifacts/monitoring:/reports:ro
