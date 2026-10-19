@@ -1,0 +1,1117 @@
+{
+ "data": {
+  "rows_total": 110514,
+  "rows_train": 88411,
+  "rows_test": 22103,
+  "no_show_rate_total": 0.20188392420869755,
+  "no_show_rate_train": 0.201886643064777,
+  "no_show_rate_test": 0.20187304890738814,
+  "patients_total": 62294,
+  "patients_in_both_train_and_test": 10499,
+  "appointment_dates": [
+   "2016-04-29",
+   "2016-06-08"
+  ],
+  "split": "stratified random 80/20 on appointments, random_state=42"
+ },
+ "features_used_by_model": [
+  "Gender",
+  "Age",
+  "Neighbourhood",
+  "Scholarship",
+  "Hipertension",
+  "Diabetes",
+  "Alcoholism",
+  "Handcap",
+  "SMS_received",
+  "lead_time_days",
+  "appointment_dow",
+  "appointment_month",
+  "age_band",
+  "prior_appointments",
+  "prior_noShows",
+  "prior_noShow_rate"
+ ],
+ "threshold": {
+  "flag_threshold": 0.25,
+  "source": "5-fold out-of-fold predictions on the training set",
+  "train_oof_recall_at_T": 0.655050703120623,
+  "train_oof_recall_at_T_plus_step": 0.6465348198778643,
+  "rule": "largest cut-off (0.0025 grid) with OOF recall >= 0.65"
+ },
+ "xgboost_test": {
+  "roc_auc": 0.7455058393445996,
+  "pr_auc": 0.39857384161423515,
+  "recall": 0.6557597489914836,
+  "precision": 0.3427835051546392,
+  "f1": 0.4502231112478843,
+  "flag_rate": 0.3861919196489164,
+  "confusion": {
+   "tn": 12031,
+   "fp": 5610,
+   "fn": 1536,
+   "tp": 2926
+  }
+ },
+ "comparison_table": {
+  "logistic_regression": {
+   "threshold": 0.48,
+   "roc_auc": 0.6803239245115572,
+   "pr_auc": 0.3166008606797922,
+   "recall": 0.6521739130434783,
+   "precision": 0.3051273985530041,
+   "f1": 0.4157439817129795,
+   "flag_rate": 0.4314798896077456
+  },
+  "random_forest": {
+   "threshold": 0.255,
+   "roc_auc": 0.7426706563097645,
+   "pr_auc": 0.38544385609391696,
+   "recall": 0.6488121918422233,
+   "precision": 0.3447659878528046,
+   "f1": 0.4502682945796718,
+   "flag_rate": 0.3799031805637244
+  },
+  "xgboost": {
+   "threshold": 0.25,
+   "roc_auc": 0.7455058393445996,
+   "pr_auc": 0.39857384161423515,
+   "recall": 0.6557597489914836,
+   "precision": 0.3427835051546392,
+   "f1": 0.4502231112478843,
+   "flag_rate": 0.3861919196489164
+  }
+ },
+ "baselines": {
+  "most_frequent": {
+   "threshold": 0.5,
+   "accuracy": 0.7981269510926119,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "roc_auc": 0.5,
+   "pr_auc": 0.20187304890738814,
+   "brier": 0.20187304890738814,
+   "flag_rate": 0.0
+  },
+  "stratified": {
+   "threshold": 0.5,
+   "accuracy": 0.679862462109216,
+   "precision": 0.20825892857142858,
+   "recall": 0.20909905871806364,
+   "f1": 0.20867814806530977,
+   "roc_auc": 0.5040166797473319,
+   "pr_auc": 0.2032083303342258,
+   "brier": 0.32013753789078403,
+   "flag_rate": 0.20268741799755688
+  }
+ },
+ "robustness": {
+  "patient_grouped": {
+   "threshold": 0.25,
+   "accuracy": 0.6756954277622984,
+   "precision": 0.34879705306780245,
+   "recall": 0.6773977196512407,
+   "f1": 0.46048632218844987,
+   "roc_auc": 0.74627683822029,
+   "pr_auc": 0.3852801797410125,
+   "brier": 0.142958864569664,
+   "flag_rate": 0.39679349563787514
+  },
+  "no_sensitive_inputs": {
+   "features": [
+    "Age",
+    "Neighbourhood",
+    "SMS_received",
+    "lead_time_days",
+    "appointment_dow",
+    "appointment_month",
+    "prior_appointments",
+    "prior_noShows",
+    "prior_noShow_rate"
+   ],
+   "removed": [
+    "Gender",
+    "Scholarship",
+    "Hipertension",
+    "Diabetes",
+    "Alcoholism",
+    "Handcap",
+    "age_band"
+   ],
+   "threshold": 0.25,
+   "accuracy": 0.6771478984753201,
+   "precision": 0.3432590855803048,
+   "recall": 0.6562079784849844,
+   "f1": 0.45073891625615764,
+   "roc_auc": 0.7420517903885683,
+   "pr_auc": 0.3876096446101208,
+   "brier": 0.14201310276985168,
+   "flag_rate": 0.38592046328552687
+  }
+ },
+ "fairness": {
+  "single_cutoff": {
+   "age_band": {
+    "demographic_parity_difference": 0.49376049577662484,
+    "equalized_odds_difference": 0.6292506982162154,
+    "disparate_impact_ratio": 0.20110661357489917,
+    "groups": {
+     "adult": {
+      "n": 6021,
+      "no_shows": 1213,
+      "no_show_rate": 0.201461551237336,
+      "selection_rate": 0.3692077727952167,
+      "tpr": 0.6009892827699918,
+      "fpr": 0.31073211314475874
+     },
+     "child": {
+      "n": 4247,
+      "no_shows": 879,
+      "no_show_rate": 0.20696962561808335,
+      "selection_rate": 0.444549093477749,
+      "tpr": 0.7440273037542662,
+      "fpr": 0.3663895486935867
+     },
+     "elderly": {
+      "n": 1074,
+      "no_shows": 178,
+      "no_show_rate": 0.16573556797020483,
+      "selection_rate": 0.17783985102420857,
+      "tpr": 0.3707865168539326,
+      "fpr": 0.13950892857142858
+     },
+     "senior": {
+      "n": 4433,
+      "no_shows": 702,
+      "no_show_rate": 0.15835777126099707,
+      "selection_rate": 0.12429505977893075,
+      "tpr": 0.254985754985755,
+      "fpr": 0.09970517287590458
+     },
+     "teen": {
+      "n": 1584,
+      "no_shows": 406,
+      "no_show_rate": 0.2563131313131313,
+      "selection_rate": 0.6180555555555556,
+      "tpr": 0.8842364532019704,
+      "fpr": 0.5263157894736842
+     },
+     "young_adult": {
+      "n": 4744,
+      "no_shows": 1084,
+      "no_show_rate": 0.22849915682967958,
+      "selection_rate": 0.5699831365935919,
+      "tpr": 0.8662361623616236,
+      "fpr": 0.4822404371584699
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.5868542244946178,
+     0.6750078642588374
+    ],
+    "share_of_bootstraps_above_0.05": 1.0
+   },
+   "Gender": {
+    "demographic_parity_difference": 0.015036567033388182,
+    "equalized_odds_difference": 0.01740411338194725,
+    "disparate_impact_ratio": 0.9615944493348041,
+    "groups": {
+     "F": {
+      "n": 14270,
+      "no_shows": 2862,
+      "no_show_rate": 0.20056061667834618,
+      "selection_rate": 0.391520672740014,
+      "tpr": 0.6600279524807827,
+      "fpr": 0.3241584852734923
+     },
+     "M": {
+      "n": 7833,
+      "no_shows": 1600,
+      "no_show_rate": 0.20426401123452062,
+      "selection_rate": 0.3764841057066258,
+      "tpr": 0.648125,
+      "fpr": 0.30675437189154503
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.008304219243603918,
+     0.04043310268147285
+    ],
+    "share_of_bootstraps_above_0.05": 0.006666666666666667
+   },
+   "Scholarship": {
+    "demographic_parity_difference": 0.1576837985177839,
+    "equalized_odds_difference": 0.20892348404718775,
+    "disparate_impact_ratio": 0.7016158593722145,
+    "groups": {
+     "no": {
+      "n": 19942,
+      "no_shows": 3964,
+      "no_show_rate": 0.1987764517099589,
+      "selection_rate": 0.37077524821983754,
+      "tpr": 0.6324419778002018,
+      "fpr": 0.3058580548253849
+     },
+     "yes": {
+      "n": 2161,
+      "no_shows": 498,
+      "no_show_rate": 0.23044886626561778,
+      "selection_rate": 0.5284590467376215,
+      "tpr": 0.8413654618473896,
+      "fpr": 0.43475646422128683
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.17251047053972804,
+     0.2430310804749687
+    ],
+    "share_of_bootstraps_above_0.05": 1.0
+   }
+  },
+  "option_B_seed42": {
+   "age_band": {
+    "demographic_parity_difference": 0.03452013935884901,
+    "equalized_odds_difference": 0.05570297276006464,
+    "disparate_impact_ratio": 0.9446559709064607,
+    "groups": {
+     "adult": {
+      "n": 6021,
+      "no_shows": 1213,
+      "no_show_rate": 0.201461551237336,
+      "selection_rate": 0.6055472512871616,
+      "tpr": 0.8557295960428689,
+      "fpr": 0.5424292845257903
+     },
+     "child": {
+      "n": 4247,
+      "no_shows": 879,
+      "no_show_rate": 0.20696962561808335,
+      "selection_rate": 0.6112550035319049,
+      "tpr": 0.8521046643913538,
+      "fpr": 0.5483966745843231
+     },
+     "elderly": {
+      "n": 1074,
+      "no_shows": 178,
+      "no_show_rate": 0.16573556797020483,
+      "selection_rate": 0.6210428305400373,
+      "tpr": 0.898876404494382,
+      "fpr": 0.5658482142857143
+     },
+     "senior": {
+      "n": 4433,
+      "no_shows": 702,
+      "no_show_rate": 0.15835777126099707,
+      "selection_rate": 0.5892172343785247,
+      "tpr": 0.8461538461538461,
+      "fpr": 0.5408737603859555
+     },
+     "teen": {
+      "n": 1584,
+      "no_shows": 406,
+      "no_show_rate": 0.2563131313131313,
+      "selection_rate": 0.6237373737373737,
+      "tpr": 0.8448275862068966,
+      "fpr": 0.5475382003395586
+     },
+     "young_adult": {
+      "n": 4744,
+      "no_shows": 1084,
+      "no_show_rate": 0.22849915682967958,
+      "selection_rate": 0.6117200674536256,
+      "tpr": 0.8431734317343174,
+      "fpr": 0.5431693989071038
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.03382981658296874,
+     0.11299543134496175
+    ],
+    "share_of_bootstraps_above_0.05": 0.7966666666666666
+   },
+   "Gender": {
+    "demographic_parity_difference": 0.024653383243462446,
+    "equalized_odds_difference": 0.03039396189894572,
+    "disparate_impact_ratio": 0.9599449187197758,
+    "groups": {
+     "F": {
+      "n": 14270,
+      "no_shows": 2862,
+      "no_show_rate": 0.20056061667834618,
+      "selection_rate": 0.6154870357393133,
+      "tpr": 0.8539482879105521,
+      "fpr": 0.5556626928471248
+     },
+     "M": {
+      "n": 7833,
+      "no_shows": 1600,
+      "no_show_rate": 0.20426401123452062,
+      "selection_rate": 0.5908336524958508,
+      "tpr": 0.84625,
+      "fpr": 0.525268730948179
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.014819699892249594,
+     0.04572201086580214
+    ],
+    "share_of_bootstraps_above_0.05": 0.0
+   },
+   "Scholarship": {
+    "demographic_parity_difference": 0.014777909152646318,
+    "equalized_odds_difference": 0.04319092717996098,
+    "disparate_impact_ratio": 0.9761678644187547,
+    "groups": {
+     "no": {
+      "n": 19942,
+      "no_shows": 3964,
+      "no_show_rate": 0.1987764517099589,
+      "selection_rate": 0.6053053856182931,
+      "tpr": 0.8463673057517659,
+      "fpr": 0.5455000625860559
+     },
+     "yes": {
+      "n": 2161,
+      "no_shows": 498,
+      "no_show_rate": 0.23044886626561778,
+      "selection_rate": 0.6200832947709394,
+      "tpr": 0.8895582329317269,
+      "fpr": 0.539386650631389
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.01510626527586102,
+     0.0739493078289263
+    ],
+    "share_of_bootstraps_above_0.05": 0.32
+   }
+  },
+  "option_B_over_50_random_seeds": {
+   "age_band": {
+    "min": 0.022917616816617636,
+    "max": 0.08417379299766081,
+    "mean": 0.047893734666311596
+   },
+   "Gender": {
+    "min": 0.021682524854701568,
+    "max": 0.04310142943645423,
+    "mean": 0.03111654021519177
+   },
+   "Scholarship": {
+    "min": 0.01259629841262122,
+    "max": 0.05674261121174917,
+    "mean": 0.030566028941545476
+   }
+  },
+  "option_B_expected": {
+   "recall": 0.8521186928476249,
+   "flag_rate": 0.6073805841207056,
+   "share_randomised": 0.8158621001673981
+  },
+  "option_B_expected_by_group": {
+   "age_band": {
+    "eod": 0.04078421918128994,
+    "dpd": 0.04507957779358518,
+    "di": 0.9289719859786876,
+    "groups": {
+     "adult": {
+      "n": 6021,
+      "selection": 0.6076596273734004,
+      "tpr": 0.8482413754533079,
+      "fpr": 0.5469637745404288
+     },
+     "child": {
+      "n": 4247,
+      "selection": 0.6089865218872141,
+      "tpr": 0.8500822199548048,
+      "fpr": 0.5460639807347757
+     },
+     "elderly": {
+      "n": 1074,
+      "selection": 0.6183103935884376,
+      "tpr": 0.8882793300365506,
+      "fpr": 0.564678171838701
+     },
+     "senior": {
+      "n": 4433,
+      "selection": 0.5895936341036073,
+      "tpr": 0.8474951108552606,
+      "fpr": 0.5410686175719374
+     },
+     "teen": {
+      "n": 1584,
+      "selection": 0.6346732118971925,
+      "tpr": 0.865054527212789,
+      "fpr": 0.5552718417629546
+     },
+     "young_adult": {
+      "n": 4744,
+      "selection": 0.6106223367641836,
+      "tpr": 0.8503202224222097,
+      "fpr": 0.5396298482250307
+     }
+    }
+   },
+   "Gender": {
+    "eod": 0.031192608008635103,
+    "dpd": 0.026069032711478646,
+    "di": 0.9577226312613559,
+    "groups": {
+     "F": {
+      "n": 14270,
+      "selection": 0.6166190917092236,
+      "tpr": 0.8562582770165899,
+      "fpr": 0.556499232982919
+     },
+     "M": {
+      "n": 7833,
+      "selection": 0.5905500589977449,
+      "tpr": 0.8447140116653893,
+      "fpr": 0.5253066249742839
+     }
+    }
+   },
+   "Scholarship": {
+    "eod": 0.029344547304396285,
+    "dpd": 0.007857502450640208,
+    "di": 0.9872125503076298,
+    "groups": {
+     "no": {
+      "n": 19942,
+      "selection": 0.6066123597712583,
+      "tpr": 0.8488435730453864,
+      "fpr": 0.5465169454879534
+     },
+     "yes": {
+      "n": 2161,
+      "selection": 0.6144698622218985,
+      "tpr": 0.8781881203497827,
+      "fpr": 0.5354971066309867
+     }
+    }
+   }
+  }
+ },
+ "explanations": {
+  "lime_r2": {
+   "high": 0.6476407705782379,
+   "medium": 0.1040344303419305,
+   "low": 0.6397875614827271
+  },
+  "counterfactuals": [
+   {
+    "tier": "high",
+    "original_score": 0.6016988754272461,
+    "threshold": 0.25,
+    "flagged": true,
+    "policy_flag_probability": 0.9318040526358008,
+    "counterfactual": null,
+    "lowest_reachable": {
+     "lead_time_days": 0,
+     "SMS_received": 1,
+     "score": 0.5974631309509277,
+     "cost": 1.0,
+     "policy_flag_probability": 0.9318040526358008
+    },
+    "searched": 2,
+    "immutable": [
+     "Age",
+     "Gender",
+     "Neighbourhood",
+     "prior history",
+     "health flags",
+     "Scholarship"
+    ]
+   },
+   {
+    "tier": "medium",
+    "original_score": 0.24492233991622925,
+    "threshold": 0.25,
+    "flagged": false,
+    "policy_flag_probability": 1.0,
+    "counterfactual": {
+     "lead_time_days": 3,
+     "SMS_received": 0,
+     "score": 0.23586079478263855,
+     "cost": 0.143,
+     "policy_flag_probability": 1.0
+    },
+    "lowest_reachable": {
+     "lead_time_days": 0,
+     "SMS_received": 1,
+     "score": 0.04645131528377533,
+     "cost": 1.571,
+     "policy_flag_probability": 0.0
+    },
+    "searched": 10,
+    "immutable": [
+     "Age",
+     "Gender",
+     "Neighbourhood",
+     "prior history",
+     "health flags",
+     "Scholarship"
+    ]
+   },
+   {
+    "tier": "low",
+    "original_score": 0.009800909087061882,
+    "threshold": 0.25,
+    "flagged": false,
+    "policy_flag_probability": 0.05821851821712267,
+    "counterfactual": {
+     "lead_time_days": 0,
+     "SMS_received": 1,
+     "score": 0.009490813128650188,
+     "cost": 1.0,
+     "policy_flag_probability": 0.05821851821712267
+    },
+    "lowest_reachable": {
+     "lead_time_days": 0,
+     "SMS_received": 1,
+     "score": 0.009490813128650188,
+     "cost": 1.0,
+     "policy_flag_probability": 0.05821851821712267
+    },
+    "searched": 2,
+    "immutable": [
+     "Age",
+     "Gender",
+     "Neighbourhood",
+     "prior history",
+     "health flags",
+     "Scholarship"
+    ]
+   }
+  ],
+  "population": {
+   "flagged_sampled": 1500,
+   "share_unflaggable_by_actionable_change": 0.982
+  }
+ },
+ "mlflow": {
+  "experiment_id": "1",
+  "runs": [
+   {
+    "run_id": "6b6eb2d35ac445f38a7a13555e29acf4",
+    "name": "xgboost_without_sensitive_inputs",
+    "status": "FINISHED",
+    "test_roc_auc": 0.7420517903885683
+   },
+   {
+    "run_id": "625c7b05e1804e77a09e728da29ca00a",
+    "name": "xgboost_patient_grouped_split",
+    "status": "FINISHED",
+    "test_roc_auc": 0.74627683822029
+   },
+   {
+    "run_id": "56af9dcbee2144d8acf388067b007d78",
+    "name": "xgboost",
+    "status": "FINISHED",
+    "test_roc_auc": 0.7455058393445996
+   },
+   {
+    "run_id": "bb935a81390641a793cbe6b4edf15cae",
+    "name": "random_forest",
+    "status": "FINISHED",
+    "test_roc_auc": 0.7426706563097645
+   },
+   {
+    "run_id": "8ad63a421a5f4fd3973243b2a0f62b56",
+    "name": "logistic_regression",
+    "status": "FINISHED",
+    "test_roc_auc": 0.6803239245115572
+   },
+   {
+    "run_id": "179e7d4805d044c5a9d734d751759ec2",
+    "name": "baseline_stratified",
+    "status": "FINISHED",
+    "test_roc_auc": 0.5040166797473319
+   },
+   {
+    "run_id": "c8be8ebac6c84424b6d9001359a30b84",
+    "name": "baseline_most_frequent",
+    "status": "FINISHED",
+    "test_roc_auc": 0.5
+   }
+  ],
+  "registry": {
+   "name": "careconnect_noshow_xgb",
+   "version": 1,
+   "alias": "candidate",
+   "tags": {
+    "approval": "pending Ethics Committee review",
+    "semver": "2.0.0"
+   },
+   "source_run": "56af9dcbee2144d8acf388067b007d78",
+   "all_aliases": {
+    "candidate": 1
+   }
+  }
+ },
+ "promotion_gate": {
+  "generated_utc": "2026-10-19T18:23:43.005749+00:00",
+  "model_version": "2.0.0",
+  "checks": [
+   {
+    "check": "data contract passed",
+    "value": true,
+    "passed": true
+   },
+   {
+    "check": "representation-bias gate passed",
+    "value": true,
+    "passed": true
+   },
+   {
+    "check": "ROC-AUC >= 0.70",
+    "value": 0.7455,
+    "passed": true
+   },
+   {
+    "check": "recall >= 0.65 (single cut-off)",
+    "value": 0.6558,
+    "passed": true
+   },
+   {
+    "check": "F1 >= 0.55",
+    "value": 0.4502,
+    "passed": false
+   },
+   {
+    "check": "adopted policy: EXPECTED age-group equalized-odds gap <= 0.05",
+    "value": 0.0408,
+    "passed": true
+   },
+   {
+    "check": "adopted policy: EXPECTED gender gap <= 0.05",
+    "value": 0.0312,
+    "passed": true
+   },
+   {
+    "check": "adopted policy: EXPECTED scholarship gap <= 0.05",
+    "value": 0.0293,
+    "passed": true
+   },
+   {
+    "check": "adopted policy: 95th percentile of realised age gap (200 draws) <= 0.05",
+    "value": 0.0697,
+    "passed": false
+   },
+   {
+    "check": "patient-grouped AUC within 0.02 of random-split AUC",
+    "value": 0.7463,
+    "passed": true
+   }
+  ],
+  "blocking_failures": [],
+  "non_blocking_notes": [
+   "F1 target (0.55) is reported but treated as non-blocking: at a 20% base rate and recall >= 0.65, F1 is bounded by precision; the committee decides whether to revise it.",
+   "The 95th-percentile check shows how often a single month's randomised decisions could exceed the limit by chance; it is reported to the committee rather than blocking."
+  ],
+  "decision": "eligible for Ethics Committee review",
+  "automatic_promotion": false
+ },
+ "monitoring": {
+  "evidently": "evidently>=0.7",
+  "weeks": [
+   {
+    "batch": "week of 2016-04-25",
+    "n": 669,
+    "auc": 0.7433919022154316,
+    "max_feature_psi": 2.0953288200234557,
+    "score_psi": 0.03494757233358825,
+    "age_eod": 0.13104013104013112,
+    "status": {
+     "data_drift": "alert",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "halt"
+    }
+   },
+   {
+    "batch": "week of 2016-05-02",
+    "n": 4175,
+    "auc": 0.7301311866428146,
+    "max_feature_psi": 0.33671537516071737,
+    "score_psi": 0.0343290895822191,
+    "age_eod": 0.08918688803746277,
+    "status": {
+     "data_drift": "alert",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "halt"
+    }
+   },
+   {
+    "batch": "week of 2016-05-09",
+    "n": 4382,
+    "auc": 0.7611673530760754,
+    "max_feature_psi": 0.03569113030843555,
+    "score_psi": 0.007192733144696428,
+    "age_eod": 0.12753623188405794,
+    "status": {
+     "data_drift": "ok",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "halt"
+    }
+   },
+   {
+    "batch": "week of 2016-05-16",
+    "n": 4278,
+    "auc": 0.7361993892430014,
+    "max_feature_psi": 2.731624718616652,
+    "score_psi": 0.04324277314746222,
+    "age_eod": 0.07044459267422643,
+    "status": {
+     "data_drift": "alert",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "halt"
+    }
+   },
+   {
+    "batch": "week of 2016-05-23",
+    "n": 1606,
+    "auc": 0.7434892941742542,
+    "max_feature_psi": 0.6598240965717073,
+    "score_psi": 0.01783063858743794,
+    "age_eod": 0.18311965811965814,
+    "status": {
+     "data_drift": "alert",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "halt"
+    }
+   },
+   {
+    "batch": "week of 2016-05-30",
+    "n": 4198,
+    "auc": 0.7413843069429824,
+    "max_feature_psi": 0.0930016379555251,
+    "score_psi": 0.0171292006996979,
+    "age_eod": 0.16485439320084994,
+    "status": {
+     "data_drift": "ok",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "halt"
+    }
+   },
+   {
+    "batch": "week of 2016-06-06",
+    "n": 2795,
+    "auc": 0.761605167867633,
+    "max_feature_psi": 0.17019464179693478,
+    "score_psi": 0.04587682615426067,
+    "age_eod": 0.10585585585585577,
+    "status": {
+     "data_drift": "warn",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "halt"
+    }
+   }
+  ],
+  "stress_test_status": {
+   "data_drift": "alert",
+   "prediction_drift": "alert",
+   "performance": "alert",
+   "bias_drift": "halt"
+  }
+ },
+ "module5_comparison": {
+  "module5_v1": {
+   "rows": 110514,
+   "train": 88411,
+   "test": 22103,
+   "roc_auc": 0.752,
+   "recall": 0.678,
+   "precision": 0.349,
+   "f1": 0.461,
+   "cutoff": 0.2525,
+   "age_eod_single_cutoff": 0.687,
+   "tuning": "25,000-row sample, 3-fold CV"
+  },
+  "v2": {
+   "rows": 110514,
+   "train": 88411,
+   "test": 22103,
+   "roc_auc": 0.7455058393445996,
+   "recall": 0.6557597489914836,
+   "precision": 0.3427835051546392,
+   "f1": 0.4502231112478843,
+   "cutoff": 0.25,
+   "age_eod_single_cutoff": 0.6292506982162154,
+   "tuning": "full training set, 5-fold CV"
+  },
+  "same_split_rows": true
+ },
+ "checks": [
+  {
+   "check": "train/test rows disjoint",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "test share is 20%",
+   "status": "PASS",
+   "detail": 0.2
+  },
+  {
+   "check": "stratification: train/test no-show rates within 0.002",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "model input schema == config.FEATURES",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "no target, identifier or raw date among model inputs",
+   "status": "PASS",
+   "detail": []
+  },
+  {
+   "check": "prior-visit features use only outcomes known at booking (500-row recount)",
+   "status": "PASS",
+   "detail": "0 mismatches"
+  },
+  {
+   "check": "cut-off is the largest grid value reaching OOF recall >= 0.65",
+   "status": "PASS",
+   "detail": [
+    0.6551,
+    0.6465
+   ]
+  },
+  {
+   "check": "reported roc_auc matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.7455058393445996,
+    0.7455058393445996
+   ]
+  },
+  {
+   "check": "reported recall matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.6557597489914836,
+    0.6557597489914836
+   ]
+  },
+  {
+   "check": "reported precision matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.3427835051546392,
+    0.3427835051546392
+   ]
+  },
+  {
+   "check": "reported f1 matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.4502231112478843,
+    0.4502231112478843
+   ]
+  },
+  {
+   "check": "reported flag_rate matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.3861919196489164,
+    0.3861919196489164
+   ]
+  },
+  {
+   "check": "reported confusion matrix matches",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "XGBoost beats both baselines on ROC-AUC by > 0.2",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "single-cut-off fairness matches mitigation.json (age EOD)",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "exported Option B rule reproduces Fairlearn's probabilities",
+   "status": "PASS",
+   "detail": 0.0
+  },
+  {
+   "check": "Option B age_band: EXPECTED equalized-odds gap <= 0.05",
+   "status": "PASS",
+   "detail": 0.0408
+  },
+  {
+   "check": "Option B age_band: expected gap matches mitigation.json",
+   "status": "PASS",
+   "detail": [
+    0.0408,
+    0.0408
+   ]
+  },
+  {
+   "check": "INFO Option B age_band: one realised draw (numpy seed 42) gap",
+   "status": "INFO",
+   "detail": 0.0557
+  },
+  {
+   "check": "INFO Option B age_band: realised gap over 50 draws min/mean/max",
+   "status": "INFO",
+   "detail": [
+    0.0229,
+    0.0479,
+    0.0842
+   ]
+  },
+  {
+   "check": "Option B Gender: EXPECTED equalized-odds gap <= 0.05",
+   "status": "PASS",
+   "detail": 0.0312
+  },
+  {
+   "check": "Option B Gender: expected gap matches mitigation.json",
+   "status": "PASS",
+   "detail": [
+    0.0312,
+    0.0312
+   ]
+  },
+  {
+   "check": "INFO Option B Gender: one realised draw (numpy seed 42) gap",
+   "status": "INFO",
+   "detail": 0.0304
+  },
+  {
+   "check": "INFO Option B Gender: realised gap over 50 draws min/mean/max",
+   "status": "INFO",
+   "detail": [
+    0.0217,
+    0.0311,
+    0.0431
+   ]
+  },
+  {
+   "check": "Option B Scholarship: EXPECTED equalized-odds gap <= 0.05",
+   "status": "PASS",
+   "detail": 0.0293
+  },
+  {
+   "check": "Option B Scholarship: expected gap matches mitigation.json",
+   "status": "PASS",
+   "detail": [
+    0.0293,
+    0.0293
+   ]
+  },
+  {
+   "check": "INFO Option B Scholarship: one realised draw (numpy seed 42) gap",
+   "status": "INFO",
+   "detail": 0.0432
+  },
+  {
+   "check": "INFO Option B Scholarship: realised gap over 50 draws min/mean/max",
+   "status": "INFO",
+   "detail": [
+    0.0126,
+    0.0306,
+    0.0567
+   ]
+  },
+  {
+   "check": "SHAP additivity: contributions sum to the model's log-odds (300 rows)",
+   "status": "PASS",
+   "detail": 6.67572021484375e-06
+  },
+  {
+   "check": "SHAP explains the deployed model: sigmoid(margin) == predict_proba",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "analysis.json produced by model version 2.0.0",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "LIME high: explained score equals the model's score",
+   "status": "PASS",
+   "detail": 0.6017
+  },
+  {
+   "check": "LIME medium: explained score equals the model's score",
+   "status": "PASS",
+   "detail": 0.2449
+  },
+  {
+   "check": "LIME low: explained score equals the model's score",
+   "status": "PASS",
+   "detail": 0.0098
+  },
+  {
+   "check": "counterfactual medium: re-scored change falls below the cut-off",
+   "status": "PASS",
+   "detail": 0.2359
+  },
+  {
+   "check": "counterfactual medium: only actionable features changed",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "counterfactual low: re-scored change falls below the cut-off",
+   "status": "PASS",
+   "detail": 0.0095
+  },
+  {
+   "check": "counterfactual low: only actionable features changed",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "MLflow: >= 7 runs logged (2 baselines, 3 models, 2 robustness)",
+   "status": "PASS",
+   "detail": 7
+  },
+  {
+   "check": "MLflow: candidate version comes from the xgboost run",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "MLflow: no 'production' alias set automatically",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "promotion gate ran and did not auto-promote",
+   "status": "PASS",
+   "detail": "eligible for Ethics Committee review"
+  },
+  {
+   "check": "Evidently HTML report written",
+   "status": "PASS",
+   "detail": "evidently>=0.7"
+  },
+  {
+   "check": "stress test raises data-drift alert",
+   "status": "PASS",
+   "detail": null
+  }
+ ],
+ "summary": {
+  "pass": 38,
+  "fail": 0
+ }
+}

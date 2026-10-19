@@ -1,0 +1,63 @@
+{
+ "generated_utc": "2026-10-19T18:23:43.005749+00:00",
+ "model_version": "2.0.0",
+ "checks": [
+  {
+   "check": "data contract passed",
+   "value": true,
+   "passed": true
+  },
+  {
+   "check": "representation-bias gate passed",
+   "value": true,
+   "passed": true
+  },
+  {
+   "check": "ROC-AUC >= 0.70",
+   "value": 0.7455,
+   "passed": true
+  },
+  {
+   "check": "recall >= 0.65 (single cut-off)",
+   "value": 0.6558,
+   "passed": true
+  },
+  {
+   "check": "F1 >= 0.55",
+   "value": 0.4502,
+   "passed": false
+  },
+  {
+   "check": "adopted policy: EXPECTED age-group equalized-odds gap <= 0.05",
+   "value": 0.0408,
+   "passed": true
+  },
+  {
+   "check": "adopted policy: EXPECTED gender gap <= 0.05",
+   "value": 0.0312,
+   "passed": true
+  },
+  {
+   "check": "adopted policy: EXPECTED scholarship gap <= 0.05",
+   "value": 0.0293,
+   "passed": true
+  },
+  {
+   "check": "adopted policy: 95th percentile of realised age gap (200 draws) <= 0.05",
+   "value": 0.0697,
+   "passed": false
+  },
+  {
+   "check": "patient-grouped AUC within 0.02 of random-split AUC",
+   "value": 0.7463,
+   "passed": true
+  }
+ ],
+ "blocking_failures": [],
+ "non_blocking_notes": [
+  "F1 target (0.55) is reported but treated as non-blocking: at a 20% base rate and recall >= 0.65, F1 is bounded by precision; the committee decides whether to revise it.",
+  "The 95th-percentile check shows how often a single month's randomised decisions could exceed the limit by chance; it is reported to the committee rather than blocking."
+ ],
+ "decision": "eligible for Ethics Committee review",
+ "automatic_promotion": false
+}

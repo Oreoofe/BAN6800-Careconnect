@@ -1,0 +1,373 @@
+{
+ "generated_utc": "2026-10-19T18:23:43.002901+00:00",
+ "model_version": "2.0.0",
+ "mode": "replay of held-out appointments by week (not live production data)",
+ "thresholds": {
+  "psi_warn": 0.1,
+  "psi_alert": 0.2,
+  "auc_drop_alert": 0.03,
+  "eod_warn": 0.04,
+  "eod_halt": 0.05
+ },
+ "validation_auc": 0.7433905495945989,
+ "policy": "Option B - equalized odds (Fairlearn ThresholdOptimizer)",
+ "weeks": [
+  {
+   "batch": "week of 2016-04-25",
+   "n": 669,
+   "no_show_rate": 0.17787742899850523,
+   "mean_score": 0.20506075024604797,
+   "flag_rate": 0.617339312406577,
+   "auc": 0.7433919022154316,
+   "recall": 0.8823529411764706,
+   "score_psi": 0.03494757233358825,
+   "feature_psi": {
+    "Age": 0.01912960412077309,
+    "lead_time_days": 0.169525443995233,
+    "prior_appointments": 2.0953288200234557,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.03377666254382063,
+    "Scholarship": 0.000493758008073829,
+    "Gender": 0.0017082525485662354,
+    "age_band": 0.009638428904625618,
+    "Neighbourhood": 0.229786842333255
+   },
+   "max_feature_psi": 2.0953288200234557,
+   "age_eod": 0.13104013104013112,
+   "age_dpd": 0.008433734939759074,
+   "fairness_groups_scored": [
+    "adult",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "child",
+    "elderly",
+    "senior",
+    "teen"
+   ],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-02",
+   "n": 4175,
+   "no_show_rate": 0.2059880239520958,
+   "mean_score": 0.19820304214954376,
+   "flag_rate": 0.6225149700598802,
+   "auc": 0.7301311866428146,
+   "recall": 0.8441860465116279,
+   "score_psi": 0.0343290895822191,
+   "feature_psi": {
+    "Age": 0.0015194008460929392,
+    "lead_time_days": 0.019408173876668527,
+    "prior_appointments": 0.33671537516071737,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.05235573535692808,
+    "Scholarship": 0.00020867646845665967,
+    "Gender": 0.0002722722993943479,
+    "age_band": 0.000827466139266999,
+    "Neighbourhood": 0.02566836328854969
+   },
+   "max_feature_psi": 0.33671537516071737,
+   "age_eod": 0.08918688803746277,
+   "age_dpd": 0.038302154866208915,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "elderly"
+   ],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-09",
+   "n": 4382,
+   "no_show_rate": 0.20880876312186217,
+   "mean_score": 0.20912204682826996,
+   "flag_rate": 0.6131903240529438,
+   "auc": 0.7611673530760754,
+   "recall": 0.8721311475409836,
+   "score_psi": 0.007192733144696428,
+   "feature_psi": {
+    "Age": 0.002725099759629296,
+    "lead_time_days": 0.00597998228268493,
+    "prior_appointments": 0.03569113030843555,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.026879120461138134,
+    "Scholarship": 0.000192987254020011,
+    "Gender": 0.000652627856944224,
+    "age_band": 0.001518453617229393,
+    "Neighbourhood": 0.024830248230729556
+   },
+   "max_feature_psi": 0.03569113030843555,
+   "age_eod": 0.12753623188405794,
+   "age_dpd": 0.09242220691887093,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "elderly",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [],
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-16",
+   "n": 4278,
+   "no_show_rate": 0.2171575502571295,
+   "mean_score": 0.2218497097492218,
+   "flag_rate": 0.6250584385226742,
+   "auc": 0.7361993892430014,
+   "recall": 0.8665231431646933,
+   "score_psi": 0.04324277314746222,
+   "feature_psi": {
+    "Age": 0.002925891040699735,
+    "lead_time_days": 0.0012517056239310575,
+    "prior_appointments": 0.003945105927463307,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 2.731624718616652,
+    "Scholarship": 0.0006974922957015429,
+    "Gender": 0.0026394800053002442,
+    "age_band": 0.0031857726494160486,
+    "Neighbourhood": 0.017473461146216892
+   },
+   "max_feature_psi": 2.731624718616652,
+   "age_eod": 0.07044459267422643,
+   "age_dpd": 0.04586404586404591,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "elderly",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-23",
+   "n": 1606,
+   "no_show_rate": 0.2129514321295143,
+   "mean_score": 0.19699743390083313,
+   "flag_rate": 0.5940224159402242,
+   "auc": 0.7434892941742542,
+   "recall": 0.8596491228070176,
+   "score_psi": 0.01783063858743794,
+   "feature_psi": {
+    "Age": 0.012840246152070717,
+    "lead_time_days": 0.6598240965717073,
+    "prior_appointments": 0.04677595061431866,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.15410700078385747,
+    "Scholarship": 5.742003412307996e-05,
+    "Gender": 2.754818179249873e-05,
+    "age_band": 0.009589058782292513,
+    "Neighbourhood": 0.07504455187638533
+   },
+   "max_feature_psi": 0.6598240965717073,
+   "age_eod": 0.18311965811965814,
+   "age_dpd": 0.09877524709926944,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "senior",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "elderly",
+    "teen"
+   ],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-30",
+   "n": 4198,
+   "no_show_rate": 0.188423058599333,
+   "mean_score": 0.1898418664932251,
+   "flag_rate": 0.5755121486422106,
+   "auc": 0.7413843069429824,
+   "recall": 0.8268015170670038,
+   "score_psi": 0.0171292006996979,
+   "feature_psi": {
+    "Age": 0.0058164788017761385,
+    "lead_time_days": 0.0521479708312731,
+    "prior_appointments": 0.0930016379555251,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.05083377142216537,
+    "Scholarship": 0.00019175043227886572,
+    "Gender": 0.00037764951929905827,
+    "age_band": 0.00315344436873017,
+    "Neighbourhood": 0.02899979839235044
+   },
+   "max_feature_psi": 0.0930016379555251,
+   "age_eod": 0.16485439320084994,
+   "age_dpd": 0.07685996761344982,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "elderly",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [],
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-06-06",
+   "n": 2795,
+   "no_show_rate": 0.1810375670840787,
+   "mean_score": 0.18778926134109497,
+   "flag_rate": 0.5896243291592129,
+   "auc": 0.761605167867633,
+   "recall": 0.8596837944664032,
+   "score_psi": 0.04587682615426067,
+   "feature_psi": {
+    "Age": 0.0010061000238585699,
+    "lead_time_days": 0.07153005239808602,
+    "prior_appointments": 0.17019464179693478,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.10290075943140067,
+    "Scholarship": 0.00020210829699904276,
+    "Gender": 0.0008763479204136708,
+    "age_band": 0.0017303259539759534,
+    "Neighbourhood": 0.05747292236177232
+   },
+   "max_feature_psi": 0.17019464179693478,
+   "age_eod": 0.10585585585585577,
+   "age_dpd": 0.11699281254918414,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "elderly"
+   ],
+   "status": {
+    "data_drift": "warn",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  }
+ ],
+ "stress_test": {
+  "batch": "STRESS TEST (synthetic: lead times x1.5 + 7 days)",
+  "n": 4000,
+  "no_show_rate": 0.2065,
+  "mean_score": 0.3060277998447418,
+  "flag_rate": 0.8935,
+  "auc": 0.628887518289492,
+  "recall": 0.9019370460048426,
+  "score_psi": 2.074018528864359,
+  "feature_psi": {
+   "Age": 0.0009779389960345264,
+   "lead_time_days": 5.390439214797031,
+   "prior_appointments": 8.797682714054396e-05,
+   "prior_noShow_rate": 0.0,
+   "SMS_received": 6.981884465369326e-05,
+   "Scholarship": 6.467954363547928e-05,
+   "Gender": 0.0008964848653119776,
+   "age_band": 0.001054257062310203,
+   "Neighbourhood": 0.019982385656543707
+  },
+  "max_feature_psi": 5.390439214797031,
+  "age_eod": 0.06454388984509474,
+  "age_dpd": 0.05612091126673169,
+  "fairness_groups_scored": [
+   "adult",
+   "child",
+   "elderly",
+   "senior",
+   "teen",
+   "young_adult"
+  ],
+  "fairness_groups_skipped_small": [],
+  "status": {
+   "data_drift": "alert",
+   "prediction_drift": "alert",
+   "performance": "alert",
+   "bias_drift": "halt"
+  },
+  "concept_drift_suspected": false,
+  "actions": [
+   "Retraining review (PSI >= 0.20)",
+   "Investigate score shift",
+   "Performance review with Data Science lead",
+   "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+  ],
+  "synthetic": true
+ },
+ "evidently": "evidently>=0.7"
+}

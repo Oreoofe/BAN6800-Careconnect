@@ -1,0 +1,192 @@
+{
+ "model_version": "2.0.0",
+ "flag_threshold": 0.25,
+ "lime": [
+  {
+   "tier": "high",
+   "model_score": 0.6016988754272461,
+   "lime_local_prediction": 0.11426189400484385,
+   "lime_r2": 0.6476407705782379,
+   "weights": [
+    [
+     "lead_time_days <= 0.00",
+     -0.24719173109807846
+    ],
+    [
+     "Age <= 18.00",
+     0.05887621094781272
+    ],
+    [
+     "Alcoholism <= 0.00",
+     -0.043102762244272244
+    ],
+    [
+     "SMS_received <= 0.00",
+     0.02518155224571654
+    ],
+    [
+     "Scholarship > 0.00",
+     0.023541508076187934
+    ],
+    [
+     "appointment_month > 5.00",
+     0.009241312003537632
+    ]
+   ]
+  },
+  {
+   "tier": "medium",
+   "model_score": 0.24492233991622925,
+   "lime_local_prediction": 0.15740021358239922,
+   "lime_r2": 0.1040344303419305,
+   "weights": [
+    [
+     "Age > 55.00",
+     -0.09675377989908472
+    ],
+    [
+     "Alcoholism <= 0.00",
+     -0.04834098786791641
+    ],
+    [
+     "0.00 < lead_time_days <= 4.00",
+     0.03941752291303461
+    ],
+    [
+     "Handcap <= 0.00",
+     -0.03690834071123455
+    ],
+    [
+     "Scholarship <= 0.00",
+     -0.03568351517018075
+    ],
+    [
+     "SMS_received <= 0.00",
+     0.03108433726262414
+    ]
+   ]
+  },
+  {
+   "tier": "low",
+   "model_score": 0.009800909087061882,
+   "lime_local_prediction": 0.00407328288491654,
+   "lime_r2": 0.6397875614827271,
+   "weights": [
+    [
+     "lead_time_days <= 0.00",
+     -0.24715859777067736
+    ],
+    [
+     "Scholarship <= 0.00",
+     -0.03659753002709111
+    ],
+    [
+     "SMS_received <= 0.00",
+     0.029854050736219936
+    ],
+    [
+     "37.00 < Age <= 55.00",
+     -0.022474242375153816
+    ],
+    [
+     "prior_appointments > 1.00",
+     -0.020509010494536836
+    ],
+    [
+     "Alcoholism <= 0.00",
+     -0.013351317301068403
+    ]
+   ]
+  }
+ ],
+ "counterfactuals": [
+  {
+   "tier": "high",
+   "original_score": 0.6016988754272461,
+   "threshold": 0.25,
+   "flagged": true,
+   "policy_flag_probability": 0.9318040526358008,
+   "counterfactual": null,
+   "lowest_reachable": {
+    "lead_time_days": 0,
+    "SMS_received": 1,
+    "score": 0.5974631309509277,
+    "cost": 1.0,
+    "policy_flag_probability": 0.9318040526358008
+   },
+   "searched": 2,
+   "immutable": [
+    "Age",
+    "Gender",
+    "Neighbourhood",
+    "prior history",
+    "health flags",
+    "Scholarship"
+   ]
+  },
+  {
+   "tier": "medium",
+   "original_score": 0.24492233991622925,
+   "threshold": 0.25,
+   "flagged": false,
+   "policy_flag_probability": 1.0,
+   "counterfactual": {
+    "lead_time_days": 3,
+    "SMS_received": 0,
+    "score": 0.23586079478263855,
+    "cost": 0.143,
+    "policy_flag_probability": 1.0
+   },
+   "lowest_reachable": {
+    "lead_time_days": 0,
+    "SMS_received": 1,
+    "score": 0.04645131528377533,
+    "cost": 1.571,
+    "policy_flag_probability": 0.0
+   },
+   "searched": 10,
+   "immutable": [
+    "Age",
+    "Gender",
+    "Neighbourhood",
+    "prior history",
+    "health flags",
+    "Scholarship"
+   ]
+  },
+  {
+   "tier": "low",
+   "original_score": 0.009800909087061882,
+   "threshold": 0.25,
+   "flagged": false,
+   "policy_flag_probability": 0.05821851821712267,
+   "counterfactual": {
+    "lead_time_days": 0,
+    "SMS_received": 1,
+    "score": 0.009490813128650188,
+    "cost": 1.0,
+    "policy_flag_probability": 0.05821851821712267
+   },
+   "lowest_reachable": {
+    "lead_time_days": 0,
+    "SMS_received": 1,
+    "score": 0.009490813128650188,
+    "cost": 1.0,
+    "policy_flag_probability": 0.05821851821712267
+   },
+   "searched": 2,
+   "immutable": [
+    "Age",
+    "Gender",
+    "Neighbourhood",
+    "prior history",
+    "health flags",
+    "Scholarship"
+   ]
+  }
+ ],
+ "population": {
+  "flagged_sampled": 1500,
+  "share_unflaggable_by_actionable_change": 0.982
+ }
+}
