@@ -203,7 +203,6 @@ def option_b_mechanism(policy, te, p, y):
                      "risk_unrelated_flag_probability": floor,
                      "lowest_score_in_group_flag_probability": floor,
                      "binding_group": r["p_ignore"] == 0.0}
-    n = len(g)
     floors = np.array([rows[x]["risk_unrelated_flag_probability"] for x in g])
     from careconnect.fairness.policy import flag_probability
     pmf = np.array([flag_probability(s, x, policy) for s, x in zip(p, g)])

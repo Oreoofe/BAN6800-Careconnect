@@ -38,7 +38,6 @@ def main():
     X = json.load(open(A / "explanations.json"))
     G = json.load(open(A / "promotion_decision.json"))
     R = json.load(open(A / "model_results.json"))
-    E = json.load(open(A / "analysis.json"))
     P = PC["policies"]
     mech = PC["option_B_mechanism"]
     B, EO = P["P4_option_B_equalized_odds"], P["P1_equal_opportunity_tpr85"]
