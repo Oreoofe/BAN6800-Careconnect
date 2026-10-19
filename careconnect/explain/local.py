@@ -27,6 +27,13 @@ FIG = config.ARTIFACTS / "figures"
 CAT = ["Gender", "Neighbourhood", "age_band"]
 
 
+def _per_label(v, label=1):
+    """LIME 0.2.0.1 (PyPI) stores score/local_pred as one value; LIME master stores a dict per label."""
+    if isinstance(v, dict):
+        v = v[label]
+    return float(np.ravel(v)[0])
+
+
 def lime_explanations(model, train: pd.DataFrame, samples: list, n_features=6):
     from lime.lime_tabular import LimeTabularExplainer
     feats = config.FEATURES
@@ -62,7 +69,7 @@ def lime_explanations(model, train: pd.DataFrame, samples: list, n_features=6):
         e = expl.explain_instance(encode(row)[0], predict_fn, num_features=n_features, num_samples=3000)
         weights = e.as_list()
         out.append({"tier": s["tier"], "model_score": float(model.predict_proba(row[feats])[0, 1]),
-                    "lime_local_prediction": float(np.ravel(e.local_pred[1])[0]), "lime_r2": float(e.score[1]),
+                    "lime_local_prediction": _per_label(e.local_pred), "lime_r2": _per_label(e.score),
                     "weights": weights})
         fig = e.as_pyplot_figure()
         fig.set_size_inches(7, 3.6)

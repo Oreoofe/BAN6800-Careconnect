@@ -1,6 +1,7 @@
 # Full build / scheduled retraining. Produces the model, MLflow runs, explanations, fairness results,
-# monitoring report, model card and promotion decision as downloadable artifacts.
-# It never commits or promotes a model: a person reviews the outputs and the Ethics Committee approves.
+# monitoring report, model card, promotion decision and an independent verification report as
+# downloadable artifacts. It never commits or promotes a model: a person reviews the outputs and the
+# Ethics Committee approves. Later steps run even if an earlier one fails, so every failure is visible.
 name: build-and-retrain
 on:
   workflow_dispatch:
@@ -25,18 +26,25 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: |
-          scripts/run_logged.sh pip install -r requirements-build.txt playwright
+          scripts/run_logged.sh pip install -r requirements-build.txt -r requirements.txt playwright
           python -m playwright install --with-deps chromium
           pip freeze > requirements-lock.txt
       - name: Run pipeline, training, XAI, fairness, monitoring, model card, promotion gate
         run: scripts/run_logged.sh python -m careconnect.run_all
+      - name: Independent verification of results (recomputed from saved model and test set)
+        if: success() || failure()
+        run: scripts/run_logged.sh python scripts/verify_results.py
       - name: API demo against the new model
+        if: success() || failure()
         run: scripts/run_logged.sh python api_demo.py
-      - name: Tests against the new artifacts
-        run: scripts/run_logged.sh pytest -v -x
+      - name: Tests against the new artifacts (incl. dashboard rendering)
+        if: success() || failure()
+        run: scripts/run_logged.sh pytest -v --junitxml=test-results.xml
       - name: MLflow UI screenshots (experiment + model registry)
+        if: success() || failure()
         run: scripts/run_logged.sh python scripts/mlflow_screenshots.py
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: careconnect-build-${{ github.run_number }}
           retention-days: 30
@@ -50,6 +58,7 @@ jobs:
             docs/model_card.md
             docs/api_demo_output.txt
             docs/evidence/
-            mlruns/
+            mlruns/mlflow.db
             logs/audit.log
             requirements-lock.txt
+            test-results.xml

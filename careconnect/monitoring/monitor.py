@@ -98,14 +98,23 @@ def batch_report(name, cur, ref, model, policy, T, val_auc, ref_scores):
 
 def evidently_report(ref, cur, path):
     cols = [c for c in DRIFT_FEATURES]
+    # plain object/str dtypes: Evidently's type inference is not tested against pandas 3 string dtypes
+    ref = ref[cols].copy()
+    cur = cur[cols].copy()
+    for c in cols:
+        if not pd.api.types.is_numeric_dtype(ref[c]):
+            ref[c] = ref[c].astype(object)
+            cur[c] = cur[c].astype(object)
     try:                                    # Evidently >= 0.7 API
         from evidently import Report
         from evidently.presets import DataDriftPreset
-        snap = Report([DataDriftPreset()]).run(cur[cols], ref[cols])
+        snap = Report([DataDriftPreset()]).run(cur, ref)
         snap.save_html(str(path))
         return "evidently>=0.7"
     except ImportError:
         pass
+    except Exception as e:                  # report the failure instead of crashing the monitoring run
+        return f"failed: {type(e).__name__}: {str(e)[:200]}"
     try:                                    # Evidently 0.4-0.6 API
         from evidently.metric_preset import DataDriftPreset
         from evidently.report import Report
