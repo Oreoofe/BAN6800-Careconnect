@@ -238,6 +238,48 @@ def main():
     else:
         check("policy_comparison.json exists", False)
 
+    # ---------- acceptance matrix, recomputed from the stored metrics (criteria as originally written) ----------
+    if PC:
+        for k, v in PC["policies"].items():
+            a, g_, sc = v["age_band"], v["Gender"], v["Scholarship"]
+            auc = v.get("test_roc_auc", PC["reference_test_roc_auc_full_model"])
+            rel = all(x["eod_bootstrap_95ci"][1] <= 0.05 for x in (a, g_, sc)) and (
+                not v["randomised"] or all(x["realised_eod"]["p95"] <= 0.05 for x in (a, g_, sc)))
+            mine = {"C1": auc >= 0.70, "C2": v["recall"] >= 0.65, "C3": v["f1"] >= 0.55,
+                    "C4": a["eod"] <= 0.05 and g_["eod"] <= 0.05, "C5": a["dpd"] <= 0.05 and g_["dpd"] <= 0.05,
+                    "C6": a["di_ratio"] >= 0.8 and g_["di_ratio"] >= 0.8, "C7": sc["eod"] <= 0.05, "C8": rel}
+            check(f"acceptance matrix for {k} reproduces", all(mine[c] == v["acceptance"][c] for c in mine),
+                  "".join(c if mine[c] else "-" for c in sorted(mine)))
+        none = not any(v["acceptance"]["meets_full_fairness_requirement"] for v in PC["policies"].values())
+        check("statement 'no evaluated policy reliably meets the 0.05 equalized-odds limit across all required groups' is supported",
+              none == PC["no_policy_reliably_meets_fairness"] and none)
+        rep["acceptance_matrix"] = {k: v["acceptance"] for k, v in PC["policies"].items()}
+        # Option B mechanism: lowest-scoring appointment in each mixed group still has a non-zero flag probability
+        mech = PC["option_B_mechanism"]
+        for grp, r in POL["groups"].items():
+            k = groups["age_band"] == grp
+            pmin = float(min(p[k]))
+            pf = flag_probability(pmin, grp, POL)
+            expect = r["p_ignore"] * r["prediction_constant"]
+            check(f"Option B {grp}: lowest-score appointment's flag probability = p_ignore x x_best", abs(pf - expect) < 1e-9,
+                  (round(pmin, 4), round(pf, 4)))
+        floors = np.array([POL["groups"][x]["p_ignore"] * POL["groups"][x]["prediction_constant"] for x in groups["age_band"]])
+        check("Option B share of flags unrelated to risk reproduces", abs(floors.sum() / pmf.sum() - mech["share_of_flags_unrelated_to_risk"]) < 1e-9,
+              round(floors.sum() / pmf.sum(), 4))
+        rep["option_B_mechanism"] = mech
+
+    # ---------- documentation states the measured findings ----------
+    must = {"docs/governance.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "no evaluated policy"],
+            "docs/algorithmic_impact_assessment.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity"],
+            "docs/public_trust_statement.md": ["regardless of", "not yet met"],
+            "docs/model_card.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "No evaluated policy"],
+            "docs/committee_decision_pack.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "No evaluated policy"]}
+    for f, phrases in must.items():
+        path = config.ROOT / f
+        txt = path.read_text() if path.exists() else ""
+        miss = [x for x in phrases if x.lower() not in txt.lower()]
+        check(f"{f} discloses the measured findings", not miss, miss or None)
+
     # ---------- build identity ----------
     import hashlib
     import os
@@ -297,6 +339,26 @@ def main():
         gw = win["age_band"].astype(str).values
         k = np.isin(gw, last["fairness"]["groups_evaluated"])
         e2 = float(equalized_odds_difference(win[config.TARGET].values[k], yw[k], sensitive_features=gw[k]))
+        # status logic consistent with the stored interval for every evaluated window
+        bad = []
+        for setname in ["rolling_28d", "weeks_cycle2_rule", "calendar_months", "stress_tests"]:
+            for r in MON[setname]:
+                f = r["fairness"]
+                if f["status"] == "insufficient data":
+                    ok_ = f["eod"] is None and len(f["groups_evaluated"]) < 2
+                else:
+                    lo, hi = f["ci95"]
+                    want = "halt" if lo > 0.05 else ("ok" if hi <= 0.05 else "inconclusive")
+                    ok_ = f["status"] == want and len(f["groups_evaluated"]) >= 2
+                ok_ = ok_ and not (set(f["groups_evaluated"]) & set(f["groups_not_evaluated"]))
+                if not ok_:
+                    bad.append(r["batch"])
+        check("monitoring: every window's status follows its interval; insufficient data never scored", not bad, bad or None)
+        S = MON["summary"]
+        check("monitoring: expected Option B age gap > 0.05 in every evaluable window (rolling + months)",
+              S["rolling_28d_all"]["windows_with_expected_gap_above_0.05"] == S["rolling_28d_all"]["windows_with_expected_gap_evaluable"]
+              and S["calendar_months"]["windows_with_expected_gap_above_0.05"] == S["calendar_months"]["windows_with_expected_gap_evaluable"],
+              (S["rolling_28d_all"]["expected_gap_range"], S["calendar_months"]["expected_gap_range"]))
         check("latest rolling window: realised age gap reproduces", abs(e2 - (last["fairness"]["eod"] or -1)) < 1e-9, round(e2, 4))
         rep["monitoring"] = {
             "rule": MON["fairness_rule"], "evidently": MON["evidently"],
@@ -308,7 +370,10 @@ def main():
                               "not_evaluated": list(w["fairness"]["groups_not_evaluated"])} for w in MON["weeks_cycle2_rule"]],
             "months": [{"month": r["batch"], "n": r["n"], "status": r["fairness"]["status"], "eod": r["fairness"]["eod"], "ci95": r["fairness"]["ci95"]}
                        for r in MON["calendar_months"]],
-            "stress": [{"name": t["name"], "expect": t["expect"], "fairness": t["fairness"]["status"], "status": t["status"]} for t in MON["stress_tests"]]}
+            "stress": [{"name": t["name"], "expect": t["expect"], "fairness": t["fairness"]["status"], "status": t["status"]} for t in MON["stress_tests"]],
+            "summary": MON["summary"],
+            "expected_vs_realised": [{"window": r["batch"], "realised": r["fairness"]["eod"], "expected": r["expected_age_eod_evaluated_groups"],
+                                      "status": r["fairness"]["status"]} for r in MON["rolling_28d"] + MON["calendar_months"]]}
     else:
         check("monitoring.json exists", False)
 

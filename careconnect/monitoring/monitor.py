@@ -261,11 +261,28 @@ def main():
     for st in stress:
         st["synthetic"] = True
     ev = evidently_report(ref, last, OUT / "evidently_drift_report.html")
+
+    def summarise(rows):
+        out = {"halt": [], "inconclusive": [], "ok": [], "insufficient data": []}
+        for r in rows:
+            out[r["fairness"]["status"]].append(r["batch"])
+        exp = [r["expected_age_eod_evaluated_groups"] for r in rows if r["expected_age_eod_evaluated_groups"] is not None]
+        return {"counts": {k: len(v) for k, v in out.items()}, "windows": out,
+                "windows_with_expected_gap_above_0.05": sum(e > 0.05 for e in exp),
+                "windows_with_expected_gap_evaluable": len(exp),
+                "expected_gap_range": [min(exp), max(exp)] if exp else None,
+                "windows_with_any_group_not_evaluated": [r["batch"] for r in rows if r["fairness"]["groups_not_evaluated"]]}
+    summary = {"rolling_28d_all": summarise(rolling),
+               "rolling_28d_full_windows_only": summarise([r for r in rolling if (r["coverage_days"] or 0) >= 28]),
+               "calendar_months": summarise(months), "weeks_cycle2_rule": summarise(weeks_new),
+               "weeks_cycle1_rule_halts": sum(w["status"]["bias_drift"] == "halt" for w in weeks),
+               "reading": ("'insufficient data' and groups 'not evaluated' are reported separately and are never counted as a pass; "
+                           "'inconclusive' means the 95% interval straddles 0.05 and supports no conclusion either way.")}
     res = {"generated_utc": datetime.now(timezone.utc).isoformat(), "model_version": config.MODEL_VERSION,
            "mode": "replay of held-out appointments (not live production data)", "thresholds": TH,
            "fairness_rule": FAIR_RULE, "validation_auc": val_auc, "policy": policy["name"] if policy else "single cut-off",
            "weeks_cycle1_rule": weeks, "weeks_cycle2_rule": weeks_new, "rolling_28d": rolling, "calendar_months": months,
-           "stress_tests": stress, "evidently": ev, "evidently_window": "last 28 days of test appointments vs training sample",
+           "stress_tests": stress, "summary": summary, "evidently": ev, "evidently_window": "last 28 days of test appointments vs training sample",
            "weeks": weeks, "stress_test": stress[0]}       # cycle-1 keys kept for backward compatibility
     json.dump(res, open(OUT / "monitoring.json", "w"), indent=1, default=float)
     for label, rows in [("cycle1 weekly", weeks)]:

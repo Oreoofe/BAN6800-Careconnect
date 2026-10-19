@@ -19,3 +19,24 @@ Independent verification: 38 PASS, 0 FAIL. pytest: 25 passed. MLflow experiment 
 | Weekly fairness rule halts every week | 7 of 7 weeks "halt", weekly age EOD 0.070-0.183, small groups skipped | Rolling 28-day windows, minimum group sizes, bootstrap interval; cycle-1 rule kept in the output |
 | API tier vs decision confusing | patient A: score 0.243, tier "low", flagged with probability 0.916 | Separate `score_tier` from the policy decision, with an explanation string |
 | Model card wording | "all three gaps are at or below the limit" (true only in expectation) | Expected vs realised stated explicitly |
+
+## Cycle 2 - run 39316354066, commit fc9d176, outputs on branch `build-outputs-6`
+
+Independent verification: 60 PASS, 0 FAIL. pytest (against v2 artifacts): 29 passed. MLflow experiment screenshot captured.
+
+| Component | Result | Status |
+| --- | --- | --- |
+| Policy comparison (8 rules, same test set) | No rule meets the 0.05 equalized-odds limit for age, gender and scholarship reliably; best deterministic (equal opportunity, TPR 0.85): age EOD 0.100 (0.076-0.138) | Negative finding, kept |
+| Option B mechanism | Score-independent flag probability (p_ignore x 0.538): child 0.113, young adult 0.098, teen 0.079, adult 0.058, elderly 0.026, senior 0; about 11% of its flags | Disclosed in cycle 3 |
+| Option B over time | Expected age EOD > 0.05 in all 6 rolling windows (0.052-0.100) and both evaluable months (0.066-0.133); weekly 5 of 6 evaluable weeks | Disclosed in cycle 3 |
+| LIME | Original sampling 2/6 adequate; local sampling 0/6 adequate (bar fixed before the run) | Failed; kept as a limitation |
+| Counterfactuals (policy-aware) | None of three tier examples can be un-flagged under Option B (lowest reachable flag probability 0.10-0.11) | Negative finding, kept |
+| Monitoring rule | Rolling windows: 3 halt, 3 inconclusive; months: 1 halt, 1 inconclusive, 1 insufficient data; stress tests behave as designed | Rule works; outcome adverse |
+
+## Cycle 3 - documentation and acceptance criteria (this commit)
+
+- Acceptance matrix against the original criteria C1-C8 computed in `policy_comparison.py` (criteria quoted from Modules 1, 4, 5).
+- Promotion gate realigned to the original Module 4 s.7 list plus the Charter halt rule. The cycle-2 gate had made the realised-gap
+  check non-blocking after cycle-1 results were known; that was a relaxation and is reversed. Gate outcome is now expected to be
+  "not eligible".
+- Option B mechanism quantified and checked independently; committee decision pack generated from artifacts.

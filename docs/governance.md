@@ -55,3 +55,28 @@ Triggers: G3 failure metric worsens for two consecutive quarters (Module 1 termi
 4. **Revoke access:** API keys, service accounts, dashboard access and data-zone permissions removed; raw-zone data deleted per the 30-day rule.
 5. **Retire artifacts:** MLflow versions archived with tag `decommissioned` and reason; container images removed from the registry.
 6. **Review impact:** compare attendance and equity metrics in the three months after withdrawal; report to the committee.
+
+## 6. Fairness evidence for the committee decision (verification cycles 1-2)
+
+Figures are generated in `docs/committee_decision_pack.md` and `docs/model_card.md` from the build artifacts; the points below
+summarise them and must be read with those files.
+
+- **No evaluated policy reliably met the 0.05 equalized-odds limit across all required groups** (age band, gender, scholarship as
+  the G3 stand-in). Eight policies were tested against the original acceptance criteria C1-C8; the criteria were not changed after
+  the results were seen. No policy meets F1 >= 0.55 either.
+- **Option B (configured, not approved) creates flags unrelated to predicted risk.** Fairlearn's equalized-odds post-processing
+  equalises error rates by ignoring the score for a share of appointments in every age group whose ROC curve lies above the lowest
+  group's (senior), and flagging those at the common false-positive rate. In the verified build this is a score-independent flag
+  probability between 0 (senior) and about 0.11 (child) depending on age group, roughly 11% of all Option B flags. It also lowers decision quality for
+  the groups the model predicts best, prevents counterfactual "what would remove this flag" answers in those groups, and means
+  SHAP reason codes do not explain those flags. For exact equalized odds by post-processing this randomisation is unavoidable when
+  the groups' ROC curves differ (Hardt et al., 2016).
+- **The expected Option B age-group gap exceeds 0.05 in every monitored time window** used by the monitoring rule (all rolling
+  28-day windows and both evaluable calendar months; April 2016 had insufficient data), although it is within 0.05 on the pooled
+  test set. Monitoring outcomes are recorded separately as halt, inconclusive and insufficient data; insufficient data and
+  unevaluated groups are never treated as a pass.
+- **Deterministic equal opportunity at TPR 0.85 is presented as an alternative, not as compliant.** Equal opportunity equalises
+  only the true-positive rate; equalized odds (the Charter requirement) also requires equal false-positive rates. This policy
+  equalises catch rates closely but leaves age-group false-positive and scholarship gaps above 0.05, so it fails C4, C5, C7 and C8.
+- **Decision rights.** Choosing between not piloting, piloting either policy with disclosure, or formally amending the Charter
+  criterion belongs to the AI Ethics Committee. Amending the criterion is a separate ethics decision and is not proposed here.

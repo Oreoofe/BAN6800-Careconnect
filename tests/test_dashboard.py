@@ -81,3 +81,19 @@ def test_build_identity_and_new_sections():
         assert not at.exception and "how far to trust it" in _text(at)
     at.sidebar.radio[0].set_value(next(p for p in pages if p.startswith("4"))).run()
     assert not at.exception and "Model score tier" in _text(at)
+
+
+def test_committee_disclosures_rendered():
+    pc = config.ARTIFACTS / "policy_comparison.json"
+    mon = config.ARTIFACTS / "monitoring" / "monitoring.json"
+    if not pc.exists() or "criteria" not in json.load(open(pc)):
+        pytest.skip("cycle-3 artifacts not built")
+    at = _app()
+    pages = list(at.sidebar.radio[0].options)
+    at.sidebar.radio[0].set_value(next(p for p in pages if p.startswith("5"))).run()
+    t = _text(at) + "\n".join(str(e.value) for e in at.error)
+    assert not at.exception
+    assert "No evaluated policy reliably met" in t and "unrelated to predicted risk" in t and "Equal opportunity" in t
+    if mon.exists() and "summary" in json.load(open(mon)):
+        at.sidebar.radio[0].set_value(next(p for p in pages if p.startswith("7"))).run()
+        assert not at.exception and "every monitored time window" in _text(at)

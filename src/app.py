@@ -407,6 +407,37 @@ elif page.startswith("5"):
                          "Age DI ratio": round(ag["di_ratio"], 2)})
         st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
         st.caption(PCOMP["note"])
+        if "criteria" in PCOMP:
+            st.markdown("#### Against the original acceptance criteria (unchanged after results)")
+            cs = [c["id"] for c in PCOMP["criteria"]]
+            st.dataframe(pd.DataFrame([{"Policy": k.split("_", 1)[1].replace("_", " "),
+                                        **{c: ("✅" if v["acceptance"][c] else "❌") for c in cs},
+                                        "Full fairness requirement": "✅" if v["acceptance"]["meets_full_fairness_requirement"] else "❌"}
+                                       for k, v in PCOMP["policies"].items()]), hide_index=True, width="stretch")
+            st.caption(" · ".join(f"{c['id']}: {c['criterion']}" for c in PCOMP["criteria"]))
+            if PCOMP.get("no_policy_reliably_meets_fairness"):
+                st.error("No evaluated policy reliably met the 0.05 equalized-odds limit across all required groups (age band, gender, scholarship).")
+        mech = PCOMP.get("option_B_mechanism")
+        if mech:
+            st.markdown("#### Option B creates flags unrelated to predicted risk")
+            st.markdown(f"To equalise error rates, Option B ignores the score for part of each age group whose ROC curve is above the senior group's "
+                        f"and flags those appointments at the common false-positive rate ({mech['x_best_common_false_positive_rate']:.3f}). "
+                        f"**{mech['share_of_flags_unrelated_to_risk']:.1%}** of its expected flags are unrelated to predicted risk, and "
+                        f"**{mech['share_of_appointments_with_nonzero_flag_probability']:.1%}** of appointments have some chance of being flagged.")
+            st.dataframe(pd.DataFrame([{"Age group": g.replace("_", " "), "Appointments (test)": r["n_test"], "p_ignore": round(r["p_ignore"], 3),
+                                        "Flag probability whatever the score": round(r["risk_unrelated_flag_probability"], 3)}
+                                       for g, r in sorted(mech["groups"].items())]), hide_index=True, width="stretch")
+        eo = PCOMP["policies"].get("P1_equal_opportunity_tpr85")
+        if eo:
+            st.markdown("#### Alternative for committee consideration: deterministic equal opportunity (TPR 0.85)")
+            st.markdown("**Equal opportunity** equalises only the share of real no-shows flagged (true-positive rate). **Equalized odds**, the Charter "
+                        "requirement, also equalises false-alarm rates. This rule is deterministic and has no risk-unrelated flags, but it **does not meet "
+                        "the full fairness requirement**.")
+            st.dataframe(pd.DataFrame([{"Attribute": a, "TPR gap": round(eo[a]["tpr_gap"], 3), "FPR gap": round(eo[a]["fpr_gap"], 3),
+                                        "Equalized-odds gap": round(eo[a]["eod"], 3),
+                                        "95% range": f"{eo[a]['eod_bootstrap_95ci'][0]:.3f}-{eo[a]['eod_bootstrap_95ci'][1]:.3f}",
+                                        "Groups (n test)": ", ".join(f"{g} {r['n']:,}" for g, r in eo[a]["groups"].items())}
+                                       for a in ["age_band", "Gender", "Scholarship"]]), hide_index=True, width="stretch")
     if POLICY:
         st.markdown("#### The adopted rule, in full (auditable)")
         pr = [{"Age group": g.replace("_", " "), "Rule": (f"flag if score {r['op0'][0]} {r['op0'][1]:.3f}" if r["p0"] >= 0.999 else
@@ -439,8 +470,19 @@ elif page.startswith("7"):
                               "Age gap": None if r["fairness"]["eod"] is None else round(r["fairness"]["eod"], 3),
                               "95% interval": "-" if not r["fairness"]["ci95"] else f"{r['fairness']['ci95'][0]:.3f}-{r['fairness']['ci95'][1]:.3f}",
                               "Fairness status": emoji[r["fairness"]["status"]],
+                              "Expected gap (Option B)": None if r.get("expected_age_eod_evaluated_groups") is None else round(r["expected_age_eod_evaluated_groups"], 3),
                               "Groups not evaluated": ", ".join(r["fairness"]["groups_not_evaluated"]) or "none",
                               "Data drift": emoji[r["status"]["data_drift"]]} for r in rows])
+    SUM = MON.get("summary")
+    if SUM:
+        st.markdown("#### Outcomes, counted separately")
+        st.dataframe(pd.DataFrame([{"Window set": n, **SUM[k]["counts"],
+                                    "Expected gap > 0.05": f"{SUM[k]['windows_with_expected_gap_above_0.05']} of {SUM[k]['windows_with_expected_gap_evaluable']} evaluable"}
+                                   for n, k in [("Rolling 28-day (all)", "rolling_28d_all"), ("Rolling 28-day (full windows)", "rolling_28d_full_windows_only"),
+                                                ("Calendar months", "calendar_months"), ("Weekly (current rule)", "weeks_cycle2_rule")]]),
+                     hide_index=True, width="stretch")
+        st.warning("Under Option B the expected age-group gap exceeds 0.05 in every monitored time window used by the rule (rolling 28-day windows and "
+                   "evaluable calendar months), even though it is within 0.05 on the pooled test set. 'Insufficient data' is never counted as a pass.")
     st.markdown("#### Rolling 28-day windows")
     st.dataframe(wtable(MON["rolling_28d"]), hide_index=True, width="stretch")
     st.markdown("#### Same seven weeks: cycle-1 rule vs current rule")

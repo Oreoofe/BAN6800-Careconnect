@@ -161,6 +161,66 @@ def threshold_optimizer(oof, y_tr, g_tr, constraint):
     return to
 
 
+# ---------------------------------------------------------------- original acceptance criteria (fixed; not edited after results)
+# Sources: Module 4 report section 7 ("accepted for staging if ROC-AUC >= 0.70, Recall >= 0.65, all fairness metrics PASS
+# (<5% disparity, DIR >= 0.80)") and section 1 (success criteria incl. F1 >= 0.55; protected attributes Gender and age_band);
+# Module 1 Charter Principle 2 ("error rate disparity between any two groups must not exceed 5%. Automatic halt if
+# threshold breached"); Module 5 (welfare scholarship used as the stand-in for goal G3, Medicaid vs private).
+CRITERIA = [
+    ("C1", "ROC-AUC >= 0.70", "Module 4 s.7"),
+    ("C2", "Recall >= 0.65", "Module 4 s.7"),
+    ("C3", "F1 >= 0.55", "Module 4 s.1 (success criterion; not in the s.7 staging list)"),
+    ("C4", "Equalized-odds gap <= 0.05 for age band AND gender", "Module 4 s.7 / Charter P2"),
+    ("C5", "Demographic-parity gap <= 0.05 for age band AND gender", "Module 4 s.7 ('all fairness metrics')"),
+    ("C6", "Disparate-impact ratio >= 0.80 for age band AND gender", "Module 4 s.7"),
+    ("C7", "Equalized-odds gap <= 0.05 for scholarship (G3 stand-in)", "Module 1 G3 via Module 5 stand-in"),
+    ("C8", "Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th "
+           "percentile of realised gaps <= 0.05)", "Charter P2 ('automatic halt if threshold breached')"),
+]
+
+
+def acceptance(v, auc):
+    a, g, sc = v["age_band"], v["Gender"], v["Scholarship"]
+    rel = all(x["eod_bootstrap_95ci"][1] <= 0.05 for x in (a, g, sc))
+    if v["randomised"]:
+        rel = rel and all(x["realised_eod"]["p95"] <= 0.05 for x in (a, g, sc))
+    res = {"C1": auc >= 0.70, "C2": v["recall"] >= 0.65, "C3": v["f1"] >= 0.55,
+           "C4": a["eod"] <= 0.05 and g["eod"] <= 0.05, "C5": a["dpd"] <= 0.05 and g["dpd"] <= 0.05,
+           "C6": a["di_ratio"] >= 0.80 and g["di_ratio"] >= 0.80, "C7": sc["eod"] <= 0.05, "C8": rel}
+    res["meets_full_fairness_requirement"] = all(res[c] for c in ["C4", "C5", "C6", "C7", "C8"])
+    res["meets_all_original_criteria"] = all(res[c] for c in ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"])
+    return {k: bool(x) for k, x in res.items()}
+
+
+def option_b_mechanism(policy, te, p, y):
+    """Why Option B flags appointments regardless of predicted risk (Fairlearn equalized-odds post-processing)."""
+    g = te["age_band"].astype(str).values
+    rows = {}
+    for grp, r in policy["groups"].items():
+        k = g == grp
+        floor = r["p_ignore"] * r["prediction_constant"]
+        rows[grp] = {"n_test": int(k.sum()), "p_ignore": r["p_ignore"], "prediction_constant": r["prediction_constant"],
+                     "risk_unrelated_flag_probability": floor,
+                     "lowest_score_in_group_flag_probability": floor,
+                     "binding_group": r["p_ignore"] == 0.0}
+    n = len(g)
+    floors = np.array([rows[x]["risk_unrelated_flag_probability"] for x in g])
+    from careconnect.fairness.policy import flag_probability
+    pmf = np.array([flag_probability(s, x, policy) for s, x in zip(p, g)])
+    return {"groups": rows, "x_best_common_false_positive_rate": next(iter(policy["groups"].values()))["prediction_constant"],
+            "expected_risk_unrelated_flags_per_1000": float(floors.mean() * 1000),
+            "expected_total_flags_per_1000": float(pmf.mean() * 1000),
+            "share_of_flags_unrelated_to_risk": float(floors.sum() / pmf.sum()),
+            "share_of_appointments_with_nonzero_flag_probability": float((pmf > 0).mean()),
+            "explanation": (
+                "Fairlearn's equalized-odds post-processing (Hardt et al., 2016) picks one operating point (common false-positive "
+                "rate x_best, true-positive rate y_best) that every group can reach: the best point on the LOWEST of the groups' "
+                "ROC curves. Groups whose ROC curve lies above that point are pulled down to it by mixing their own threshold rule "
+                "with the ROC diagonal: with probability p_ignore the score is ignored and the appointment is flagged with "
+                "probability x_best. That product is a flag probability that is the same for every appointment in the group, "
+                "whatever its score. The group with the lowest curve (here: senior) needs no mixing (p_ignore = 0).")}
+
+
 def main():
     m = joblib.load(config.ARTIFACTS / "xgboost.joblib")
     tr = pd.read_pickle(config.ARTIFACTS / "train_frame.pkl")
@@ -209,6 +269,13 @@ def main():
                                     "test_roc_auc": float(roc_auc_score(yte, pu)),
                                     **evaluate(yte, (pu >= Tu).astype(int), te)}
     res["reference_test_roc_auc_full_model"] = float(roc_auc_score(yte, pte))
+    res["criteria"] = [{"id": c, "criterion": t, "source": src} for c, t, src in CRITERIA]
+    for k, v in P.items():
+        v["acceptance"] = acceptance(v, v.get("test_roc_auc", res["reference_test_roc_auc_full_model"]))
+    res["no_policy_reliably_meets_fairness"] = not any(v["acceptance"]["meets_full_fairness_requirement"] for v in P.values())
+    res["policies_meeting_full_fairness_requirement"] = [k for k, v in P.items() if v["acceptance"]["meets_full_fairness_requirement"]]
+    from careconnect.fairness.policy import load_policy
+    res["option_B_mechanism"] = option_b_mechanism(load_policy(), te, pte, yte)
 
     res["note"] = ("Deterministic rules can equalise one error rate per group (TPR or FPR) but generally not both, "
                    "because the groups' ROC curves differ; Fairlearn reaches equal TPR and FPR by randomising between "
@@ -219,7 +286,10 @@ def main():
     for k, v in P.items():
         print(f"{k:38s} {v['recall']:6.3f} {v['precision']:6.3f} {v['f1']:6.3f} {v['flag_rate']:6.3f} "
               f"{v['age_band']['eod']:7.3f} {v['age_band']['tpr_gap']:7.3f} {v['age_band']['fpr_gap']:7.3f} "
-              f"{v['Gender']['eod']:7.3f} {v['Scholarship']['eod']:7.3f} {v['share_decisions_randomised']*100:6.1f}")
+              f"{v['Gender']['eod']:7.3f} {v['Scholarship']['eod']:7.3f} {v['share_decisions_randomised']*100:6.1f} "
+              + " ".join(c for c in ["C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8"] if not v["acceptance"][c]))
+    print("no policy reliably meets the fairness requirement:", res["no_policy_reliably_meets_fairness"])
+    print("Option B risk-unrelated share of flags:", round(res["option_B_mechanism"]["share_of_flags_unrelated_to_risk"], 4))
 
 
 if __name__ == "__main__":

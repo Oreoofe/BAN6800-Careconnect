@@ -59,6 +59,10 @@ def main():
                           ("not flagged, nothing to change" if not c["applicable"] else
                            f"no allowed change removes the flag (lowest reachable probability {c['lowest_reachable']['policy_flag_probability']:.2f})"))
                        for c in X["counterfactuals"])
+    mech = PC["option_B_mechanism"]
+    mech_groups = ", ".join(f"{g} {r['risk_unrelated_flag_probability']:.3f}" for g, r in sorted(mech["groups"].items()))
+    eo = PC["policies"]["P1_equal_opportunity_tpr85"]
+    S = MON["summary"]
     from collections import Counter
     cnt = Counter(r["fairness"]["status"] for r in MON["rolling_28d"])
     mon_txt = (f"{len(MON['rolling_28d'])} rolling windows -> " + ", ".join(f"{v} {k}" for k, v in cnt.items())
@@ -123,6 +127,22 @@ decisions**, and fairness is not "solved" by it.
 {pcomp}
 
 {pnote}
+
+**No evaluated policy reliably met the 0.05 equalized-odds limit across all required groups** (age band, gender, scholarship as
+the G3 stand-in), judged against the original acceptance criteria C1-C8 (see `docs/committee_decision_pack.md`). Option B meets
+C4-C7 in expectation but fails C8 (reliability) and C3 (F1).
+
+**Option B creates flags unrelated to predicted risk.** To give every age group the same error rates, Fairlearn's equalized-odds
+post-processing pulls groups the model predicts well down to the lowest group's ROC curve by ignoring the score with probability
+p_ignore and flagging at the common false-positive rate ({mech['x_best_common_false_positive_rate']:.3f}). The resulting score-independent flag probability is
+{mech_groups}. Overall {mech['share_of_flags_unrelated_to_risk']:.1%} of Option B's expected flags are unrelated to predicted risk and
+{mech['share_of_appointments_with_nonzero_flag_probability']:.1%} of appointments have a non-zero flag probability.
+
+**Equal opportunity is not equalized odds.** The deterministic alternative (equal opportunity at TPR 0.85) equalises only the
+share of real no-shows flagged (age TPR gap {eo['age_band']['tpr_gap']:.3f}); its false-positive gap is {eo['age_band']['fpr_gap']:.3f}, so its equalized-odds
+gaps are age {eo['age_band']['eod']:.3f} ({eo['age_band']['eod_bootstrap_95ci'][0]:.3f}-{eo['age_band']['eod_bootstrap_95ci'][1]:.3f}), gender {eo['Gender']['eod']:.3f}
+({eo['Gender']['eod_bootstrap_95ci'][0]:.3f}-{eo['Gender']['eod_bootstrap_95ci'][1]:.3f}), scholarship {eo['Scholarship']['eod']:.3f} ({eo['Scholarship']['eod_bootstrap_95ci'][0]:.3f}-{eo['Scholarship']['eod_bootstrap_95ci'][1]:.3f}).
+It is offered for committee consideration only and does not meet the full fairness requirement.
 Age groups have different true no-show rates, so equal flag rates (demographic parity) are neither required nor expected.
 
 ## Promotion gate (automated; promotion itself is a human decision)
@@ -130,10 +150,13 @@ Age groups have different true no-show rates, so equal flag rates (demographic p
 | --- | --- | --- |
 {gate}
 
-**Decision:** {G['decision']}.
+**Decision:** {G['decision']}. Original criteria not met: {'; '.join(G['original_criteria_not_met'])}.
 
 ## Explanations
-- **SHAP (explanation of record):** exact TreeSHAP from XGBoost; contributions sum to the model's log-odds (checked in verification).
+- **SHAP (explanation of record), with limits:** exact TreeSHAP for the XGBoost score (contributions sum to the log-odds; checked).
+  It explains the score, not the policy decision (Option B's random and per-group components are outside it); contributions are
+  associations, not causes; correlated inputs (lead time, SMS) can share credit misleadingly; the summary-plot colour scale is not
+  meaningful for categorical inputs.
 - **LIME (cross-check only):** fidelity bar fixed before the run (R² >= {X['fidelity_bar']['min_r2']}, |error| <= {X['fidelity_bar']['max_abs_error']}).
 {lime_txt}
 - **Counterfactuals** target the adopted policy (flag probability 0), using only an earlier slot or an added reminder:
@@ -152,6 +175,12 @@ PSI on inputs and scores (warn >= 0.10, alert >= 0.20); AUC alert if more than 0
 the age-group gap gets a bootstrap 95% interval; halt only if the whole interval is above 0.05, ok only if it is wholly at or below,
 otherwise inconclusive; too few eligible groups = insufficient data (never read as fair or unfair).
 Replay result: {mon_txt}
+Under Option B the expected age-group gap exceeds 0.05 in every monitored time window used by the monitoring rule: all
+{S['rolling_28d_all']['windows_with_expected_gap_evaluable']} rolling 28-day windows ({S['rolling_28d_all']['expected_gap_range'][0]:.3f}-{S['rolling_28d_all']['expected_gap_range'][1]:.3f}) and both evaluable
+calendar months ({S['calendar_months']['expected_gap_range'][0]:.3f}-{S['calendar_months']['expected_gap_range'][1]:.3f}); in weekly windows it exceeds 0.05 in
+{S['weeks_cycle2_rule']['windows_with_expected_gap_above_0.05']} of {S['weeks_cycle2_rule']['windows_with_expected_gap_evaluable']} evaluable weeks. Outcomes are reported separately - rolling windows:
+{', '.join(f"{k} {v}" for k, v in S['rolling_28d_all']['counts'].items())}; months: {', '.join(f"{k} {v}" for k, v in S['calendar_months']['counts'].items())}.
+Insufficient data and unevaluated groups are never counted as a pass.
 The cycle-1 weekly rule (halt if the point estimate > 0.05) halted in {n_halt1} of {len(MON['weeks_cycle1_rule'])} weeks; it is kept in the
 replay output for audit. Retraining runs `python -m careconnect.run_all` and must pass the gate
 above and Ethics Committee review before the MLflow `production` alias moves. Previous version kept for rollback.
