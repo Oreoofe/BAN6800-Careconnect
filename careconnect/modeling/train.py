@@ -93,10 +93,17 @@ class Tracker:
             if model is not None:
                 import mlflow.sklearn
                 kw = {"input_example": X_example.head(3)} if X_example is not None else {}
+                # cloudpickle (MLflow's long-standing format): newer MLflow defaults to skops, which refuses
+                # tree models unless their internal types are whitelisted. The model is also saved with joblib.
+                kw["serialization_format"] = "cloudpickle"
                 try:
-                    info = mlflow.sklearn.log_model(model, name="model", **kw)
-                except TypeError:   # MLflow 2.x signature
-                    info = mlflow.sklearn.log_model(model, artifact_path="model", **kw)
+                    try:
+                        info = mlflow.sklearn.log_model(model, name="model", **kw)
+                    except TypeError:   # MLflow 2.x signature
+                        info = mlflow.sklearn.log_model(model, artifact_path="model", **kw)
+                except Exception as e:  # never lose a training run because model logging failed
+                    m.set_tag("model_logging_error", str(e)[:250])
+                    print("MLflow model logging failed:", str(e)[:300], flush=True)
             if register and info is not None:
                 mv = m.register_model(info.model_uri, config.REGISTERED_MODEL)
                 client = m.tracking.MlflowClient()
