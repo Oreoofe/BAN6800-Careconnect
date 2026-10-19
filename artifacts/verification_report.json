@@ -1,0 +1,2434 @@
+{
+ "data": {
+  "rows_total": 110514,
+  "rows_train": 88411,
+  "rows_test": 22103,
+  "no_show_rate_total": 0.20188392420869755,
+  "no_show_rate_train": 0.201886643064777,
+  "no_show_rate_test": 0.20187304890738814,
+  "patients_total": 62294,
+  "patients_in_both_train_and_test": 10499,
+  "appointment_dates": [
+   "2016-04-29",
+   "2016-06-08"
+  ],
+  "split": "stratified random 80/20 on appointments, random_state=42"
+ },
+ "features_used_by_model": [
+  "Gender",
+  "Age",
+  "Neighbourhood",
+  "Scholarship",
+  "Hipertension",
+  "Diabetes",
+  "Alcoholism",
+  "Handcap",
+  "SMS_received",
+  "lead_time_days",
+  "appointment_dow",
+  "appointment_month",
+  "age_band",
+  "prior_appointments",
+  "prior_noShows",
+  "prior_noShow_rate"
+ ],
+ "threshold": {
+  "flag_threshold": 0.25,
+  "source": "5-fold out-of-fold predictions on the training set",
+  "train_oof_recall_at_T": 0.655050703120623,
+  "train_oof_recall_at_T_plus_step": 0.6465348198778643,
+  "rule": "largest cut-off (0.0025 grid) with OOF recall >= 0.65"
+ },
+ "xgboost_test": {
+  "roc_auc": 0.7455058393445996,
+  "pr_auc": 0.39857384161423515,
+  "recall": 0.6557597489914836,
+  "precision": 0.3427835051546392,
+  "f1": 0.4502231112478843,
+  "flag_rate": 0.3861919196489164,
+  "confusion": {
+   "tn": 12031,
+   "fp": 5610,
+   "fn": 1536,
+   "tp": 2926
+  }
+ },
+ "comparison_table": {
+  "logistic_regression": {
+   "threshold": 0.48,
+   "roc_auc": 0.6803239245115572,
+   "pr_auc": 0.3166008606797922,
+   "recall": 0.6521739130434783,
+   "precision": 0.3051273985530041,
+   "f1": 0.4157439817129795,
+   "flag_rate": 0.4314798896077456
+  },
+  "random_forest": {
+   "threshold": 0.255,
+   "roc_auc": 0.7426706563097645,
+   "pr_auc": 0.38544385609391696,
+   "recall": 0.6488121918422233,
+   "precision": 0.3447659878528046,
+   "f1": 0.4502682945796718,
+   "flag_rate": 0.3799031805637244
+  },
+  "xgboost": {
+   "threshold": 0.25,
+   "roc_auc": 0.7455058393445996,
+   "pr_auc": 0.39857384161423515,
+   "recall": 0.6557597489914836,
+   "precision": 0.3427835051546392,
+   "f1": 0.4502231112478843,
+   "flag_rate": 0.3861919196489164
+  }
+ },
+ "baselines": {
+  "most_frequent": {
+   "threshold": 0.5,
+   "accuracy": 0.7981269510926119,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "roc_auc": 0.5,
+   "pr_auc": 0.20187304890738814,
+   "brier": 0.20187304890738814,
+   "flag_rate": 0.0
+  },
+  "stratified": {
+   "threshold": 0.5,
+   "accuracy": 0.679862462109216,
+   "precision": 0.20825892857142858,
+   "recall": 0.20909905871806364,
+   "f1": 0.20867814806530977,
+   "roc_auc": 0.5040166797473319,
+   "pr_auc": 0.2032083303342258,
+   "brier": 0.32013753789078403,
+   "flag_rate": 0.20268741799755688
+  }
+ },
+ "robustness": {
+  "patient_grouped": {
+   "threshold": 0.25,
+   "accuracy": 0.6756954277622984,
+   "precision": 0.34879705306780245,
+   "recall": 0.6773977196512407,
+   "f1": 0.46048632218844987,
+   "roc_auc": 0.74627683822029,
+   "pr_auc": 0.3852801797410125,
+   "brier": 0.142958864569664,
+   "flag_rate": 0.39679349563787514
+  },
+  "no_sensitive_inputs": {
+   "features": [
+    "Age",
+    "Neighbourhood",
+    "SMS_received",
+    "lead_time_days",
+    "appointment_dow",
+    "appointment_month",
+    "prior_appointments",
+    "prior_noShows",
+    "prior_noShow_rate"
+   ],
+   "removed": [
+    "Gender",
+    "Scholarship",
+    "Hipertension",
+    "Diabetes",
+    "Alcoholism",
+    "Handcap",
+    "age_band"
+   ],
+   "threshold": 0.25,
+   "accuracy": 0.6771478984753201,
+   "precision": 0.3432590855803048,
+   "recall": 0.6562079784849844,
+   "f1": 0.45073891625615764,
+   "roc_auc": 0.7420517903885683,
+   "pr_auc": 0.3876096446101208,
+   "brier": 0.14201310276985168,
+   "flag_rate": 0.38592046328552687
+  }
+ },
+ "fairness": {
+  "single_cutoff": {
+   "age_band": {
+    "demographic_parity_difference": 0.49376049577662484,
+    "equalized_odds_difference": 0.6292506982162154,
+    "disparate_impact_ratio": 0.20110661357489917,
+    "groups": {
+     "adult": {
+      "n": 6021,
+      "no_shows": 1213,
+      "no_show_rate": 0.201461551237336,
+      "selection_rate": 0.3692077727952167,
+      "tpr": 0.6009892827699918,
+      "fpr": 0.31073211314475874
+     },
+     "child": {
+      "n": 4247,
+      "no_shows": 879,
+      "no_show_rate": 0.20696962561808335,
+      "selection_rate": 0.444549093477749,
+      "tpr": 0.7440273037542662,
+      "fpr": 0.3663895486935867
+     },
+     "elderly": {
+      "n": 1074,
+      "no_shows": 178,
+      "no_show_rate": 0.16573556797020483,
+      "selection_rate": 0.17783985102420857,
+      "tpr": 0.3707865168539326,
+      "fpr": 0.13950892857142858
+     },
+     "senior": {
+      "n": 4433,
+      "no_shows": 702,
+      "no_show_rate": 0.15835777126099707,
+      "selection_rate": 0.12429505977893075,
+      "tpr": 0.254985754985755,
+      "fpr": 0.09970517287590458
+     },
+     "teen": {
+      "n": 1584,
+      "no_shows": 406,
+      "no_show_rate": 0.2563131313131313,
+      "selection_rate": 0.6180555555555556,
+      "tpr": 0.8842364532019704,
+      "fpr": 0.5263157894736842
+     },
+     "young_adult": {
+      "n": 4744,
+      "no_shows": 1084,
+      "no_show_rate": 0.22849915682967958,
+      "selection_rate": 0.5699831365935919,
+      "tpr": 0.8662361623616236,
+      "fpr": 0.4822404371584699
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.5868542244946178,
+     0.6750078642588374
+    ],
+    "share_of_bootstraps_above_0.05": 1.0
+   },
+   "Gender": {
+    "demographic_parity_difference": 0.015036567033388182,
+    "equalized_odds_difference": 0.01740411338194725,
+    "disparate_impact_ratio": 0.9615944493348041,
+    "groups": {
+     "F": {
+      "n": 14270,
+      "no_shows": 2862,
+      "no_show_rate": 0.20056061667834618,
+      "selection_rate": 0.391520672740014,
+      "tpr": 0.6600279524807827,
+      "fpr": 0.3241584852734923
+     },
+     "M": {
+      "n": 7833,
+      "no_shows": 1600,
+      "no_show_rate": 0.20426401123452062,
+      "selection_rate": 0.3764841057066258,
+      "tpr": 0.648125,
+      "fpr": 0.30675437189154503
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.008304219243603918,
+     0.04043310268147285
+    ],
+    "share_of_bootstraps_above_0.05": 0.006666666666666667
+   },
+   "Scholarship": {
+    "demographic_parity_difference": 0.1576837985177839,
+    "equalized_odds_difference": 0.20892348404718775,
+    "disparate_impact_ratio": 0.7016158593722145,
+    "groups": {
+     "no": {
+      "n": 19942,
+      "no_shows": 3964,
+      "no_show_rate": 0.1987764517099589,
+      "selection_rate": 0.37077524821983754,
+      "tpr": 0.6324419778002018,
+      "fpr": 0.3058580548253849
+     },
+     "yes": {
+      "n": 2161,
+      "no_shows": 498,
+      "no_show_rate": 0.23044886626561778,
+      "selection_rate": 0.5284590467376215,
+      "tpr": 0.8413654618473896,
+      "fpr": 0.43475646422128683
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.17251047053972804,
+     0.2430310804749687
+    ],
+    "share_of_bootstraps_above_0.05": 1.0
+   }
+  },
+  "option_B_seed42": {
+   "age_band": {
+    "demographic_parity_difference": 0.03452013935884901,
+    "equalized_odds_difference": 0.05570297276006464,
+    "disparate_impact_ratio": 0.9446559709064607,
+    "groups": {
+     "adult": {
+      "n": 6021,
+      "no_shows": 1213,
+      "no_show_rate": 0.201461551237336,
+      "selection_rate": 0.6055472512871616,
+      "tpr": 0.8557295960428689,
+      "fpr": 0.5424292845257903
+     },
+     "child": {
+      "n": 4247,
+      "no_shows": 879,
+      "no_show_rate": 0.20696962561808335,
+      "selection_rate": 0.6112550035319049,
+      "tpr": 0.8521046643913538,
+      "fpr": 0.5483966745843231
+     },
+     "elderly": {
+      "n": 1074,
+      "no_shows": 178,
+      "no_show_rate": 0.16573556797020483,
+      "selection_rate": 0.6210428305400373,
+      "tpr": 0.898876404494382,
+      "fpr": 0.5658482142857143
+     },
+     "senior": {
+      "n": 4433,
+      "no_shows": 702,
+      "no_show_rate": 0.15835777126099707,
+      "selection_rate": 0.5892172343785247,
+      "tpr": 0.8461538461538461,
+      "fpr": 0.5408737603859555
+     },
+     "teen": {
+      "n": 1584,
+      "no_shows": 406,
+      "no_show_rate": 0.2563131313131313,
+      "selection_rate": 0.6237373737373737,
+      "tpr": 0.8448275862068966,
+      "fpr": 0.5475382003395586
+     },
+     "young_adult": {
+      "n": 4744,
+      "no_shows": 1084,
+      "no_show_rate": 0.22849915682967958,
+      "selection_rate": 0.6117200674536256,
+      "tpr": 0.8431734317343174,
+      "fpr": 0.5431693989071038
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.03382981658296874,
+     0.11299543134496175
+    ],
+    "share_of_bootstraps_above_0.05": 0.7966666666666666
+   },
+   "Gender": {
+    "demographic_parity_difference": 0.024653383243462446,
+    "equalized_odds_difference": 0.03039396189894572,
+    "disparate_impact_ratio": 0.9599449187197758,
+    "groups": {
+     "F": {
+      "n": 14270,
+      "no_shows": 2862,
+      "no_show_rate": 0.20056061667834618,
+      "selection_rate": 0.6154870357393133,
+      "tpr": 0.8539482879105521,
+      "fpr": 0.5556626928471248
+     },
+     "M": {
+      "n": 7833,
+      "no_shows": 1600,
+      "no_show_rate": 0.20426401123452062,
+      "selection_rate": 0.5908336524958508,
+      "tpr": 0.84625,
+      "fpr": 0.525268730948179
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.014819699892249594,
+     0.04572201086580214
+    ],
+    "share_of_bootstraps_above_0.05": 0.0
+   },
+   "Scholarship": {
+    "demographic_parity_difference": 0.014777909152646318,
+    "equalized_odds_difference": 0.04319092717996098,
+    "disparate_impact_ratio": 0.9761678644187547,
+    "groups": {
+     "no": {
+      "n": 19942,
+      "no_shows": 3964,
+      "no_show_rate": 0.1987764517099589,
+      "selection_rate": 0.6053053856182931,
+      "tpr": 0.8463673057517659,
+      "fpr": 0.5455000625860559
+     },
+     "yes": {
+      "n": 2161,
+      "no_shows": 498,
+      "no_show_rate": 0.23044886626561778,
+      "selection_rate": 0.6200832947709394,
+      "tpr": 0.8895582329317269,
+      "fpr": 0.539386650631389
+     }
+    },
+    "eod_bootstrap_95ci": [
+     0.01510626527586102,
+     0.0739493078289263
+    ],
+    "share_of_bootstraps_above_0.05": 0.32
+   }
+  },
+  "option_B_over_50_random_seeds": {
+   "age_band": {
+    "min": 0.022917616816617636,
+    "max": 0.08417379299766081,
+    "mean": 0.047893734666311596
+   },
+   "Gender": {
+    "min": 0.021682524854701568,
+    "max": 0.04310142943645423,
+    "mean": 0.03111654021519177
+   },
+   "Scholarship": {
+    "min": 0.01259629841262122,
+    "max": 0.05674261121174917,
+    "mean": 0.030566028941545476
+   }
+  },
+  "option_B_expected": {
+   "recall": 0.8521186928476249,
+   "flag_rate": 0.6073805841207056,
+   "share_randomised": 0.8158621001673981
+  },
+  "option_B_expected_by_group": {
+   "age_band": {
+    "eod": 0.04078421918128994,
+    "dpd": 0.04507957779358518,
+    "di": 0.9289719859786876,
+    "groups": {
+     "adult": {
+      "n": 6021,
+      "selection": 0.6076596273734004,
+      "tpr": 0.8482413754533079,
+      "fpr": 0.5469637745404288
+     },
+     "child": {
+      "n": 4247,
+      "selection": 0.6089865218872141,
+      "tpr": 0.8500822199548048,
+      "fpr": 0.5460639807347757
+     },
+     "elderly": {
+      "n": 1074,
+      "selection": 0.6183103935884376,
+      "tpr": 0.8882793300365506,
+      "fpr": 0.564678171838701
+     },
+     "senior": {
+      "n": 4433,
+      "selection": 0.5895936341036073,
+      "tpr": 0.8474951108552606,
+      "fpr": 0.5410686175719374
+     },
+     "teen": {
+      "n": 1584,
+      "selection": 0.6346732118971925,
+      "tpr": 0.865054527212789,
+      "fpr": 0.5552718417629546
+     },
+     "young_adult": {
+      "n": 4744,
+      "selection": 0.6106223367641836,
+      "tpr": 0.8503202224222097,
+      "fpr": 0.5396298482250307
+     }
+    }
+   },
+   "Gender": {
+    "eod": 0.031192608008635103,
+    "dpd": 0.026069032711478646,
+    "di": 0.9577226312613559,
+    "groups": {
+     "F": {
+      "n": 14270,
+      "selection": 0.6166190917092236,
+      "tpr": 0.8562582770165899,
+      "fpr": 0.556499232982919
+     },
+     "M": {
+      "n": 7833,
+      "selection": 0.5905500589977449,
+      "tpr": 0.8447140116653893,
+      "fpr": 0.5253066249742839
+     }
+    }
+   },
+   "Scholarship": {
+    "eod": 0.029344547304396285,
+    "dpd": 0.007857502450640208,
+    "di": 0.9872125503076298,
+    "groups": {
+     "no": {
+      "n": 19942,
+      "selection": 0.6066123597712583,
+      "tpr": 0.8488435730453864,
+      "fpr": 0.5465169454879534
+     },
+     "yes": {
+      "n": 2161,
+      "selection": 0.6144698622218985,
+      "tpr": 0.8781881203497827,
+      "fpr": 0.5354971066309867
+     }
+    }
+   }
+  }
+ },
+ "explanations": {
+  "lime": [
+   {
+    "config": "cycle1_training_distribution",
+    "example": "cycle1_high",
+    "model_score": 0.6016988754272461,
+    "lime_local_prediction": 0.07313271431923729,
+    "lime_r2": 0.6859944807327945,
+    "abs_error": 0.5285661611080088,
+    "lime_top3": [
+     "lead_time_days",
+     "Alcoholism",
+     "Age"
+    ],
+    "shap_top3": [
+     "prior_noShows",
+     "lead_time_days",
+     "Age"
+    ],
+    "top3_overlap": 2,
+    "fidelity": "weak"
+   },
+   {
+    "config": "cycle1_training_distribution",
+    "example": "cycle1_medium",
+    "model_score": 0.24492233991622925,
+    "lime_local_prediction": 0.15430002487412475,
+    "lime_r2": 0.07202152893086877,
+    "abs_error": 0.0906223150421045,
+    "lime_top3": [
+     "Age",
+     "Alcoholism",
+     "lead_time_days"
+    ],
+    "shap_top3": [
+     "prior_noShow_rate",
+     "lead_time_days",
+     "Age"
+    ],
+    "top3_overlap": 2,
+    "fidelity": "weak"
+   },
+   {
+    "config": "cycle1_training_distribution",
+    "example": "cycle1_low",
+    "model_score": 0.009800909087061882,
+    "lime_local_prediction": 0.01571268466304182,
+    "lime_r2": 0.657464537563383,
+    "abs_error": 0.005911775575979938,
+    "lime_top3": [
+     "lead_time_days",
+     "Alcoholism",
+     "SMS_received"
+    ],
+    "shap_top3": [
+     "lead_time_days",
+     "prior_appointments",
+     "Age"
+    ],
+    "top3_overlap": 1,
+    "fidelity": "adequate"
+   },
+   {
+    "config": "cycle1_training_distribution",
+    "example": "high",
+    "model_score": 0.45151135325431824,
+    "lime_local_prediction": 0.35745967288050773,
+    "lime_r2": 0.12226976328520178,
+    "abs_error": 0.09405168037381051,
+    "lime_top3": [
+     "lead_time_days",
+     "Alcoholism",
+     "Age"
+    ],
+    "shap_top3": [
+     "lead_time_days",
+     "Neighbourhood",
+     "SMS_received"
+    ],
+    "top3_overlap": 1,
+    "fidelity": "weak"
+   },
+   {
+    "config": "cycle1_training_distribution",
+    "example": "medium",
+    "model_score": 0.31355366110801697,
+    "lime_local_prediction": 0.3532123551522799,
+    "lime_r2": 0.31271729257440495,
+    "abs_error": 0.03965869404426292,
+    "lime_top3": [
+     "lead_time_days",
+     "Alcoholism",
+     "Age"
+    ],
+    "shap_top3": [
+     "lead_time_days",
+     "Age",
+     "appointment_month"
+    ],
+    "top3_overlap": 2,
+    "fidelity": "weak"
+   },
+   {
+    "config": "cycle1_training_distribution",
+    "example": "low",
+    "model_score": 0.06639333069324493,
+    "lime_local_prediction": 0.08033778920020365,
+    "lime_r2": 0.6744608972806196,
+    "abs_error": 0.013944458506958718,
+    "lime_top3": [
+     "lead_time_days",
+     "Alcoholism",
+     "Age"
+    ],
+    "shap_top3": [
+     "lead_time_days",
+     "Age",
+     "appointment_month"
+    ],
+    "top3_overlap": 2,
+    "fidelity": "adequate"
+   },
+   {
+    "config": "local_sampling",
+    "example": "cycle1_high",
+    "model_score": 0.6016988754272461,
+    "lime_local_prediction": 0.3059647427381482,
+    "lime_r2": 0.4088086391169353,
+    "abs_error": 0.2957341326890979,
+    "lime_top3": [
+     "lead_time_days",
+     "prior_appointments",
+     "Age"
+    ],
+    "shap_top3": [
+     "prior_noShows",
+     "lead_time_days",
+     "Age"
+    ],
+    "top3_overlap": 2,
+    "fidelity": "weak"
+   },
+   {
+    "config": "local_sampling",
+    "example": "cycle1_medium",
+    "model_score": 0.24492233991622925,
+    "lime_local_prediction": 0.14676220103338142,
+    "lime_r2": 0.4665798401958229,
+    "abs_error": 0.09816013888284783,
+    "lime_top3": [
+     "lead_time_days",
+     "prior_appointments",
+     "Age"
+    ],
+    "shap_top3": [
+     "prior_noShow_rate",
+     "lead_time_days",
+     "Age"
+    ],
+    "top3_overlap": 2,
+    "fidelity": "weak"
+   },
+   {
+    "config": "local_sampling",
+    "example": "cycle1_low",
+    "model_score": 0.009800909087061882,
+    "lime_local_prediction": 0.16751677069396964,
+    "lime_r2": 0.524264665966733,
+    "abs_error": 0.15771586160690776,
+    "lime_top3": [
+     "lead_time_days",
+     "Age",
+     "prior_appointments"
+    ],
+    "shap_top3": [
+     "lead_time_days",
+     "prior_appointments",
+     "Age"
+    ],
+    "top3_overlap": 3,
+    "fidelity": "weak"
+   },
+   {
+    "config": "local_sampling",
+    "example": "high",
+    "model_score": 0.45151135325431824,
+    "lime_local_prediction": 0.29457868589652636,
+    "lime_r2": 0.5798813369753235,
+    "abs_error": 0.15693266735779188,
+    "lime_top3": [
+     "lead_time_days",
+     "Age",
+     "prior_appointments"
+    ],
+    "shap_top3": [
+     "lead_time_days",
+     "Neighbourhood",
+     "SMS_received"
+    ],
+    "top3_overlap": 1,
+    "fidelity": "weak"
+   },
+   {
+    "config": "local_sampling",
+    "example": "medium",
+    "model_score": 0.31355366110801697,
+    "lime_local_prediction": 0.28632692919692104,
+    "lime_r2": 0.22089539274610637,
+    "abs_error": 0.027226731911095925,
+    "lime_top3": [
+     "lead_time_days",
+     "Age",
+     "SMS_received"
+    ],
+    "shap_top3": [
+     "lead_time_days",
+     "Age",
+     "appointment_month"
+    ],
+    "top3_overlap": 2,
+    "fidelity": "weak"
+   },
+   {
+    "config": "local_sampling",
+    "example": "low",
+    "model_score": 0.06639333069324493,
+    "lime_local_prediction": 0.13735383212935354,
+    "lime_r2": 0.6324046896763151,
+    "abs_error": 0.0709605014361086,
+    "lime_top3": [
+     "lead_time_days",
+     "Age",
+     "Neighbourhood"
+    ],
+    "shap_top3": [
+     "lead_time_days",
+     "Age",
+     "appointment_month"
+    ],
+    "top3_overlap": 2,
+    "fidelity": "weak"
+   }
+  ],
+  "counterfactuals": [
+   {
+    "example": "high",
+    "score_tier": "high",
+    "test_row": 18077,
+    "original_score": 0.45151135325431824,
+    "original_policy_flag_probability": 0.9026687296191013,
+    "age_band": "child",
+    "single_cutoff_flag": true,
+    "applicable": true,
+    "counterfactual": null,
+    "lowest_reachable": {
+     "lead_time_days": 0,
+     "SMS_received": 1,
+     "score": 0.0246297437697649,
+     "policy_flag_probability": 0.11334247503230198,
+     "single_cutoff_flag": false,
+     "cost": 2.714
+    },
+    "n_options": 14,
+    "levers": "earlier slot (lead time can only fall); add SMS reminder",
+    "immutable": [
+     "Age",
+     "Gender",
+     "Neighbourhood",
+     "prior history",
+     "health flags",
+     "Scholarship"
+    ]
+   },
+   {
+    "example": "medium",
+    "score_tier": "medium",
+    "test_row": 15872,
+    "original_score": 0.31355366110801697,
+    "original_policy_flag_probability": 0.916257576096033,
+    "age_band": "young_adult",
+    "single_cutoff_flag": true,
+    "applicable": true,
+    "counterfactual": null,
+    "lowest_reachable": {
+     "lead_time_days": 0,
+     "SMS_received": 1,
+     "score": 0.022851351648569107,
+     "policy_flag_probability": 0.09751823389682747,
+     "single_cutoff_flag": false,
+     "cost": 3.857
+    },
+    "n_options": 9,
+    "levers": "earlier slot (lead time can only fall); add SMS reminder",
+    "immutable": [
+     "Age",
+     "Gender",
+     "Neighbourhood",
+     "prior history",
+     "health flags",
+     "Scholarship"
+    ]
+   },
+   {
+    "example": "low",
+    "score_tier": "low",
+    "test_row": 10548,
+    "original_score": 0.06639333069324493,
+    "original_policy_flag_probability": 0.09751823389682747,
+    "age_band": "young_adult",
+    "single_cutoff_flag": false,
+    "applicable": true,
+    "counterfactual": null,
+    "lowest_reachable": {
+     "lead_time_days": 0,
+     "SMS_received": 1,
+     "score": 0.06217752769589424,
+     "policy_flag_probability": 0.09751823389682747,
+     "single_cutoff_flag": false,
+     "cost": 1.0
+    },
+    "n_options": 2,
+    "levers": "earlier slot (lead time can only fall); add SMS reminder",
+    "immutable": [
+     "Age",
+     "Gender",
+     "Neighbourhood",
+     "prior history",
+     "health flags",
+     "Scholarship"
+    ]
+   }
+  ],
+  "population": {
+   "sampled_with_flag_probability_above_0": 1500,
+   "share_with_any_flag_probability_above_0_in_test": 0.9177034791657241,
+   "share_unflaggable_by_actionable_change": 0.12466666666666666,
+   "share_flag_probability_reducible": 0.6726666666666666,
+   "share_already_same_day_booking": 0.304
+  }
+ },
+ "policy_comparison": {
+  "P0_single_cutoff": {
+   "recall": 0.6557597489914836,
+   "precision": 0.3427835051546392,
+   "f1": 0.4502231112478843,
+   "flag_rate": 0.3861919196489164,
+   "share_decisions_randomised": 0.0,
+   "age_eod": 0.6292506982162154,
+   "age_ci": [
+    0.5868542244946178,
+    0.6750078642588374
+   ]
+  },
+  "P1_equal_opportunity_tpr65": {
+   "recall": 0.6642761093679964,
+   "precision": 0.3273691186216037,
+   "f1": 0.438591299200947,
+   "flag_rate": 0.40962765235488396,
+   "share_decisions_randomised": 0.0,
+   "age_eod": 0.06444053274516454,
+   "age_ci": [
+    0.059458090820311296,
+    0.11019526810246873
+   ]
+  },
+  "P1_equal_opportunity_tpr75": {
+   "recall": 0.7680412371134021,
+   "precision": 0.3140579178885631,
+   "f1": 0.44581761415376614,
+   "flag_rate": 0.49368863955119213,
+   "share_decisions_randomised": 0.0,
+   "age_eod": 0.08291800984051578,
+   "age_ci": [
+    0.06396556880683212,
+    0.1361894106937703
+   ]
+  },
+  "P1_equal_opportunity_tpr85": {
+   "recall": 0.8635141192290453,
+   "precision": 0.30019477989871446,
+   "f1": 0.44551078221656937,
+   "flag_rate": 0.5806904040175542,
+   "share_decisions_randomised": 0.0,
+   "age_eod": 0.09976777231082462,
+   "age_ci": [
+    0.07555323514061106,
+    0.138077248544879
+   ]
+  },
+  "P2_minimax_per_group": {
+   "recall": 0.7817122366651725,
+   "precision": 0.312516799569931,
+   "f1": 0.4465211547078026,
+   "flag_rate": 0.5049540786318599,
+   "share_decisions_randomised": 0.0,
+   "age_eod": 0.0885366230193817,
+   "age_ci": [
+    0.07674874417785793,
+    0.15679140716803175
+   ]
+  },
+  "P3_tpr_parity_randomised": {
+   "recall": 0.8996393965019852,
+   "precision": 0.2944179899032843,
+   "f1": 0.44364705712061986,
+   "flag_rate": 0.616854112578915,
+   "share_decisions_randomised": 0.0237071890693571,
+   "age_eod": 0.0908706238701465,
+   "age_ci": [
+    0.07512250158249724,
+    0.13458452643334623
+   ]
+  },
+  "P4_option_B_equalized_odds": {
+   "recall": 0.8521186928476249,
+   "precision": 0.2832158337842793,
+   "f1": 0.4251319772577566,
+   "flag_rate": 0.6073805841207056,
+   "share_decisions_randomised": 0.8158621001673981,
+   "age_eod": 0.04078421918128994,
+   "age_ci": [
+    0.037186789318802496,
+    0.11515458097850177
+   ]
+  },
+  "P5_unaware_model_no_age": {
+   "recall": 0.6591214701927387,
+   "precision": 0.33371156246454103,
+   "f1": 0.4430885122410546,
+   "flag_rate": 0.39872415509206893,
+   "share_decisions_randomised": 0.0,
+   "age_eod": 0.25405529777198294,
+   "age_ci": [
+    0.21609214744950148,
+    0.3306276941426536
+   ]
+  }
+ },
+ "acceptance_matrix": {
+  "P0_single_cutoff": {
+   "C1": true,
+   "C2": true,
+   "C3": false,
+   "C4": false,
+   "C5": false,
+   "C6": false,
+   "C7": false,
+   "C8": false,
+   "meets_full_fairness_requirement": false,
+   "meets_all_original_criteria": false
+  },
+  "P1_equal_opportunity_tpr65": {
+   "C1": true,
+   "C2": true,
+   "C3": false,
+   "C4": false,
+   "C5": false,
+   "C6": true,
+   "C7": false,
+   "C8": false,
+   "meets_full_fairness_requirement": false,
+   "meets_all_original_criteria": false
+  },
+  "P1_equal_opportunity_tpr75": {
+   "C1": true,
+   "C2": true,
+   "C3": false,
+   "C4": false,
+   "C5": false,
+   "C6": true,
+   "C7": false,
+   "C8": false,
+   "meets_full_fairness_requirement": false,
+   "meets_all_original_criteria": false
+  },
+  "P1_equal_opportunity_tpr85": {
+   "C1": true,
+   "C2": true,
+   "C3": false,
+   "C4": false,
+   "C5": false,
+   "C6": true,
+   "C7": false,
+   "C8": false,
+   "meets_full_fairness_requirement": false,
+   "meets_all_original_criteria": false
+  },
+  "P2_minimax_per_group": {
+   "C1": true,
+   "C2": true,
+   "C3": false,
+   "C4": false,
+   "C5": false,
+   "C6": true,
+   "C7": false,
+   "C8": false,
+   "meets_full_fairness_requirement": false,
+   "meets_all_original_criteria": false
+  },
+  "P3_tpr_parity_randomised": {
+   "C1": true,
+   "C2": true,
+   "C3": false,
+   "C4": false,
+   "C5": false,
+   "C6": true,
+   "C7": true,
+   "C8": false,
+   "meets_full_fairness_requirement": false,
+   "meets_all_original_criteria": false
+  },
+  "P4_option_B_equalized_odds": {
+   "C1": true,
+   "C2": true,
+   "C3": false,
+   "C4": true,
+   "C5": true,
+   "C6": true,
+   "C7": true,
+   "C8": false,
+   "meets_full_fairness_requirement": false,
+   "meets_all_original_criteria": false
+  },
+  "P5_unaware_model_no_age": {
+   "C1": true,
+   "C2": true,
+   "C3": false,
+   "C4": false,
+   "C5": false,
+   "C6": false,
+   "C7": false,
+   "C8": false,
+   "meets_full_fairness_requirement": false,
+   "meets_all_original_criteria": false
+  }
+ },
+ "option_B_mechanism": {
+  "groups": {
+   "adult": {
+    "n_test": 6021,
+    "p_ignore": 0.10821285913963322,
+    "prediction_constant": 0.538,
+    "risk_unrelated_flag_probability": 0.05821851821712267,
+    "lowest_score_in_group_flag_probability": 0.05821851821712267,
+    "binding_group": false
+   },
+   "child": {
+    "n_test": 4247,
+    "p_ignore": 0.2106737454132007,
+    "prediction_constant": 0.538,
+    "risk_unrelated_flag_probability": 0.11334247503230198,
+    "lowest_score_in_group_flag_probability": 0.11334247503230198,
+    "binding_group": false
+   },
+   "elderly": {
+    "n_test": 1074,
+    "p_ignore": 0.04749767342598718,
+    "prediction_constant": 0.538,
+    "risk_unrelated_flag_probability": 0.025553748303181103,
+    "lowest_score_in_group_flag_probability": 0.025553748303181103,
+    "binding_group": false
+   },
+   "senior": {
+    "n_test": 4433,
+    "p_ignore": 0.0,
+    "prediction_constant": 0.538,
+    "risk_unrelated_flag_probability": 0.0,
+    "lowest_score_in_group_flag_probability": 0.0,
+    "binding_group": true
+   },
+   "teen": {
+    "n_test": 1584,
+    "p_ignore": 0.14761027568008478,
+    "prediction_constant": 0.538,
+    "risk_unrelated_flag_probability": 0.07941432831588562,
+    "lowest_score_in_group_flag_probability": 0.07941432831588562,
+    "binding_group": false
+   },
+   "young_adult": {
+    "n_test": 4744,
+    "p_ignore": 0.18126065780079453,
+    "prediction_constant": 0.538,
+    "risk_unrelated_flag_probability": 0.09751823389682747,
+    "lowest_score_in_group_flag_probability": 0.09751823389682747,
+    "binding_group": false
+   }
+  },
+  "x_best_common_false_positive_rate": 0.538,
+  "expected_risk_unrelated_flags_per_1000": 65.5007335196132,
+  "expected_total_flags_per_1000": 607.3805841207056,
+  "share_of_flags_unrelated_to_risk": 0.10784133578197513,
+  "share_of_appointments_with_nonzero_flag_probability": 0.9177034791657241,
+  "explanation": "Fairlearn's equalized-odds post-processing (Hardt et al., 2016) picks one operating point (common false-positive rate x_best, true-positive rate y_best) that every group can reach: the best point on the LOWEST of the groups' ROC curves. Groups whose ROC curve lies above that point are pulled down to it by mixing their own threshold rule with the ROC diagonal: with probability p_ignore the score is ignored and the appointment is flagged with probability x_best. That product is a flag probability that is the same for every appointment in the group, whatever its score. The group with the lowest curve (here: senior) needs no mixing (p_ignore = 0)."
+ },
+ "build": {
+  "commit": "cbb6360",
+  "model_results_git_sha": "cbb6360",
+  "model_sha256": "6d60bea7544ffac64049a66af98f4d133508cb77aa464702a91075706127a385",
+  "policy_sha256": "e18da7cd12d13fc431a730af9f2afe6cbfa75e7de7928f19ded79a7364e11e1f"
+ },
+ "mlflow": {
+  "experiment_id": "1",
+  "runs": [
+   {
+    "run_id": "78f18fe0b6bc4262b8658844620e3172",
+    "name": "xgboost_without_sensitive_inputs",
+    "status": "FINISHED",
+    "test_roc_auc": 0.7420517903885683
+   },
+   {
+    "run_id": "803c545aacb949d999dbee1305025c99",
+    "name": "xgboost_patient_grouped_split",
+    "status": "FINISHED",
+    "test_roc_auc": 0.74627683822029
+   },
+   {
+    "run_id": "6945accb8da148a58063b9412305cd18",
+    "name": "xgboost",
+    "status": "FINISHED",
+    "test_roc_auc": 0.7455058393445996
+   },
+   {
+    "run_id": "015e7f17050348db9afc73d27028b0ac",
+    "name": "random_forest",
+    "status": "FINISHED",
+    "test_roc_auc": 0.7426706563097645
+   },
+   {
+    "run_id": "3ac762362ebf43f8a68cea87c9da1e49",
+    "name": "logistic_regression",
+    "status": "FINISHED",
+    "test_roc_auc": 0.6803239245115572
+   },
+   {
+    "run_id": "b267d51ed4994aeabc9b43187b8b6349",
+    "name": "baseline_stratified",
+    "status": "FINISHED",
+    "test_roc_auc": 0.5040166797473319
+   },
+   {
+    "run_id": "0faeea51d5744d8daca438ec0943adcb",
+    "name": "baseline_most_frequent",
+    "status": "FINISHED",
+    "test_roc_auc": 0.5
+   }
+  ],
+  "registry": {
+   "name": "careconnect_noshow_xgb",
+   "version": 1,
+   "alias": "candidate",
+   "tags": {
+    "approval": "pending Ethics Committee review",
+    "semver": "2.0.0"
+   },
+   "source_run": "6945accb8da148a58063b9412305cd18",
+   "all_aliases": {
+    "candidate": 1
+   }
+  }
+ },
+ "promotion_gate": {
+  "generated_utc": "2026-10-19T21:11:04.956752+00:00",
+  "model_version": "2.0.0",
+  "configured_policy": "P4_option_B_equalized_odds",
+  "checks": [
+   {
+    "check": "data contract passed",
+    "value": true,
+    "passed": true,
+    "blocking": true
+   },
+   {
+    "check": "representation-bias gate passed",
+    "value": true,
+    "passed": true,
+    "blocking": true
+   },
+   {
+    "check": "patient-grouped AUC within 0.02 of random-split AUC",
+    "value": 0.7463,
+    "passed": true,
+    "blocking": true
+   },
+   {
+    "check": "C1 ROC-AUC >= 0.70 (configured policy: Option B)",
+    "value": true,
+    "passed": true,
+    "blocking": true
+   },
+   {
+    "check": "C2 Recall >= 0.65 (configured policy: Option B)",
+    "value": true,
+    "passed": true,
+    "blocking": true
+   },
+   {
+    "check": "C4 Equalized-odds gap <= 0.05 for age band AND gender (configured policy: Option B)",
+    "value": true,
+    "passed": true,
+    "blocking": true
+   },
+   {
+    "check": "C5 Demographic-parity gap <= 0.05 for age band AND gender (configured policy: Option B)",
+    "value": true,
+    "passed": true,
+    "blocking": true
+   },
+   {
+    "check": "C6 Disparate-impact ratio >= 0.80 for age band AND gender (configured policy: Option B)",
+    "value": true,
+    "passed": true,
+    "blocking": true
+   },
+   {
+    "check": "C7 Equalized-odds gap <= 0.05 for scholarship (G3 stand-in) (configured policy: Option B)",
+    "value": true,
+    "passed": true,
+    "blocking": true
+   },
+   {
+    "check": "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)",
+    "value": false,
+    "passed": false,
+    "blocking": true
+   },
+   {
+    "check": "C3 F1 >= 0.55",
+    "value": 0.4502,
+    "passed": false,
+    "blocking": false
+   }
+  ],
+  "blocking_failures": [
+   "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)"
+  ],
+  "original_criteria_not_met": [
+   "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)",
+   "C3 F1 >= 0.55"
+  ],
+  "no_evaluated_policy_reliably_meets_fairness": true,
+  "decision": "NOT ELIGIBLE under the original acceptance criteria; evidence package prepared for an Ethics Committee decision",
+  "automatic_promotion": false
+ },
+ "monitoring": {
+  "rule": {
+   "window": "rolling 28 days, evaluated weekly",
+   "min_no_shows_per_group": 50,
+   "min_attended_per_group": 50,
+   "bootstrap": 300,
+   "limit": 0.05,
+   "statuses": {
+    "ok": "95% interval for the gap lies wholly at or below the limit",
+    "halt": "95% interval lies wholly above the limit: suspend flagging, notify Ethics Committee",
+    "inconclusive": "interval straddles the limit: no conclusion; review at monthly audit, extend window",
+    "insufficient data": "fewer than 2 groups meet the minimum counts: no fairness conclusion is drawn"
+   }
+  },
+  "evidently": "evidently>=0.7",
+  "rolling_28d": [
+   {
+    "window": "28 days to 2016-05-05 (partial: 7 days)",
+    "n": 4106,
+    "auc": 0.7381144129463086,
+    "max_psi": 0.4708352151013879,
+    "max_psi_feature": "prior_appointments",
+    "fairness_status": "halt",
+    "eod": 0.07813911472448065,
+    "ci95": [
+     0.05618768076886588,
+     0.1796524553877494
+    ],
+    "not_evaluated": [
+     "elderly"
+    ]
+   },
+   {
+    "window": "28 days to 2016-05-12 (partial: 14 days)",
+    "n": 8432,
+    "auc": 0.7414126044373193,
+    "max_psi": 0.18062572704184748,
+    "max_psi_feature": "prior_appointments",
+    "fairness_status": "halt",
+    "eod": 0.12038369304556351,
+    "ci95": [
+     0.07150147033385228,
+     0.18633092781002009
+    ],
+    "not_evaluated": []
+   },
+   {
+    "window": "28 days to 2016-05-19 (partial: 21 days)",
+    "n": 12786,
+    "auc": 0.742448904208916,
+    "max_psi": 0.06523728854545513,
+    "max_psi_feature": "prior_appointments",
+    "fairness_status": "inconclusive",
+    "eod": 0.07878485151212422,
+    "ci95": [
+     0.049632500728591114,
+     0.1544148213247313
+    ],
+    "not_evaluated": []
+   },
+   {
+    "window": "28 days to 2016-05-26",
+    "n": 15110,
+    "auc": 0.7428414329235431,
+    "max_psi": 0.02937721802973343,
+    "max_psi_feature": "prior_appointments",
+    "fairness_status": "inconclusive",
+    "eod": 0.07825545677208079,
+    "ci95": [
+     0.04599837258364982,
+     0.135135865183035
+    ],
+    "not_evaluated": []
+   },
+   {
+    "window": "28 days to 2016-06-02",
+    "n": 14387,
+    "auc": 0.7452261306532664,
+    "max_psi": 0.020753182206866467,
+    "max_psi_feature": "SMS_received",
+    "fairness_status": "halt",
+    "eod": 0.08536405039332817,
+    "ci95": [
+     0.05308847370025375,
+     0.14327863765810667
+    ],
+    "not_evaluated": []
+   },
+   {
+    "window": "28 days to 2016-06-08",
+    "n": 14573,
+    "auc": 0.7471312039959515,
+    "max_psi": 0.041027745635585436,
+    "max_psi_feature": "prior_appointments",
+    "fairness_status": "inconclusive",
+    "eod": 0.047069262595309524,
+    "ci95": [
+     0.03764731952585231,
+     0.11614859938263349
+    ],
+    "not_evaluated": []
+   }
+  ],
+  "weeks_cycle1": [
+   {
+    "week": "week of 2016-04-25",
+    "eod": 0.13104013104013112,
+    "status": "halt"
+   },
+   {
+    "week": "week of 2016-05-02",
+    "eod": 0.08918688803746277,
+    "status": "halt"
+   },
+   {
+    "week": "week of 2016-05-09",
+    "eod": 0.12753623188405794,
+    "status": "halt"
+   },
+   {
+    "week": "week of 2016-05-16",
+    "eod": 0.07044459267422643,
+    "status": "halt"
+   },
+   {
+    "week": "week of 2016-05-23",
+    "eod": 0.18311965811965814,
+    "status": "halt"
+   },
+   {
+    "week": "week of 2016-05-30",
+    "eod": 0.16485439320084994,
+    "status": "halt"
+   },
+   {
+    "week": "week of 2016-06-06",
+    "eod": 0.10585585585585577,
+    "status": "halt"
+   }
+  ],
+  "weeks_cycle2": [
+   {
+    "week": "week of 2016-04-25",
+    "status": "insufficient data",
+    "eod": null,
+    "ci95": null,
+    "not_evaluated": [
+     "adult",
+     "child",
+     "elderly",
+     "senior",
+     "teen",
+     "young_adult"
+    ]
+   },
+   {
+    "week": "week of 2016-05-02",
+    "status": "halt",
+    "eod": 0.07998084291187735,
+    "ci95": [
+     0.0521834055323954,
+     0.18433335923274002
+    ],
+    "not_evaluated": [
+     "elderly"
+    ]
+   },
+   {
+    "week": "week of 2016-05-09",
+    "status": "halt",
+    "eod": 0.08399209486166004,
+    "ci95": [
+     0.06656950868103854,
+     0.17006489886924667
+    ],
+    "not_evaluated": [
+     "elderly"
+    ]
+   },
+   {
+    "week": "week of 2016-05-16",
+    "status": "halt",
+    "eod": 0.06826697148663241,
+    "ci95": [
+     0.05100790548462515,
+     0.16245419717393508
+    ],
+    "not_evaluated": [
+     "elderly"
+    ]
+   },
+   {
+    "week": "week of 2016-05-23",
+    "status": "inconclusive",
+    "eod": 0.07216261998870693,
+    "ci95": [
+     0.02874120790342068,
+     0.16139308147878223
+    ],
+    "not_evaluated": [
+     "child",
+     "elderly",
+     "teen"
+    ]
+   },
+   {
+    "week": "week of 2016-05-30",
+    "status": "halt",
+    "eod": 0.19660042494688168,
+    "ci95": [
+     0.14463303938216182,
+     0.2834033292048341
+    ],
+    "not_evaluated": [
+     "elderly"
+    ]
+   },
+   {
+    "week": "week of 2016-06-06",
+    "status": "halt",
+    "eod": 0.1325854156042835,
+    "ci95": [
+     0.09184468304832484,
+     0.24163149350649338
+    ],
+    "not_evaluated": [
+     "elderly"
+    ]
+   }
+  ],
+  "months": [
+   {
+    "month": "calendar month 2016-04",
+    "n": 669,
+    "status": "insufficient data",
+    "eod": null,
+    "ci95": null
+   },
+   {
+    "month": "calendar month 2016-05",
+    "n": 16155,
+    "status": "inconclusive",
+    "eod": 0.05566196117377209,
+    "ci95": [
+     0.0391659670835111,
+     0.11777587834845173
+    ]
+   },
+   {
+    "month": "calendar month 2016-06",
+    "n": 5279,
+    "status": "halt",
+    "eod": 0.16666666666666663,
+    "ci95": [
+     0.10031008889189355,
+     0.24529870400641327
+    ]
+   }
+  ],
+  "stress": [
+   {
+    "name": "S1 data drift: lead times x1.5 + 7 days",
+    "expect": "data/prediction drift alerts",
+    "fairness": "halt",
+    "status": {
+     "data_drift": "alert",
+     "prediction_drift": "alert",
+     "performance": "alert",
+     "bias_drift": "halt"
+    }
+   },
+   {
+    "name": "S2 bias drift: 60% of senior/elderly flags removed (last 28 days)",
+    "expect": "fairness halt",
+    "fairness": "halt",
+    "status": {
+     "data_drift": "ok",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "halt"
+    }
+   },
+   {
+    "name": "S3 small group: elderly reduced to 25 appointments (last 28 days)",
+    "expect": "elderly not evaluated",
+    "fairness": "inconclusive",
+    "status": {
+     "data_drift": "warn",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "inconclusive"
+    }
+   },
+   {
+    "name": "S4 tiny batch: 300 random appointments",
+    "expect": "insufficient data",
+    "fairness": "insufficient data",
+    "status": {
+     "data_drift": "alert",
+     "prediction_drift": "ok",
+     "performance": "ok",
+     "bias_drift": "insufficient data"
+    }
+   }
+  ],
+  "summary": {
+   "rolling_28d_all": {
+    "counts": {
+     "halt": 3,
+     "inconclusive": 3,
+     "ok": 0,
+     "insufficient data": 0
+    },
+    "windows": {
+     "halt": [
+      "28 days to 2016-05-05 (partial: 7 days)",
+      "28 days to 2016-05-12 (partial: 14 days)",
+      "28 days to 2016-06-02"
+     ],
+     "inconclusive": [
+      "28 days to 2016-05-19 (partial: 21 days)",
+      "28 days to 2016-05-26",
+      "28 days to 2016-06-08"
+     ],
+     "ok": [],
+     "insufficient data": []
+    },
+    "windows_with_expected_gap_above_0.05": 6.0,
+    "windows_with_expected_gap_evaluable": 6,
+    "expected_gap_range": [
+     0.05162459442174527,
+     0.10002467748011434
+    ],
+    "windows_with_any_group_not_evaluated": [
+     "28 days to 2016-05-05 (partial: 7 days)"
+    ]
+   },
+   "rolling_28d_full_windows_only": {
+    "counts": {
+     "halt": 1,
+     "inconclusive": 2,
+     "ok": 0,
+     "insufficient data": 0
+    },
+    "windows": {
+     "halt": [
+      "28 days to 2016-06-02"
+     ],
+     "inconclusive": [
+      "28 days to 2016-05-26",
+      "28 days to 2016-06-08"
+     ],
+     "ok": [],
+     "insufficient data": []
+    },
+    "windows_with_expected_gap_above_0.05": 3.0,
+    "windows_with_expected_gap_evaluable": 3,
+    "expected_gap_range": [
+     0.055626638418061924,
+     0.061987481632773234
+    ],
+    "windows_with_any_group_not_evaluated": []
+   },
+   "calendar_months": {
+    "counts": {
+     "halt": 1,
+     "inconclusive": 1,
+     "ok": 0,
+     "insufficient data": 1
+    },
+    "windows": {
+     "halt": [
+      "calendar month 2016-06"
+     ],
+     "inconclusive": [
+      "calendar month 2016-05"
+     ],
+     "ok": [],
+     "insufficient data": [
+      "calendar month 2016-04"
+     ]
+    },
+    "windows_with_expected_gap_above_0.05": 2.0,
+    "windows_with_expected_gap_evaluable": 2,
+    "expected_gap_range": [
+     0.06612083635624266,
+     0.1331355606162702
+    ],
+    "windows_with_any_group_not_evaluated": [
+     "calendar month 2016-04",
+     "calendar month 2016-06"
+    ]
+   },
+   "weeks_cycle2_rule": {
+    "counts": {
+     "halt": 5,
+     "inconclusive": 1,
+     "ok": 0,
+     "insufficient data": 1
+    },
+    "windows": {
+     "halt": [
+      "week of 2016-05-02",
+      "week of 2016-05-09",
+      "week of 2016-05-16",
+      "week of 2016-05-30",
+      "week of 2016-06-06"
+     ],
+     "inconclusive": [
+      "week of 2016-05-23"
+     ],
+     "ok": [],
+     "insufficient data": [
+      "week of 2016-04-25"
+     ]
+    },
+    "windows_with_expected_gap_above_0.05": 5.0,
+    "windows_with_expected_gap_evaluable": 6,
+    "expected_gap_range": [
+     0.04675510212843881,
+     0.14039148849423433
+    ],
+    "windows_with_any_group_not_evaluated": [
+     "week of 2016-04-25",
+     "week of 2016-05-02",
+     "week of 2016-05-09",
+     "week of 2016-05-16",
+     "week of 2016-05-23",
+     "week of 2016-05-30",
+     "week of 2016-06-06"
+    ]
+   },
+   "weeks_cycle1_rule_halts": 7,
+   "reading": "'insufficient data' and groups 'not evaluated' are reported separately and are never counted as a pass; 'inconclusive' means the 95% interval straddles 0.05 and supports no conclusion either way."
+  },
+  "expected_vs_realised": [
+   {
+    "window": "28 days to 2016-05-05 (partial: 7 days)",
+    "realised": 0.07813911472448065,
+    "expected": 0.05162459442174527,
+    "status": "halt"
+   },
+   {
+    "window": "28 days to 2016-05-12 (partial: 14 days)",
+    "realised": 0.12038369304556351,
+    "expected": 0.10002467748011434,
+    "status": "halt"
+   },
+   {
+    "window": "28 days to 2016-05-19 (partial: 21 days)",
+    "realised": 0.07878485151212422,
+    "expected": 0.06167056302175178,
+    "status": "inconclusive"
+   },
+   {
+    "window": "28 days to 2016-05-26",
+    "realised": 0.07825545677208079,
+    "expected": 0.061987481632773234,
+    "status": "inconclusive"
+   },
+   {
+    "window": "28 days to 2016-06-02",
+    "realised": 0.08536405039332817,
+    "expected": 0.0582449443054881,
+    "status": "halt"
+   },
+   {
+    "window": "28 days to 2016-06-08",
+    "realised": 0.047069262595309524,
+    "expected": 0.055626638418061924,
+    "status": "inconclusive"
+   },
+   {
+    "window": "calendar month 2016-04",
+    "realised": null,
+    "expected": null,
+    "status": "insufficient data"
+   },
+   {
+    "window": "calendar month 2016-05",
+    "realised": 0.05566196117377209,
+    "expected": 0.06612083635624266,
+    "status": "inconclusive"
+   },
+   {
+    "window": "calendar month 2016-06",
+    "realised": 0.16666666666666663,
+    "expected": 0.1331355606162702,
+    "status": "halt"
+   }
+  ]
+ },
+ "module5_comparison": {
+  "module5_v1": {
+   "rows": 110514,
+   "train": 88411,
+   "test": 22103,
+   "roc_auc": 0.752,
+   "recall": 0.678,
+   "precision": 0.349,
+   "f1": 0.461,
+   "cutoff": 0.2525,
+   "age_eod_single_cutoff": 0.687,
+   "tuning": "25,000-row sample, 3-fold CV"
+  },
+  "v2": {
+   "rows": 110514,
+   "train": 88411,
+   "test": 22103,
+   "roc_auc": 0.7455058393445996,
+   "recall": 0.6557597489914836,
+   "precision": 0.3427835051546392,
+   "f1": 0.4502231112478843,
+   "cutoff": 0.25,
+   "age_eod_single_cutoff": 0.6292506982162154,
+   "tuning": "full training set, 5-fold CV"
+  },
+  "same_split_rows": true
+ },
+ "checks": [
+  {
+   "check": "train/test rows disjoint",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "test share is 20%",
+   "status": "PASS",
+   "detail": 0.2
+  },
+  {
+   "check": "stratification: train/test no-show rates within 0.002",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "model input schema == config.FEATURES",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "no target, identifier or raw date among model inputs",
+   "status": "PASS",
+   "detail": []
+  },
+  {
+   "check": "prior-visit features use only outcomes known at booking (500-row recount)",
+   "status": "PASS",
+   "detail": "0 mismatches"
+  },
+  {
+   "check": "cut-off is the largest grid value reaching OOF recall >= 0.65",
+   "status": "PASS",
+   "detail": [
+    0.6551,
+    0.6465
+   ]
+  },
+  {
+   "check": "reported roc_auc matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.7455058393445996,
+    0.7455058393445996
+   ]
+  },
+  {
+   "check": "reported recall matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.6557597489914836,
+    0.6557597489914836
+   ]
+  },
+  {
+   "check": "reported precision matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.3427835051546392,
+    0.3427835051546392
+   ]
+  },
+  {
+   "check": "reported f1 matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.4502231112478843,
+    0.4502231112478843
+   ]
+  },
+  {
+   "check": "reported flag_rate matches recomputation",
+   "status": "PASS",
+   "detail": [
+    0.3861919196489164,
+    0.3861919196489164
+   ]
+  },
+  {
+   "check": "reported confusion matrix matches",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "XGBoost beats both baselines on ROC-AUC by > 0.2",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "single-cut-off fairness matches mitigation.json (age EOD)",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "exported Option B rule reproduces Fairlearn's probabilities",
+   "status": "PASS",
+   "detail": 0.0
+  },
+  {
+   "check": "Option B age_band: EXPECTED equalized-odds gap <= 0.05",
+   "status": "PASS",
+   "detail": 0.0408
+  },
+  {
+   "check": "Option B age_band: expected gap matches mitigation.json",
+   "status": "PASS",
+   "detail": [
+    0.0408,
+    0.0408
+   ]
+  },
+  {
+   "check": "INFO Option B age_band: one realised draw (numpy seed 42) gap",
+   "status": "INFO",
+   "detail": 0.0557
+  },
+  {
+   "check": "INFO Option B age_band: realised gap over 50 draws min/mean/max",
+   "status": "INFO",
+   "detail": [
+    0.0229,
+    0.0479,
+    0.0842
+   ]
+  },
+  {
+   "check": "Option B Gender: EXPECTED equalized-odds gap <= 0.05",
+   "status": "PASS",
+   "detail": 0.0312
+  },
+  {
+   "check": "Option B Gender: expected gap matches mitigation.json",
+   "status": "PASS",
+   "detail": [
+    0.0312,
+    0.0312
+   ]
+  },
+  {
+   "check": "INFO Option B Gender: one realised draw (numpy seed 42) gap",
+   "status": "INFO",
+   "detail": 0.0304
+  },
+  {
+   "check": "INFO Option B Gender: realised gap over 50 draws min/mean/max",
+   "status": "INFO",
+   "detail": [
+    0.0217,
+    0.0311,
+    0.0431
+   ]
+  },
+  {
+   "check": "Option B Scholarship: EXPECTED equalized-odds gap <= 0.05",
+   "status": "PASS",
+   "detail": 0.0293
+  },
+  {
+   "check": "Option B Scholarship: expected gap matches mitigation.json",
+   "status": "PASS",
+   "detail": [
+    0.0293,
+    0.0293
+   ]
+  },
+  {
+   "check": "INFO Option B Scholarship: one realised draw (numpy seed 42) gap",
+   "status": "INFO",
+   "detail": 0.0432
+  },
+  {
+   "check": "INFO Option B Scholarship: realised gap over 50 draws min/mean/max",
+   "status": "INFO",
+   "detail": [
+    0.0126,
+    0.0306,
+    0.0567
+   ]
+  },
+  {
+   "check": "SHAP additivity: contributions sum to the model's log-odds (300 rows)",
+   "status": "PASS",
+   "detail": 6.67572021484375e-06
+  },
+  {
+   "check": "SHAP explains the deployed model: sigmoid(margin) == predict_proba",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "analysis.json produced by model version 2.0.0",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "example 'high' is genuinely in its score tier",
+   "status": "PASS",
+   "detail": 0.4515
+  },
+  {
+   "check": "example 'medium' is genuinely in its score tier",
+   "status": "PASS",
+   "detail": 0.3136
+  },
+  {
+   "check": "example 'low' is genuinely in its score tier",
+   "status": "PASS",
+   "detail": 0.0664
+  },
+  {
+   "check": "LIME [cycle1_training_distribution] cycle1_high: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.6017
+  },
+  {
+   "check": "INFO LIME [cycle1_training_distribution] cycle1_high: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.686,
+    0.529,
+    2,
+    "weak"
+   ]
+  },
+  {
+   "check": "LIME [cycle1_training_distribution] cycle1_medium: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.2449
+  },
+  {
+   "check": "INFO LIME [cycle1_training_distribution] cycle1_medium: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.072,
+    0.091,
+    2,
+    "weak"
+   ]
+  },
+  {
+   "check": "LIME [cycle1_training_distribution] cycle1_low: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.0098
+  },
+  {
+   "check": "INFO LIME [cycle1_training_distribution] cycle1_low: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.657,
+    0.006,
+    1,
+    "adequate"
+   ]
+  },
+  {
+   "check": "LIME [cycle1_training_distribution] high: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.4515
+  },
+  {
+   "check": "INFO LIME [cycle1_training_distribution] high: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.122,
+    0.094,
+    1,
+    "weak"
+   ]
+  },
+  {
+   "check": "LIME [cycle1_training_distribution] medium: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.3136
+  },
+  {
+   "check": "INFO LIME [cycle1_training_distribution] medium: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.313,
+    0.04,
+    2,
+    "weak"
+   ]
+  },
+  {
+   "check": "LIME [cycle1_training_distribution] low: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.0664
+  },
+  {
+   "check": "INFO LIME [cycle1_training_distribution] low: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.674,
+    0.014,
+    2,
+    "adequate"
+   ]
+  },
+  {
+   "check": "LIME [local_sampling] cycle1_high: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.6017
+  },
+  {
+   "check": "INFO LIME [local_sampling] cycle1_high: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.409,
+    0.296,
+    2,
+    "weak"
+   ]
+  },
+  {
+   "check": "LIME [local_sampling] cycle1_medium: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.2449
+  },
+  {
+   "check": "INFO LIME [local_sampling] cycle1_medium: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.467,
+    0.098,
+    2,
+    "weak"
+   ]
+  },
+  {
+   "check": "LIME [local_sampling] cycle1_low: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.0098
+  },
+  {
+   "check": "INFO LIME [local_sampling] cycle1_low: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.524,
+    0.158,
+    3,
+    "weak"
+   ]
+  },
+  {
+   "check": "LIME [local_sampling] high: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.4515
+  },
+  {
+   "check": "INFO LIME [local_sampling] high: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.58,
+    0.157,
+    1,
+    "weak"
+   ]
+  },
+  {
+   "check": "LIME [local_sampling] medium: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.3136
+  },
+  {
+   "check": "INFO LIME [local_sampling] medium: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.221,
+    0.027,
+    2,
+    "weak"
+   ]
+  },
+  {
+   "check": "LIME [local_sampling] low: explains the v2 model's score",
+   "status": "PASS",
+   "detail": 0.0664
+  },
+  {
+   "check": "INFO LIME [local_sampling] low: R2 / |error| / top-3 overlap / fidelity",
+   "status": "INFO",
+   "detail": [
+    0.632,
+    0.071,
+    2,
+    "weak"
+   ]
+  },
+  {
+   "check": "counterfactual high: original policy flag probability re-computed",
+   "status": "PASS",
+   "detail": 0.9027
+  },
+  {
+   "check": "INFO counterfactual high: none found",
+   "status": "INFO",
+   "detail": "lowest reachable flag probability 0.113"
+  },
+  {
+   "check": "counterfactual medium: original policy flag probability re-computed",
+   "status": "PASS",
+   "detail": 0.9163
+  },
+  {
+   "check": "INFO counterfactual medium: none found",
+   "status": "INFO",
+   "detail": "lowest reachable flag probability 0.098"
+  },
+  {
+   "check": "counterfactual low: original policy flag probability re-computed",
+   "status": "PASS",
+   "detail": 0.0975
+  },
+  {
+   "check": "INFO counterfactual low: none found",
+   "status": "INFO",
+   "detail": "lowest reachable flag probability 0.098"
+  },
+  {
+   "check": "policy P1_equal_opportunity_tpr65: recall and age EOD reproduce from stored cut-offs",
+   "status": "PASS",
+   "detail": [
+    0.6643,
+    0.0644
+   ]
+  },
+  {
+   "check": "policy P1_equal_opportunity_tpr75: recall and age EOD reproduce from stored cut-offs",
+   "status": "PASS",
+   "detail": [
+    0.768,
+    0.0829
+   ]
+  },
+  {
+   "check": "policy P1_equal_opportunity_tpr85: recall and age EOD reproduce from stored cut-offs",
+   "status": "PASS",
+   "detail": [
+    0.8635,
+    0.0998
+   ]
+  },
+  {
+   "check": "policy P2_minimax_per_group: recall and age EOD reproduce from stored cut-offs",
+   "status": "PASS",
+   "detail": [
+    0.7817,
+    0.0885
+   ]
+  },
+  {
+   "check": "policy comparison Option B equals mitigation.json Option B (age EOD, expected)",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "acceptance matrix for P0_single_cutoff reproduces",
+   "status": "PASS",
+   "detail": "C1C2------"
+  },
+  {
+   "check": "acceptance matrix for P1_equal_opportunity_tpr65 reproduces",
+   "status": "PASS",
+   "detail": "C1C2---C6--"
+  },
+  {
+   "check": "acceptance matrix for P1_equal_opportunity_tpr75 reproduces",
+   "status": "PASS",
+   "detail": "C1C2---C6--"
+  },
+  {
+   "check": "acceptance matrix for P1_equal_opportunity_tpr85 reproduces",
+   "status": "PASS",
+   "detail": "C1C2---C6--"
+  },
+  {
+   "check": "acceptance matrix for P2_minimax_per_group reproduces",
+   "status": "PASS",
+   "detail": "C1C2---C6--"
+  },
+  {
+   "check": "acceptance matrix for P3_tpr_parity_randomised reproduces",
+   "status": "PASS",
+   "detail": "C1C2---C6C7-"
+  },
+  {
+   "check": "acceptance matrix for P4_option_B_equalized_odds reproduces",
+   "status": "PASS",
+   "detail": "C1C2-C4C5C6C7-"
+  },
+  {
+   "check": "acceptance matrix for P5_unaware_model_no_age reproduces",
+   "status": "PASS",
+   "detail": "C1C2------"
+  },
+  {
+   "check": "statement 'no evaluated policy reliably meets the 0.05 equalized-odds limit across all required groups' is supported",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "Option B adult: lowest-score appointment's flag probability = p_ignore x x_best",
+   "status": "PASS",
+   "detail": [
+    0.0012,
+    0.0582
+   ]
+  },
+  {
+   "check": "Option B child: lowest-score appointment's flag probability = p_ignore x x_best",
+   "status": "PASS",
+   "detail": [
+    0.0059,
+    0.1133
+   ]
+  },
+  {
+   "check": "Option B elderly: lowest-score appointment's flag probability = p_ignore x x_best",
+   "status": "PASS",
+   "detail": [
+    0.0067,
+    0.0256
+   ]
+  },
+  {
+   "check": "Option B senior: lowest-score appointment's flag probability = p_ignore x x_best",
+   "status": "PASS",
+   "detail": [
+    0.0021,
+    0.0
+   ]
+  },
+  {
+   "check": "Option B teen: lowest-score appointment's flag probability = p_ignore x x_best",
+   "status": "PASS",
+   "detail": [
+    0.014,
+    0.0794
+   ]
+  },
+  {
+   "check": "Option B young_adult: lowest-score appointment's flag probability = p_ignore x x_best",
+   "status": "PASS",
+   "detail": [
+    0.0051,
+    0.0975
+   ]
+  },
+  {
+   "check": "Option B share of flags unrelated to risk reproduces",
+   "status": "PASS",
+   "detail": 0.1078
+  },
+  {
+   "check": "docs/governance.md discloses the measured findings",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "docs/algorithmic_impact_assessment.md discloses the measured findings",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "docs/public_trust_statement.md discloses the measured findings",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "docs/model_card.md discloses the measured findings",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "docs/committee_decision_pack.md discloses the measured findings",
+   "status": "FAIL",
+   "detail": [
+    "No evaluated policy"
+   ]
+  },
+  {
+   "check": "model trained from the commit being built (GITHUB_SHA)",
+   "status": "PASS",
+   "detail": [
+    "cbb6360",
+    "cbb6360"
+   ]
+  },
+  {
+   "check": "every pipeline audit event stamped with the commit being built",
+   "status": "PASS",
+   "detail": [
+    "cbb6360"
+   ]
+  },
+  {
+   "check": "MLflow: >= 7 runs logged (2 baselines, 3 models, 2 robustness)",
+   "status": "PASS",
+   "detail": 7
+  },
+  {
+   "check": "MLflow: candidate version comes from the xgboost run",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "MLflow: no 'production' alias set automatically",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "promotion gate ran and did not auto-promote",
+   "status": "PASS",
+   "detail": "NOT ELIGIBLE under the original acceptance criteria; evidence package prepared for an Ethics Committee decision"
+  },
+  {
+   "check": "Evidently HTML report written",
+   "status": "PASS",
+   "detail": "evidently>=0.7"
+  },
+  {
+   "check": "S1 stress test (lead-time shift) raises data-drift alert",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "S2 stress test (older patients' flags removed) raises fairness halt",
+   "status": "PASS",
+   "detail": "halt"
+  },
+  {
+   "check": "S3 stress test (25 elderly appointments) leaves elderly unevaluated",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "S4 stress test (300 appointments) returns 'insufficient data'",
+   "status": "PASS",
+   "detail": "insufficient data"
+  },
+  {
+   "check": "monitoring: every window's status follows its interval; insufficient data never scored",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "monitoring: no halt attributed to random variation where the expected gap itself exceeds 0.05",
+   "status": "PASS",
+   "detail": null
+  },
+  {
+   "check": "monitoring: expected Option B age gap > 0.05 in every evaluable window (rolling + months)",
+   "status": "PASS",
+   "detail": [
+    [
+     0.05162459442174527,
+     0.10002467748011434
+    ],
+    [
+     0.06612083635624266,
+     0.1331355606162702
+    ]
+   ]
+  },
+  {
+   "check": "latest rolling window: realised age gap reproduces",
+   "status": "PASS",
+   "detail": 0.0471
+  }
+ ],
+ "summary": {
+  "pass": 83,
+  "fail": 1
+ }
+}

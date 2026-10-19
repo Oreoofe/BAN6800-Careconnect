@@ -1,0 +1,87 @@
+{
+ "generated_utc": "2026-10-19T20:53:57.758737+00:00",
+ "git_sha": "cbb6360",
+ "config_hash": "992c9af67325",
+ "sample": false,
+ "overall_pass": true,
+ "checks": [
+  {
+   "check": "gender_representation",
+   "passed": true,
+   "value": {
+    "F": 71829,
+    "M": 38685
+   },
+   "threshold": "no group >75%; each >= 500",
+   "gating": true
+  },
+  {
+   "check": "age_band_representation",
+   "passed": true,
+   "value": {
+    "adult": 30018,
+    "young_adult": 24135,
+    "senior": 22112,
+    "child": 21035,
+    "teen": 7830,
+    "elderly": 5384
+   },
+   "threshold": "all 6 bands populated; each >= 500",
+   "gating": true
+  },
+  {
+   "check": "neighbourhood_concentration",
+   "passed": true,
+   "value": {
+    "top": "JARDIM CAMBURI",
+    "share": 0.0698
+   },
+   "threshold": "no neighbourhood > 20% of records",
+   "gating": true
+  },
+  {
+   "check": "socioeconomic_representation",
+   "passed": true,
+   "value": {
+    "0": 99653,
+    "1": 10861
+   },
+   "threshold": "each level >= 500",
+   "gating": true
+  },
+  {
+   "check": "label_rate_parity_gender",
+   "passed": true,
+   "value": 0.983,
+   "threshold": "ratio within 0.80-1.25",
+   "gating": true
+  },
+  {
+   "check": "label_rate_by_age_band",
+   "passed": true,
+   "value": {
+    "adult": 0.197,
+    "child": 0.2047,
+    "elderly": 0.1608,
+    "senior": 0.1553,
+    "teen": 0.2605,
+    "young_adult": 0.2383
+   },
+   "threshold": "informational (not a gate)",
+   "gating": false,
+   "min_max_ratio": 0.5959
+  },
+  {
+   "check": "label_rate_by_Scholarship",
+   "passed": true,
+   "value": {
+    "0": 0.198,
+    "1": 0.2374
+   },
+   "threshold": "informational (not a gate)",
+   "gating": false,
+   "min_max_ratio": 0.8342
+  }
+ ],
+ "n": 110514
+}
