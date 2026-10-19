@@ -1,0 +1,1 @@
+{"flag_threshold": 0.2525, "high_threshold": 0.40, "note": "flag_threshold chosen on training-set out-of-fold predictions to reach recall >= 0.65; never tuned on the test set"}
