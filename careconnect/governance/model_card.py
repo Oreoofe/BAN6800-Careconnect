@@ -32,7 +32,7 @@ def main():
     fair = "\n".join(f"| {lbl} | {M[k]['recall']:.3f} | {M[k]['flag_rate']:.3f} | {M[k]['age_band']['eod']:.3f} | "
                      f"{M[k]['Gender']['eod']:.3f} | {M[k]['Scholarship']['eod']:.3f} |"
                      for k, lbl in [("before", "Single cut-off"), ("A_group_thresholds", "A: cut-off per age group"),
-                                    ("B_equalized_odds", "**B: equalized odds (adopted)**"), ("C_demographic_parity", "C: demographic parity")])
+                                    ("B_equalized_odds", "**B: equalized odds (configured, not approved; expected values)**"), ("C_demographic_parity", "C: demographic parity")])
     sp = b["realisation_spread"]["age_band"]
     over = [n for n, k in [("age", "age_band"), ("gender", "Gender"), ("scholarship", "Scholarship")]
             if b[k]["eod"] > config.FAIRNESS_LIMIT]
@@ -159,7 +159,7 @@ Age groups have different true no-show rates, so equal flag rates (demographic p
   meaningful for categorical inputs.
 - **LIME (cross-check only):** fidelity bar fixed before the run (R² >= {X['fidelity_bar']['min_r2']}, |error| <= {X['fidelity_bar']['max_abs_error']}).
 {lime_txt}
-- **Counterfactuals** target the adopted policy (flag probability 0), using only an earlier slot or an added reminder:
+- **Counterfactuals** target the configured Option B policy (flag probability 0), using only an earlier slot or an added reminder:
 {cf_txt}
 
 ## Limitations

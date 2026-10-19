@@ -56,7 +56,7 @@ model = load_model()
 T = A["threshold"]
 HIGH = json.load(open(ART / "operating_point.json"))["high_threshold"]
 OP = A["operating"]["xgboost"]["at_recall_target"]
-ADOPTED = MIT.get("adopted", "B_equalized_odds")
+ADOPTED = MIT.get("configured", MIT.get("adopted", "B_equalized_odds"))   # configured, not approved
 MB = MIT[ADOPTED]
 VERSION = A.get("model_version", "1.x")
 import hashlib  # noqa: E402
@@ -253,7 +253,7 @@ These are **associations the model found in past data, not proven causes.** Chan
                 img = FIGS / f"lime_{e['config']}_{e['example']}.png"
                 if img.exists():
                     st.image(str(img), width="stretch")
-        st.markdown("### Counterfactuals: what would stop this appointment being flagged by the adopted policy?")
+        st.markdown("### Counterfactuals: what would stop this appointment being flagged by the configured policy (Option B)?")
         st.caption("Only two levers are searched: an earlier slot and adding a reminder. Age, gender, history, neighbourhood and "
                    "health are never suggested for change. Each change is re-scored through the model and the policy.")
         rows = []
@@ -312,7 +312,7 @@ elif page.startswith("4"):
         with c2_:
             card("Outreach decision (policy)", "Flagged" if pf >= 1 else ("Not flagged" if pf <= 0 else f"{pf:.0%} chance"),
                  f"Option B rule for the {band(age).replace('_', ' ')} group")
-        st.caption("The score tier describes the model's risk estimate. The outreach decision comes from the adopted fairness policy, "
+        st.caption("The score tier describes the model's risk estimate. The outreach decision comes from the configured (not approved) fairness policy, Option B, "
                    "which uses different cut-offs per age group and, for scores inside a group's band, a logged random draw. "
                    "A 'low' tier appointment can therefore be flagged, and a 'medium' one not flagged.")
         st.markdown("**Top reasons for this score**")
@@ -343,7 +343,7 @@ elif page.startswith("5"):
     over = [n for n, k in [("age group", "age_band"), ("gender", "Gender"), ("scholarship", "Scholarship")] if MB[k]["eod"] > 0.05]
     st.markdown('<div class="warn"><b>Honest status:</b> the single cut-off breaches the limit for <b>age group</b>'
                 + (" and the <b>welfare-scholarship</b> proxy" if not A["fairness"]["Scholarship_grp"]["pass_eod"] else "")
-                + ". The adopted rule, <b>Option B (Fairlearn equalized odds by age group)</b>, "
+                + ". The configured rule (not approved), <b>Option B (Fairlearn equalized odds by age group)</b>, "
                 + ("brings all three comparisons within the limit <i>in expectation</i>; single sets of decisions can still exceed it (see below)" if not over else f"still leaves {', '.join(over)} above the limit even in expectation")
                 + f", at the cost of flagging {MB['flag_rate']:.0%} of appointments instead of {MIT['before']['flag_rate']:.0%}. "
                   "It awaits AI Ethics Committee approval.</div>", unsafe_allow_html=True)
@@ -372,7 +372,7 @@ elif page.startswith("5"):
     c2.plotly_chart(style(f, 380), width="stretch")
     st.markdown("### Bias mitigation: what was tried")
     lab = {"before": "Standard rule (single threshold)", "A_group_thresholds": "A. Separate threshold per age group",
-           "B_equalized_odds": "B. Fairlearn equalized odds (ADOPTED)", "C_demographic_parity": "C. Fairlearn demographic parity (comparison)"}
+           "B_equalized_odds": "B. Fairlearn equalized odds (configured, not approved)", "C_demographic_parity": "C. Fairlearn demographic parity (comparison)"}
     lab = {k: v for k, v in lab.items() if k in MIT}
     mr = []
     for k, n in lab.items():
@@ -386,7 +386,7 @@ elif page.startswith("5"):
     st.markdown(f"""
 * **Found:** the model flags older patients far less often and catches fewer of their no-shows than younger patients' - the age-group gap is {A['fairness']['age_band']['eod']:.2f} against a 0.05 limit.
 * **Option A** narrows the age gap to {MIT['A_group_thresholds']['age_band']['eod']:.2f} while keeping the catch rate near {MIT['A_group_thresholds']['recall']:.0%}, but does not reach 0.05.
-* **Option B (adopted)** gives age-group, gender and scholarship gaps of {MB['age_band']['eod']:.3f}, {MB['Gender']['eod']:.3f} and {MB['Scholarship']['eod']:.3f}, but flags {MB['flag_rate']:.0%} of appointments instead of {MIT['before']['flag_rate']:.0%}, and part of the rule is randomised.
+* **Option B (configured, not approved)** gives expected age-group, gender and scholarship gaps of {MB['age_band']['eod']:.3f}, {MB['Gender']['eod']:.3f} and {MB['Scholarship']['eod']:.3f}, but flags {MB['flag_rate']:.0%} of appointments instead of {MIT['before']['flag_rate']:.0%}, and part of the rule is randomised.
 * **Option B numbers are expected values.** Because part of the rule is randomised, any single month's decisions scatter around them{spread_txt}. Option B therefore meets the limit **on average, not reliably in any one set of decisions**.
 * **Status:** Option B is the configured rule pending an Ethics Committee decision; the full comparison of alternatives is below. **What it costs:** more outreach per real no-show, so coordinator capacity (Module 2 assumption A-3) must be confirmed before use.
 * **Why not equal flag rates:** older patients genuinely miss fewer visits, so equal *flag rates* (demographic parity) would mean ignoring real differences. The Charter limit is applied to *error rates* instead.
@@ -439,7 +439,7 @@ elif page.startswith("5"):
                                         "Groups (n test)": ", ".join(f"{g} {r['n']:,}" for g, r in eo[a]["groups"].items())}
                                        for a in ["age_band", "Gender", "Scholarship"]]), hide_index=True, width="stretch")
     if POLICY:
-        st.markdown("#### The adopted rule, in full (auditable)")
+        st.markdown("#### The configured Option B rule, in full (auditable)")
         pr = [{"Age group": g.replace("_", " "), "Rule": (f"flag if score {r['op0'][0]} {r['op0'][1]:.3f}" if r["p0"] >= 0.999 else
                                                            f"{r['p0']:.0%}: score {r['op0'][0]} {r['op0'][1]:.3f}; {r['p1']:.0%}: score {r['op1'][0]} {r['op1'][1]:.3f}")}
               for g, r in POLICY["groups"].items()]
@@ -528,8 +528,8 @@ else:
 * **It is often wrong about individuals.** On {sum(cm.values()):,} unseen appointments it correctly flagged {cm['tp']:,} no-shows but also flagged {cm['fp']:,} patients who attended, and still missed {cm['fn']:,} no-shows.
 * **It cannot say why** a patient may miss a visit, and it does not measure transport, childcare, cost or health literacy directly.
 * **It was not trained on CrescentCare patients.** The data are public-health appointments from Brazil in 2016. The hospital's reported no-show rate (28%) is higher than in the data ({A['descriptive']['overall']:.0%}).
-* **It does not meet every Module 4 target:** F1 is {OP['f1']:.2f} against a 0.55 target, and the single cut-off fails the age-group fairness limit. The adopted fairness rule fixes the gap by flagging more appointments, so more flags are false alarms.
-* **Some decisions are randomised** under the adopted rule. Each draw is reproducible from the logged request id, but staff and patients need this explained.
+* **It does not meet every Module 4 target:** F1 is {OP['f1']:.2f} against a 0.55 target, and the single cut-off fails the age-group fairness limit. Option B narrows the gap only in expectation, by flagging more appointments (more false alarms) and partly at random; no evaluated policy reliably meets the fairness limit.
+* **Some decisions are randomised** under the configured Option B rule, and some flags are unrelated to predicted risk. Each draw is reproducible from the logged request id, but staff and patients need this explained.
 * **The Module 1 equity goal (Medicaid vs private insurance) cannot be measured here** because the dataset has no insurance field. Welfare-scholarship status is used as a rough socio-economic stand-in.
 * **Scores are associations, not causes**, and only about six weeks of appointments are covered, so seasonal patterns are not captured.
 """)

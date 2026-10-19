@@ -5,8 +5,8 @@ Docker:        docker compose up api
 
 Endpoints
 * GET  /health      liveness + whether model and policy are loaded
-* GET  /model_info  version, operating point, adopted fairness policy, intended / prohibited use
-* POST /predict     score one appointment; returns risk, outreach decision under the adopted policy,
+* GET  /model_info  version, operating point, configured (not approved) fairness policy, intended / prohibited use
+* POST /predict     score one appointment; returns risk, outreach decision under the configured (not approved) policy,
                     plain-language reason codes, and the explanation-store record id
 * GET  /metrics     Prometheus-format counters (requests, flags, errors, latency)
 
@@ -119,7 +119,7 @@ class PredictionResponse(BaseModel):
     no_show_probability: float
     score_tier: Literal["low", "medium", "high"] = Field(
         description="Model risk-score band only (low < flag cut-off <= medium < 0.40 <= high). It is NOT the outreach decision.")
-    flagged_for_outreach: bool = Field(description="Decision of the adopted fairness policy for this request")
+    flagged_for_outreach: bool = Field(description="Decision of the configured (not approved) fairness policy for this request")
     flag_probability: float = Field(description="Policy's probability of flagging this score in this age group")
     decision_randomised: bool = Field(description="True when 0 < flag_probability < 1: the decision came from a logged random draw")
     decision_explanation: str

@@ -9,11 +9,13 @@ CareConnect scores each booked appointment for the risk of a missed visit and ex
 
 | Item | Where |
 | --- | --- |
-| Stakeholder + XAI + monitoring dashboard (Streamlit) | https://ban6800-careconnect.streamlit.app/ (pages 3 = explainability, 5 = fairness, 7 = monitoring) |
+| Stakeholder + XAI + monitoring dashboard (Streamlit) | https://ban6800-careconnect.streamlit.app/ (pages 3 = explainability, 5 = fairness, 7 = monitoring). Deploys from `main`, which still holds the **v1** results; the verified v2 results are on branch `capstone-verify` and its `build-outputs-*` branches until a merge is approved. |
 | Scoring API (FastAPI `/predict`) | Runs locally or in Docker (`docker compose up api`, docs at http://localhost:8000/docs). **Not publicly hosted.** |
 | CI/CD | `.github/workflows/ci.yml` (lint, tests, Docker build + API smoke test on every push); `.github/workflows/build.yml` (full build / monthly retraining) |
 | MLflow tracking + registry | `mlruns/` from the build workflow; screenshots in `docs/evidence/` |
 | Model Card | `docs/model_card.md` (generated from the build artifacts) |
+| Committee decision pack | `docs/committee_decision_pack.md` - fairness evidence and options; **no evaluated policy reliably meets the 0.05 equalized-odds limit across all required groups** |
+| Model registry status | MLflow `careconnect_noshow_xgb` v1, alias `candidate` only - not in production |
 | Governance | `docs/governance.md`, `docs/algorithmic_impact_assessment.md`, `docs/regulatory_assessment.md`, `docs/data_governance_privacy.md`, `docs/public_trust_statement.md` |
 
 ## Architecture

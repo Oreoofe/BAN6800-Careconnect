@@ -354,6 +354,10 @@ def main():
                 if not ok_:
                     bad.append(r["batch"])
         check("monitoring: every window's status follows its interval; insufficient data never scored", not bad, bad or None)
+        mis = [r["batch"] for st_ in ["rolling_28d", "calendar_months", "weeks_cycle2_rule"] for r in MON[st_]
+               if r["fairness"]["status"] in ("halt", "inconclusive") and (r["expected_age_eod_evaluated_groups"] or 0) > 0.05
+               and "random" in r["fairness"]["attribution"]]
+        check("monitoring: no halt attributed to random variation where the expected gap itself exceeds 0.05", not mis, mis or None)
         S = MON["summary"]
         check("monitoring: expected Option B age gap > 0.05 in every evaluable window (rolling + months)",
               S["rolling_28d_all"]["windows_with_expected_gap_above_0.05"] == S["rolling_28d_all"]["windows_with_expected_gap_evaluable"]

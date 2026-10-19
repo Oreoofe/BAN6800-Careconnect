@@ -5,7 +5,7 @@
 * before  - single cut-off chosen for recall >= 0.65 (training OOF predictions)
 * A       - one cut-off per age group, each set for recall >= 0.65 on training OOF predictions
 * B       - Fairlearn ThresholdOptimizer, equalized-odds constraint, fitted on training OOF scores
-            (ADOPTED for the capstone; exported to artifacts/fairness_policy.json)
+            (CONFIGURED for evaluation, NOT approved; exported to artifacts/fairness_policy.json)
 * C       - ThresholdOptimizer with a demographic-parity constraint (for comparison only)
 
 All rules are fitted on training data only and evaluated once on the test set.
@@ -138,11 +138,12 @@ def main():
                                    "share_randomised": float(((our_pmf > 0) & (our_pmf < 1)).mean())}
             pol["expected_test_metrics"] = {"recall": float((our_pmf * yte).sum() / yte.sum()),
                                             "flag_rate": float(our_pmf.mean())}
-            pol["status"] = "adopted for the capstone; production use requires Ethics Committee approval"
+            pol["status"] = ("configured for evaluation only - NOT approved; fails the original acceptance criterion C8; "
+                             "any use requires an AI Ethics Committee decision")
             json.dump(pol, open(POLICY_PATH, "w"), indent=1)
             res[key]["policy_realisation_numpy_seed42"] = summary(yte, our_yh, te)
             print("policy export check, max |pmf diff| =", pol["verification"]["max_abs_diff_vs_fairlearn_pmf"])
-    res["adopted"] = "B_equalized_odds"
+    res["configured"] = "B_equalized_odds"   # configured for evaluation; not an approved policy
     json.dump(res, open(config.ARTIFACTS / "mitigation.json", "w"), indent=1, default=float)
     for k, v in res.items():
         if isinstance(v, dict):

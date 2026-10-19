@@ -29,8 +29,8 @@ Status: capstone design document (October 2026). Controls marked **implemented**
 
 1. **Triggers:** monthly schedule (`.github/workflows/build.yml`), any input PSI >= 0.20 that is not a known artefact (e.g. the data-window cold start for prior visits), AUC more than 0.03 below validation, a fairness 'halt', or 'inconclusive' in two consecutive rolling windows.
 2. **Run:** `python -m careconnect.run_all` - same pipeline, data contract, bias gate, training, fairness mitigation, explanations, monitoring and Model Card generation.
-3. **Automated gate** (`artifacts/promotion_decision.json`): data contract and bias gate pass; ROC-AUC >= 0.70; recall >= 0.65; adopted-policy equalized-odds gap <= 0.05 for age, gender and scholarship; patient-grouped AUC within 0.02. F1 is reported but non-blocking (it is not in the Module 4 acceptance criteria).
-4. **Human approval:** Ethics Committee reviews the Model Card, the gate output (including the non-blocking realised-fairness spread) and the policy comparison; approval recorded in the MLflow version tags (approver, date, decision).
+3. **Automated gate** (`artifacts/promotion_decision.json`): data contract and bias gate pass; patient-grouped AUC within 0.02; and the original criteria C1, C2 and C4-C8 for the configured policy (Module 4 s.7 staging list plus the Charter halt rule, including reliability C8). F1 >= 0.55 (C3) appears in Module 4 s.1 as a success criterion but not in the s.7 staging list; the gate reports it as an unmet original criterion and does not block on it. That reading is an ambiguity in the source documents and is referred to the committee for a decision, not settled here.
+4. **Human approval:** Ethics Committee reviews the Model Card, the gate output, the committee decision pack and the policy comparison; approval recorded in the MLflow version tags (approver, date, decision).
 5. **Release:** API image rebuilt with the approved artifacts; previous version kept for rollback.
 6. **Post-release:** rolling 28-day fairness windows reviewed weekly; groups that are 'not evaluated' (too few cases) are reviewed by hand rather than assumed fair.
 

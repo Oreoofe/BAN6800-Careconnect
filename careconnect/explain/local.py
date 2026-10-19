@@ -13,7 +13,7 @@ Fidelity is reported, not tuned: LIME's weighted R^2 on its own perturbations, |
 The bar was fixed BEFORE running: R^2 >= 0.5 and |error| <= 0.05 -> "adequate", otherwise "weak".
 age_band is re-derived from Age inside the prediction function so perturbed rows stay consistent.
 
-Counterfactuals (Wachter et al., 2017) target the ADOPTED decision policy (fairness_policy.json): the
+Counterfactuals (Wachter et al., 2017) target the CONFIGURED (not approved) decision policy, Option B (fairness_policy.json): the
 question is "what change the hospital controls would stop this appointment being flagged?", i.e. drive
 the policy's flag probability to 0. Only two levers are searched: an earlier slot (lead time can only
 fall) and adding an SMS reminder (never removed). Age, gender, history, neighbourhood and health flags
@@ -118,7 +118,7 @@ def lime_explanations(model, train: pd.DataFrame, samples: list, n_features=6):
 
 
 def counterfactual(model, features: dict, policy: dict, threshold: float):
-    """Lowest-cost actionable change that drives the ADOPTED policy's flag probability to 0."""
+    """Lowest-cost actionable change that drives the configured (not approved) policy's flag probability to 0."""
     feats = config.FEATURES
     g = str(features["age_band"])
     base = pd.DataFrame([features])[feats]
@@ -161,7 +161,7 @@ def main():
            "fidelity_bar": FIDELITY_BAR, "lime": lime_explanations(m, tr, examples),
            "counterfactuals": [{"example": s["tier"], "score_tier": s["score_tier"], "test_row": s["test_row"],
                                 **counterfactual(m, s["features"], policy, T)} for s in A["samples"]]}
-    # population view under the adopted policy, on a fixed sample of test appointments with any chance of a flag
+    # population view under the configured policy, on a fixed sample of test appointments with any chance of a flag
     p = m.predict_proba(te[config.FEATURES])[:, 1]
     pf = np.array([flag_probability(s, g, policy) for s, g in zip(p, te["age_band"].astype(str))])
     cand = te[pf > 0].sample(1500, random_state=config.RANDOM_STATE)

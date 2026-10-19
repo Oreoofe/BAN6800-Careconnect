@@ -12,7 +12,7 @@ Signals and thresholds (Module 4 monitoring hooks):
 * data drift     - Population Stability Index per feature; warn >= 0.10, alert >= 0.20 (retrain trigger)
 * prediction drift - PSI of the risk score
 * performance    - ROC-AUC and recall per week; alert if AUC falls > 0.03 below validation
-* bias drift     - equalized-odds gap by age group under the adopted policy; warn > 0.04, halt > 0.05
+* bias drift     - equalized-odds gap by age group under the configured (not approved) policy; cycle-1 rule: warn > 0.04, halt > 0.05
 Concept drift (a changed relationship between inputs and outcomes) shows up as falling performance
 with little data drift; that pattern is reported separately.
 
@@ -173,6 +173,35 @@ def fairness_rule(y, yh, groups, seed=0, rule=FAIR_RULE):
             "note": ("not all groups evaluated" if skipped else "all groups evaluated")}
 
 
+def explain_status(fr, exp_eod, drift_status, limit=0.05):
+    """Plain reason for a window's fairness status, and what the evidence attributes it to."""
+    cnt = ", ".join(f"{g} {c['no_shows']} no-shows/{c['attended']} attended" for g, c in fr["groups_not_evaluated"].items())
+    if fr["status"] == "insufficient data":
+        return (f"Fewer than two groups reach {FAIR_RULE['min_no_shows_per_group']} no-shows and {FAIR_RULE['min_attended_per_group']} "
+                f"attended visits ({cnt}). No fairness conclusion is drawn; this is not a pass."), "insufficient sample"
+    lo, hi = fr["ci95"]
+    base = f"Realised gap {fr['eod']:.3f}, bootstrap 95% CI {lo:.3f}-{hi:.3f} "
+    if fr["status"] == "halt":
+        base += "lies wholly above 0.05."
+    elif fr["status"] == "inconclusive":
+        base += "straddles 0.05."
+    else:
+        base += "lies wholly at or below 0.05."
+    if exp_eod is not None and exp_eod > limit:
+        attr = "policy's expected disparity (expected gap above the limit)"
+        base += f" Expected gap {exp_eod:.3f} is itself above 0.05, so this is not just the random draw."
+    elif fr["eod"] > limit:
+        attr = "random draw / sampling (expected gap within the limit)"
+        base += f" Expected gap {exp_eod:.3f} is within 0.05: the excess comes from this draw or sampling noise."
+    else:
+        attr = "within limit"
+    if fr["groups_not_evaluated"]:
+        base += f" Not evaluated (too few cases, not counted as passing): {cnt}."
+    if drift_status != "ok":
+        base += f" Data-drift status in this window: {drift_status}."
+    return base, attr
+
+
 def window_report(name, cur, ref, model, policy, T, val_auc, ref_scores, seed, coverage_days=None, override=None):
     X = cur[config.FEATURES]
     y = cur[config.TARGET].values
@@ -202,6 +231,13 @@ def window_report(name, cur, ref, model, policy, T, val_auc, ref_scores, seed, c
                    "prediction_drift": level(r["score_psi"], TH["psi_warn"], TH["psi_alert"]),
                    "performance": "alert" if auc is not None and auc < val_auc - TH["auc_drop_alert"] else "ok",
                    "bias_drift": fr["status"]}
+    r["start"] = str(cur["AppointmentDay"].min().date())
+    r["end"] = str(cur["AppointmentDay"].max().date())
+    r["fairness"]["reason"], r["fairness"]["attribution"] = explain_status(fr, exp_eod, r["status"]["data_drift"])
+    if override is not None:
+        r["fairness"]["attribution"] = "synthetic stress perturbation (decisions altered after the policy)"
+        r["fairness"]["reason"] += " Decisions were altered synthetically for this stress test."
+    r["fairness"]["ci_method"] = f"percentile bootstrap, {FAIR_RULE['bootstrap']} resamples of the window's appointments, realised decisions"
     return r
 
 

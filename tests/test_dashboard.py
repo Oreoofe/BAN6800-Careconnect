@@ -52,7 +52,7 @@ def test_fairness_page_matches_mitigation_artifact():
     page = next(p for p in at.sidebar.radio[0].options if p.startswith("5"))
     at.sidebar.radio[0].set_value(page).run()
     txt = _text(at)
-    b = M[M.get("adopted", "B_equalized_odds")]
+    b = M[M.get("configured", M.get("adopted", "B_equalized_odds"))]
     assert f"{b['age_band']['eod']:.3f}" in txt
     assert f"{b['flag_rate']:.0%}" in txt
 
