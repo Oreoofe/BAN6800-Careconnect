@@ -1,0 +1,58 @@
+GET /health      -> {'status': 'ok', 'model_loaded': True}
+GET /model_info  -> {
+  "model_name": "careconnect_no_show_predictor",
+  "model_type": "XGBoost classifier in an sklearn pipeline",
+  "target": "noshow_flag",
+  "operating_point": {
+    "flag_threshold": 0.2525,
+    "high_threshold": 0.4,
+    "note": "flag_threshold chosen on training-set out-of-fold predictions to reach recall >= 0.65; never tuned on the test set"
+  },
+  "intended_use": "Identify appointments at higher risk of a missed visit so a person can offer support",
+  "non_intended_use": "Deny care, penalise patients, or automate scheduling without human review",
+  "fairness_constraint": "Disparity <= 0.05 across Gender and age_band (Ethical Charter Principle 2)"
+}
+
+POST /predict [A - long lead time, past misses]
+ {
+  "no_show_probability": 0.5294,
+  "risk_tier": "high",
+  "flagged_for_outreach": true,
+  "reason_codes": [
+    "Days between booking and appointment: raises risk",
+    "Share of past appointments missed: raises risk",
+    "Number of past missed appointments: raises risk"
+  ],
+  "model_version": "careconnect_xgb_module4",
+  "note": "Decision support only. A human coordinator decides what, if anything, to offer."
+}
+
+POST /predict [B - mid lead time, one past miss]
+ {
+  "no_show_probability": 0.296,
+  "risk_tier": "medium",
+  "flagged_for_outreach": true,
+  "reason_codes": [
+    "Days between booking and appointment: raises risk",
+    "Share of past appointments missed: raises risk",
+    "Neighbourhood: lowers risk"
+  ],
+  "model_version": "careconnect_xgb_module4",
+  "note": "Decision support only. A human coordinator decides what, if anything, to offer."
+}
+
+POST /predict [C - same-day booking, reliable]
+ {
+  "no_show_probability": 0.0316,
+  "risk_tier": "low",
+  "flagged_for_outreach": false,
+  "reason_codes": [
+    "Days between booking and appointment: lowers risk",
+    "Patient age: lowers risk",
+    "Neighbourhood: lowers risk"
+  ],
+  "model_version": "careconnect_xgb_module4",
+  "note": "Decision support only. A human coordinator decides what, if anything, to offer."
+}
+
+POST /predict with missing fields -> 422 Missing features: ['Gender', 'Neighbourhood', 'Scholarship', 'Hipertension', 'Di ...
