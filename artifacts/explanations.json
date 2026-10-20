@@ -1,0 +1,683 @@
+{
+ "model_version": "2.0.0",
+ "flag_threshold": 0.25,
+ "policy": "Option B - equalized odds (Fairlearn ThresholdOptimizer)",
+ "fidelity_bar": {
+  "min_r2": 0.5,
+  "max_abs_error": 0.05
+ },
+ "lime": [
+  {
+   "config": "cycle1_training_distribution",
+   "example": "cycle1_high",
+   "score_tier": "high",
+   "test_row": 14074,
+   "model_score": 0.6016988754272461,
+   "lime_local_prediction": 0.07313271431923729,
+   "abs_error": 0.5285661611080088,
+   "lime_r2": 0.6859944807327945,
+   "lime_top3": [
+    "lead_time_days",
+    "Alcoholism",
+    "Age"
+   ],
+   "shap_top3": [
+    "prior_noShows",
+    "lead_time_days",
+    "Age"
+   ],
+   "top3_overlap": 2,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "lead_time_days <= 0.00",
+     -0.2554499447943803
+    ],
+    [
+     "Alcoholism <= 0.00",
+     -0.049121146593272276
+    ],
+    [
+     "Age <= 18.00",
+     0.04649060749815305
+    ],
+    [
+     "prior_appointments > 1.00",
+     -0.026192256054108208
+    ],
+    [
+     "SMS_received <= 0.00",
+     0.02401754771300522
+    ],
+    [
+     "prior_noShows > 0.00",
+     0.017153860785781228
+    ]
+   ]
+  },
+  {
+   "config": "cycle1_training_distribution",
+   "example": "cycle1_medium",
+   "score_tier": "low",
+   "test_row": 20762,
+   "model_score": 0.24492233991622925,
+   "lime_local_prediction": 0.15430002487412475,
+   "abs_error": 0.0906223150421045,
+   "lime_r2": 0.07202152893086877,
+   "lime_top3": [
+    "Age",
+    "Alcoholism",
+    "lead_time_days"
+   ],
+   "shap_top3": [
+    "prior_noShow_rate",
+    "lead_time_days",
+    "Age"
+   ],
+   "top3_overlap": 2,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "Age > 55.00",
+     -0.07886392470182202
+    ],
+    [
+     "Alcoholism <= 0.00",
+     -0.04999006479939843
+    ],
+    [
+     "0.00 < lead_time_days <= 4.00",
+     0.030113008047929598
+    ],
+    [
+     "SMS_received <= 0.00",
+     0.021974079855354958
+    ],
+    [
+     "Scholarship <= 0.00",
+     -0.020281132908086138
+    ],
+    [
+     "prior_appointments > 1.00",
+     -0.01983591740107675
+    ]
+   ]
+  },
+  {
+   "config": "cycle1_training_distribution",
+   "example": "cycle1_low",
+   "score_tier": "low",
+   "test_row": 5547,
+   "model_score": 0.009800909087061882,
+   "lime_local_prediction": 0.01571268466304182,
+   "abs_error": 0.005911775575979938,
+   "lime_r2": 0.657464537563383,
+   "lime_top3": [
+    "lead_time_days",
+    "Alcoholism",
+    "SMS_received"
+   ],
+   "shap_top3": [
+    "lead_time_days",
+    "prior_appointments",
+    "Age"
+   ],
+   "top3_overlap": 1,
+   "fidelity": "adequate",
+   "weights": [
+    [
+     "lead_time_days <= 0.00",
+     -0.24691904622637617
+    ],
+    [
+     "Alcoholism <= 0.00",
+     -0.053237360319144784
+    ],
+    [
+     "SMS_received <= 0.00",
+     0.024554246746924573
+    ],
+    [
+     "prior_appointments > 1.00",
+     -0.02329632864882025
+    ],
+    [
+     "Scholarship <= 0.00",
+     -0.022035170603451438
+    ],
+    [
+     "37.00 < Age <= 55.00",
+     -0.010494168371197122
+    ]
+   ]
+  },
+  {
+   "config": "cycle1_training_distribution",
+   "example": "high",
+   "score_tier": "high",
+   "test_row": 18077,
+   "model_score": 0.45151135325431824,
+   "lime_local_prediction": 0.35745967288050773,
+   "abs_error": 0.09405168037381051,
+   "lime_r2": 0.12226976328520178,
+   "lime_top3": [
+    "lead_time_days",
+    "Alcoholism",
+    "Age"
+   ],
+   "shap_top3": [
+    "lead_time_days",
+    "Neighbourhood",
+    "SMS_received"
+   ],
+   "top3_overlap": 1,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "4.00 < lead_time_days <= 15.00",
+     0.11072031086613492
+    ],
+    [
+     "Alcoholism <= 0.00",
+     -0.056157719927530304
+    ],
+    [
+     "Age <= 18.00",
+     0.05085360268780782
+    ],
+    [
+     "SMS_received <= 0.00",
+     0.0266381459211517
+    ],
+    [
+     "Scholarship > 0.00",
+     0.020629408658908718
+    ],
+    [
+     "appointment_month <= 5.00",
+     0.014014145769311648
+    ]
+   ]
+  },
+  {
+   "config": "cycle1_training_distribution",
+   "example": "medium",
+   "score_tier": "medium",
+   "test_row": 15872,
+   "model_score": 0.31355366110801697,
+   "lime_local_prediction": 0.3532123551522799,
+   "abs_error": 0.03965869404426292,
+   "lime_r2": 0.31271729257440495,
+   "lime_top3": [
+    "lead_time_days",
+    "Alcoholism",
+    "Age"
+   ],
+   "shap_top3": [
+    "lead_time_days",
+    "Age",
+    "appointment_month"
+   ],
+   "top3_overlap": 2,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "lead_time_days > 15.00",
+     0.18676186413025891
+    ],
+    [
+     "Alcoholism <= 0.00",
+     -0.06895515733223732
+    ],
+    [
+     "18.00 < Age <= 37.00",
+     0.036321051630327575
+    ],
+    [
+     "0.00 < SMS_received <= 1.00",
+     -0.027088062948118826
+    ],
+    [
+     "Scholarship <= 0.00",
+     -0.02416292371667855
+    ],
+    [
+     "prior_appointments <= 0.00",
+     0.015156512172880672
+    ]
+   ]
+  },
+  {
+   "config": "cycle1_training_distribution",
+   "example": "low",
+   "score_tier": "low",
+   "test_row": 10548,
+   "model_score": 0.06639333069324493,
+   "lime_local_prediction": 0.08033778920020365,
+   "abs_error": 0.013944458506958718,
+   "lime_r2": 0.6744608972806196,
+   "lime_top3": [
+    "lead_time_days",
+    "Alcoholism",
+    "Age"
+   ],
+   "shap_top3": [
+    "lead_time_days",
+    "Age",
+    "appointment_month"
+   ],
+   "top3_overlap": 2,
+   "fidelity": "adequate",
+   "weights": [
+    [
+     "lead_time_days <= 0.00",
+     -0.25537323260918016
+    ],
+    [
+     "Alcoholism <= 0.00",
+     -0.04623195127232415
+    ],
+    [
+     "18.00 < Age <= 37.00",
+     0.04322449789129732
+    ],
+    [
+     "SMS_received <= 0.00",
+     0.026403378283502525
+    ],
+    [
+     "Scholarship <= 0.00",
+     -0.02228625660544738
+    ],
+    [
+     "prior_appointments <= 0.00",
+     0.018510756143403993
+    ]
+   ]
+  },
+  {
+   "config": "local_sampling",
+   "example": "cycle1_high",
+   "score_tier": "high",
+   "test_row": 14074,
+   "model_score": 0.6016988754272461,
+   "lime_local_prediction": 0.3059647427381482,
+   "abs_error": 0.2957341326890979,
+   "lime_r2": 0.4088086391169353,
+   "lime_top3": [
+    "lead_time_days",
+    "prior_appointments",
+    "Age"
+   ],
+   "shap_top3": [
+    "prior_noShows",
+    "lead_time_days",
+    "Age"
+   ],
+   "top3_overlap": 2,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "lead_time_days",
+     0.14715346797351617
+    ],
+    [
+     "prior_appointments",
+     0.04239298809279453
+    ],
+    [
+     "Age",
+     -0.017527387854228724
+    ],
+    [
+     "prior_noShows",
+     0.011316352872606052
+    ],
+    [
+     "appointment_dow",
+     0.00898594572654309
+    ],
+    [
+     "Scholarship",
+     0.006721051176800119
+    ]
+   ]
+  },
+  {
+   "config": "local_sampling",
+   "example": "cycle1_medium",
+   "score_tier": "low",
+   "test_row": 20762,
+   "model_score": 0.24492233991622925,
+   "lime_local_prediction": 0.14676220103338142,
+   "abs_error": 0.09816013888284783,
+   "lime_r2": 0.4665798401958229,
+   "lime_top3": [
+    "lead_time_days",
+    "prior_appointments",
+    "Age"
+   ],
+   "shap_top3": [
+    "prior_noShow_rate",
+    "lead_time_days",
+    "Age"
+   ],
+   "top3_overlap": 2,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "lead_time_days",
+     0.08226947264926252
+    ],
+    [
+     "prior_appointments",
+     -0.019693048387336744
+    ],
+    [
+     "Age",
+     -0.014730318077102058
+    ],
+    [
+     "Gender=M",
+     -0.009243848261349588
+    ],
+    [
+     "prior_noShows",
+     0.004011627522051707
+    ],
+    [
+     "Diabetes",
+     0.0029125912874946145
+    ]
+   ]
+  },
+  {
+   "config": "local_sampling",
+   "example": "cycle1_low",
+   "score_tier": "low",
+   "test_row": 5547,
+   "model_score": 0.009800909087061882,
+   "lime_local_prediction": 0.16751677069396964,
+   "abs_error": 0.15771586160690776,
+   "lime_r2": 0.524264665966733,
+   "lime_top3": [
+    "lead_time_days",
+    "Age",
+    "prior_appointments"
+   ],
+   "shap_top3": [
+    "lead_time_days",
+    "prior_appointments",
+    "Age"
+   ],
+   "top3_overlap": 3,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "lead_time_days",
+     0.13101784886922754
+    ],
+    [
+     "Age",
+     -0.09269588801208697
+    ],
+    [
+     "prior_appointments",
+     -0.025048541586822466
+    ],
+    [
+     "appointment_dow",
+     -0.014864676284135054
+    ],
+    [
+     "Hipertension",
+     -0.004976783146548385
+    ],
+    [
+     "prior_noShows",
+     -0.004934956883104732
+    ]
+   ]
+  },
+  {
+   "config": "local_sampling",
+   "example": "high",
+   "score_tier": "high",
+   "test_row": 18077,
+   "model_score": 0.45151135325431824,
+   "lime_local_prediction": 0.29457868589652636,
+   "abs_error": 0.15693266735779188,
+   "lime_r2": 0.5798813369753235,
+   "lime_top3": [
+    "lead_time_days",
+    "Age",
+    "prior_appointments"
+   ],
+   "shap_top3": [
+    "lead_time_days",
+    "Neighbourhood",
+    "SMS_received"
+   ],
+   "top3_overlap": 1,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "lead_time_days",
+     0.12384987459035215
+    ],
+    [
+     "Age",
+     0.025444341432615803
+    ],
+    [
+     "prior_appointments",
+     -0.01226461508766386
+    ],
+    [
+     "SMS_received",
+     -0.010160557254831998
+    ],
+    [
+     "appointment_dow",
+     -0.008505104030756213
+    ],
+    [
+     "prior_noShows",
+     0.005101262815904983
+    ]
+   ]
+  },
+  {
+   "config": "local_sampling",
+   "example": "medium",
+   "score_tier": "medium",
+   "test_row": 15872,
+   "model_score": 0.31355366110801697,
+   "lime_local_prediction": 0.28632692919692104,
+   "abs_error": 0.027226731911095925,
+   "lime_r2": 0.22089539274610637,
+   "lime_top3": [
+    "lead_time_days",
+    "Age",
+    "SMS_received"
+   ],
+   "shap_top3": [
+    "lead_time_days",
+    "Age",
+    "appointment_month"
+   ],
+   "top3_overlap": 2,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "lead_time_days",
+     0.03515600813159933
+    ],
+    [
+     "Age",
+     -0.03456988792818092
+    ],
+    [
+     "SMS_received",
+     -0.008735137270186329
+    ],
+    [
+     "prior_appointments",
+     -0.008532509935876014
+    ],
+    [
+     "Gender=F",
+     -0.006457018607139081
+    ],
+    [
+     "Scholarship",
+     0.004633991614597152
+    ]
+   ]
+  },
+  {
+   "config": "local_sampling",
+   "example": "low",
+   "score_tier": "low",
+   "test_row": 10548,
+   "model_score": 0.06639333069324493,
+   "lime_local_prediction": 0.13735383212935354,
+   "abs_error": 0.0709605014361086,
+   "lime_r2": 0.6324046896763151,
+   "lime_top3": [
+    "lead_time_days",
+    "Age",
+    "Neighbourhood"
+   ],
+   "shap_top3": [
+    "lead_time_days",
+    "Age",
+    "appointment_month"
+   ],
+   "top3_overlap": 2,
+   "fidelity": "weak",
+   "weights": [
+    [
+     "lead_time_days",
+     0.1177051719644426
+    ],
+    [
+     "Age",
+     -0.026061048913163125
+    ],
+    [
+     "Neighbourhood=JARDIM DA PENHA",
+     -0.024258075666199586
+    ],
+    [
+     "prior_appointments",
+     -0.009165518129145789
+    ],
+    [
+     "Gender=F",
+     -0.008677817124778829
+    ],
+    [
+     "SMS_received",
+     -0.004569360263606876
+    ]
+   ]
+  }
+ ],
+ "counterfactuals": [
+  {
+   "example": "high",
+   "score_tier": "high",
+   "test_row": 18077,
+   "original_score": 0.45151135325431824,
+   "original_policy_flag_probability": 0.9026687296191013,
+   "age_band": "child",
+   "single_cutoff_flag": true,
+   "applicable": true,
+   "counterfactual": null,
+   "lowest_reachable": {
+    "lead_time_days": 0,
+    "SMS_received": 1,
+    "score": 0.0246297437697649,
+    "policy_flag_probability": 0.11334247503230198,
+    "single_cutoff_flag": false,
+    "cost": 2.714
+   },
+   "n_options": 14,
+   "levers": "earlier slot (lead time can only fall); add SMS reminder",
+   "immutable": [
+    "Age",
+    "Gender",
+    "Neighbourhood",
+    "prior history",
+    "health flags",
+    "Scholarship"
+   ]
+  },
+  {
+   "example": "medium",
+   "score_tier": "medium",
+   "test_row": 15872,
+   "original_score": 0.31355366110801697,
+   "original_policy_flag_probability": 0.916257576096033,
+   "age_band": "young_adult",
+   "single_cutoff_flag": true,
+   "applicable": true,
+   "counterfactual": null,
+   "lowest_reachable": {
+    "lead_time_days": 0,
+    "SMS_received": 1,
+    "score": 0.022851351648569107,
+    "policy_flag_probability": 0.09751823389682747,
+    "single_cutoff_flag": false,
+    "cost": 3.857
+   },
+   "n_options": 9,
+   "levers": "earlier slot (lead time can only fall); add SMS reminder",
+   "immutable": [
+    "Age",
+    "Gender",
+    "Neighbourhood",
+    "prior history",
+    "health flags",
+    "Scholarship"
+   ]
+  },
+  {
+   "example": "low",
+   "score_tier": "low",
+   "test_row": 10548,
+   "original_score": 0.06639333069324493,
+   "original_policy_flag_probability": 0.09751823389682747,
+   "age_band": "young_adult",
+   "single_cutoff_flag": false,
+   "applicable": true,
+   "counterfactual": null,
+   "lowest_reachable": {
+    "lead_time_days": 0,
+    "SMS_received": 1,
+    "score": 0.06217752769589424,
+    "policy_flag_probability": 0.09751823389682747,
+    "single_cutoff_flag": false,
+    "cost": 1.0
+   },
+   "n_options": 2,
+   "levers": "earlier slot (lead time can only fall); add SMS reminder",
+   "immutable": [
+    "Age",
+    "Gender",
+    "Neighbourhood",
+    "prior history",
+    "health flags",
+    "Scholarship"
+   ]
+  }
+ ],
+ "population": {
+  "sampled_with_flag_probability_above_0": 1500,
+  "share_with_any_flag_probability_above_0_in_test": 0.9177034791657241,
+  "share_unflaggable_by_actionable_change": 0.12466666666666666,
+  "share_flag_probability_reducible": 0.6726666666666666,
+  "share_already_same_day_booking": 0.304
+ }
+}

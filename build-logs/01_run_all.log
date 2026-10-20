@@ -1,0 +1,177 @@
+2026/10/20 13:13:08 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/10/20 13:13:08 INFO mlflow.store.db.utils: Updating database tables
+2026/10/20 13:13:29 WARNING mlflow.sklearn: Saving scikit-learn models in the pickle or cloudpickle format requires exercising caution because these formats rely on Python's object serialization mechanism, which can execute arbitrary code during deserialization. The recommended safe alternative is the 'skops' format. For more information, see: https://scikit-learn.org/stable/model_persistence.html
+logistic_regression {'threshold': 0.48, 'accuracy': 0.63, 'precision': 0.3051, 'recall': 0.6522, 'f1': 0.4157, 'roc_auc': 0.6803, 'pr_auc': 0.3166, 'brier': 0.2275, 'flag_rate': 0.4315} {'C': 0.01, 'class_weight': 'balanced'} 20 s
+2026/10/20 13:20:44 WARNING mlflow.sklearn: Saving scikit-learn models in the pickle or cloudpickle format requires exercising caution because these formats rely on Python's object serialization mechanism, which can execute arbitrary code during deserialization. The recommended safe alternative is the 'skops' format. For more information, see: https://scikit-learn.org/stable/model_persistence.html
+random_forest {'threshold': 0.255, 'accuracy': 0.6802, 'precision': 0.3448, 'recall': 0.6488, 'f1': 0.4503, 'roc_auc': 0.7427, 'pr_auc': 0.3854, 'brier': 0.142, 'flag_rate': 0.3799} {'class_weight': None, 'max_depth': None, 'min_samples_leaf': 5, 'n_estimators': 200} 431 s
+2026/10/20 13:23:09 WARNING mlflow.sklearn: Saving scikit-learn models in the pickle or cloudpickle format requires exercising caution because these formats rely on Python's object serialization mechanism, which can execute arbitrary code during deserialization. The recommended safe alternative is the 'skops' format. For more information, see: https://scikit-learn.org/stable/model_persistence.html
+Successfully registered model 'careconnect_noshow_xgb'.
+Created version '1' of model 'careconnect_noshow_xgb'.
+xgboost {'threshold': 0.25, 'accuracy': 0.6767, 'precision': 0.3428, 'recall': 0.6558, 'f1': 0.4502, 'roc_auc': 0.7455, 'pr_auc': 0.3986, 'brier': 0.1412, 'flag_rate': 0.3862} {'learning_rate': 0.05, 'max_depth': 8, 'n_estimators': 300, 'scale_pos_weight': 1} 142 s
+done in 629 s
+analysis.json written; AUC 0.7455 | age EOD 0.629
+policy export check, max |pmf diff| = 0.0
+before 0.656 0.386 {'age_band': 0.629, 'Gender': 0.017, 'Scholarship': 0.209}
+A_group_thresholds 0.67 0.414 {'age_band': 0.077, 'Gender': 0.041, 'Scholarship': 0.146}
+B_equalized_odds 0.852 0.607 {'age_band': 0.041, 'Gender': 0.031, 'Scholarship': 0.029}
+C_demographic_parity 0.878 0.596 {'age_band': 0.063, 'Gender': 0.037, 'Scholarship': 0.048}
+policy                                 recall   prec     F1   flag  ageEOD ageTPRg ageFPRg  genEOD  schEOD  rand%
+P0_single_cutoff                        0.656  0.343  0.450  0.386   0.629   0.629   0.427   0.017   0.209    0.0 C3 C4 C5 C6 C7 C8
+P1_equal_opportunity_tpr65              0.664  0.327  0.439  0.410   0.064   0.040   0.064   0.040   0.152    0.0 C3 C4 C5 C7 C8
+P1_equal_opportunity_tpr75              0.768  0.314  0.446  0.494   0.083   0.057   0.083   0.046   0.112    0.0 C3 C4 C5 C7 C8
+P1_equal_opportunity_tpr85              0.864  0.300  0.446  0.581   0.100   0.060   0.100   0.043   0.054    0.0 C3 C4 C5 C7 C8
+P2_minimax_per_group                    0.782  0.313  0.447  0.505   0.089   0.089   0.079   0.037   0.108    0.0 C3 C4 C5 C7 C8
+P3_tpr_parity_randomised                0.900  0.294  0.444  0.617   0.091   0.030   0.091   0.044   0.035    2.4 C3 C4 C5 C8
+P4_option_B_equalized_odds              0.852  0.283  0.425  0.607   0.041   0.041   0.025   0.031   0.029   81.6 C3 C8
+P5_unaware_model_no_age                 0.659  0.334  0.443  0.399   0.254   0.254   0.174   0.022   0.196    0.0 C3 C4 C5 C6 C7 C8
+no policy reliably meets the fairness requirement: True
+Option B risk-unrelated share of flags: 0.1078
+LIME cycle1_training_distribution cycle1_high 0.602 0.073 0.686 ['lead_time_days', 'Alcoholism', 'Age'] ['prior_noShows', 'lead_time_days', 'Age'] weak
+LIME cycle1_training_distribution cycle1_medium 0.245 0.154 0.072 ['Age', 'Alcoholism', 'lead_time_days'] ['prior_noShow_rate', 'lead_time_days', 'Age'] weak
+LIME cycle1_training_distribution cycle1_low 0.01 0.016 0.657 ['lead_time_days', 'Alcoholism', 'SMS_received'] ['lead_time_days', 'prior_appointments', 'Age'] adequate
+LIME cycle1_training_distribution high 0.452 0.357 0.122 ['lead_time_days', 'Alcoholism', 'Age'] ['lead_time_days', 'Neighbourhood', 'SMS_received'] weak
+LIME cycle1_training_distribution medium 0.314 0.353 0.313 ['lead_time_days', 'Alcoholism', 'Age'] ['lead_time_days', 'Age', 'appointment_month'] weak
+LIME cycle1_training_distribution low 0.066 0.08 0.674 ['lead_time_days', 'Alcoholism', 'Age'] ['lead_time_days', 'Age', 'appointment_month'] adequate
+LIME local_sampling cycle1_high 0.602 0.306 0.409 ['lead_time_days', 'prior_appointments', 'Age'] ['prior_noShows', 'lead_time_days', 'Age'] weak
+LIME local_sampling cycle1_medium 0.245 0.147 0.467 ['lead_time_days', 'prior_appointments', 'Age'] ['prior_noShow_rate', 'lead_time_days', 'Age'] weak
+LIME local_sampling cycle1_low 0.01 0.168 0.524 ['lead_time_days', 'Age', 'prior_appointments'] ['lead_time_days', 'prior_appointments', 'Age'] weak
+LIME local_sampling high 0.452 0.295 0.58 ['lead_time_days', 'Age', 'prior_appointments'] ['lead_time_days', 'Neighbourhood', 'SMS_received'] weak
+LIME local_sampling medium 0.314 0.286 0.221 ['lead_time_days', 'Age', 'SMS_received'] ['lead_time_days', 'Age', 'appointment_month'] weak
+LIME local_sampling low 0.066 0.137 0.632 ['lead_time_days', 'Age', 'Neighbourhood'] ['lead_time_days', 'Age', 'appointment_month'] weak
+CF high 0.452 0.903 None
+CF medium 0.314 0.916 None
+CF low 0.066 0.098 None
+{'sampled_with_flag_probability_above_0': 1500, 'share_with_any_flag_probability_above_0_in_test': 0.9177034791657241, 'share_unflaggable_by_actionable_change': 0.12466666666666666, 'share_flag_probability_reducible': 0.6726666666666666, 'share_already_same_day_booking': 0.304}
+cycle1 weekly week of 2016-04-25 0.131 halt
+cycle1 weekly week of 2016-05-02 0.089 halt
+cycle1 weekly week of 2016-05-09 0.128 halt
+cycle1 weekly week of 2016-05-16 0.07 halt
+cycle1 weekly week of 2016-05-23 0.183 halt
+cycle1 weekly week of 2016-05-30 0.165 halt
+cycle1 weekly week of 2016-06-06 0.106 halt
+cycle2 weekly week of 2016-04-25 669 insufficient data None None ['adult', 'child', 'elderly', 'senior', 'teen', 'young_adult'] alert
+cycle2 weekly week of 2016-05-02 4175 halt 0.08 [0.052, 0.184] ['elderly'] alert
+cycle2 weekly week of 2016-05-09 4382 halt 0.084 [0.067, 0.17] ['elderly'] ok
+cycle2 weekly week of 2016-05-16 4278 halt 0.068 [0.051, 0.162] ['elderly'] alert
+cycle2 weekly week of 2016-05-23 1606 inconclusive 0.072 [0.029, 0.161] ['child', 'elderly', 'teen'] alert
+cycle2 weekly week of 2016-05-30 4198 halt 0.197 [0.145, 0.283] ['elderly'] ok
+cycle2 weekly week of 2016-06-06 2795 halt 0.133 [0.092, 0.242] ['elderly'] warn
+rolling28 28 days to 2016-05-05 (partial: 7 days) 4106 halt 0.078 [0.056, 0.18] ['elderly'] alert
+rolling28 28 days to 2016-05-12 (partial: 14 days) 8432 halt 0.12 [0.072, 0.186] [] warn
+rolling28 28 days to 2016-05-19 (partial: 21 days) 12786 inconclusive 0.079 [0.05, 0.154] [] ok
+rolling28 28 days to 2016-05-26 15110 inconclusive 0.078 [0.046, 0.135] [] ok
+rolling28 28 days to 2016-06-02 14387 halt 0.085 [0.053, 0.143] [] ok
+rolling28 28 days to 2016-06-08 14573 inconclusive 0.047 [0.038, 0.116] [] ok
+month calendar month 2016-04 669 insufficient data None None ['adult', 'child', 'elderly', 'senior', 'teen', 'young_adult'] alert
+month calendar month 2016-05 16155 inconclusive 0.056 [0.039, 0.118] [] ok
+month calendar month 2016-06 5279 halt 0.167 [0.1, 0.245] ['elderly'] warn
+stress S1 4000 halt 0.09 [0.064, 0.184] ['elderly'] alert
+stress S2 14573 halt 0.609 [0.549, 0.707] [] ok
+stress S3 13894 inconclusive 0.062 [0.033, 0.113] ['elderly'] warn
+stress S4 300 insufficient data None None ['adult', 'child', 'elderly', 'senior', 'teen', 'young_adult'] alert
+module4 s7 weekly week of 2016-04-25 669 halt {'age_band': 0.286, 'Gender': 0.125, 'Scholarship': 0.056} age_band: policy's expected disparity (expected 0.262 above 0.05); age_band: small subgroup(s) (child 17 no-shows, elderly 6 no-shows, senior 15 no-shows, teen 11 no-shows) - point estimate imprecise; Gender: policy's expected disparity (expected 0.108 above 0.05); concurrent data-drift alert (prior_appointments PSI 2.10)
+module4 s7 weekly week of 2016-05-02 4175 halt {'age_band': 0.153, 'Gender': 0.04, 'Scholarship': 0.049} age_band: policy's expected disparity (expected 0.104 above 0.05); age_band: small subgroup(s) (elderly 29 no-shows) - point estimate imprecise; Gender: policy's expected disparity (expected 0.043 above 0.04); concurrent data-drift alert (prior_appointments PSI 0.34)
+module4 s7 weekly week of 2016-05-09 4382 halt {'age_band': 0.119, 'Gender': 0.053, 'Scholarship': 0.016} age_band: policy's expected disparity (expected 0.103 above 0.05); Gender: random draw / sampling (expected 0.036 within 0.05)
+module4 s7 weekly week of 2016-05-16 4278 halt {'age_band': 0.095, 'Gender': 0.046, 'Scholarship': 0.053} age_band: policy's expected disparity (expected 0.072 above 0.05); Gender: policy's expected disparity (expected 0.046 above 0.04); concurrent data-drift alert (SMS_received PSI 2.73)
+module4 s7 weekly week of 2016-05-23 1606 halt {'age_band': 0.108, 'Gender': 0.019, 'Scholarship': 0.097} age_band: policy's expected disparity (expected 0.080 above 0.05); age_band: small subgroup(s) (elderly 23 no-shows, teen 24 no-shows) - point estimate imprecise; concurrent data-drift alert (lead_time_days PSI 0.66)
+module4 s7 weekly week of 2016-05-30 4198 halt {'age_band': 0.197, 'Gender': 0.028, 'Scholarship': 0.053} age_band: policy's expected disparity (expected 0.140 above 0.05)
+module4 s7 weekly week of 2016-06-06 2795 halt {'age_band': 0.133, 'Gender': 0.027, 'Scholarship': 0.081} age_band: policy's expected disparity (expected 0.096 above 0.05); age_band: small subgroup(s) (elderly 23 no-shows) - point estimate imprecise
+evidently: evidently>=0.7
+docs/model_card.md written
+docs/committee_decision_pack.md written
+{
+ "generated_utc": "2026-10-20T13:33:03.681572+00:00",
+ "model_version": "2.0.0",
+ "configured_policy": "P4_option_B_equalized_odds",
+ "configured_policy_status": "evaluation only - not approved for operational use",
+ "checks": [
+  {
+   "check": "data contract passed",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "representation-bias gate passed",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "patient-grouped AUC within 0.02 of random-split AUC",
+   "value": 0.7463,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C1 ROC-AUC >= 0.70 (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C2 Recall >= 0.65 (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C4 Equalized-odds gap <= 0.05 for age band AND gender (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C5 Demographic-parity gap <= 0.05 for age band AND gender (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C6 Disparate-impact ratio >= 0.80 for age band AND gender (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C7 Equalized-odds gap <= 0.05 for scholarship (G3 stand-in) (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)",
+   "value": false,
+   "passed": false,
+   "blocking": true
+  },
+  {
+   "check": "C3 F1 >= 0.55",
+   "value": 0.4502,
+   "passed": false,
+   "blocking": true,
+   "source_note": "Module 4 s.1 'The acceptance threshold is: ROC-AUC >= 0.70, Recall >= 0.65, F1 >= 0.55'; omitted from the Module 4 s.7 staging list; treated as blocking by reviewer decision"
+  },
+  {
+   "check": "Ethics Committee has reviewed and approved the Model Card (Module 4 s.7)",
+   "value": "not recorded",
+   "passed": false,
+   "blocking": true
+  }
+ ],
+ "blocking_failures": [
+  "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)",
+  "C3 F1 >= 0.55",
+  "Ethics Committee has reviewed and approved the Model Card (Module 4 s.7)"
+ ],
+ "original_criteria_not_met": [
+  "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)",
+  "C3 F1 >= 0.55",
+  "Ethics Committee has reviewed and approved the Model Card (Module 4 s.7)"
+ ],
+ "no_evaluated_policy_reliably_meets_fairness": true,
+ "decision": "NOT ELIGIBLE under the original acceptance criteria; evidence package prepared for an Ethics Committee decision",
+ "automatic_promotion": false,
+ "recommendation": "Do not deploy until a better model or sufficient additional evidence is available",
+ "deployment_status": "not deployed (no public API; live dashboard serves v1 from main)"
+}

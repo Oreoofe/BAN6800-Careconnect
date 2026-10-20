@@ -1,0 +1,114 @@
+Registry store URI not provided. Using backend store URI.
+[MLflow] Security middleware enabled with default settings (localhost-only). To allow connections from other hosts, use --host 0.0.0.0 and configure --allowed-hosts and --cors-allowed-origins.
+2026/10/20 13:39:14 INFO mlflow.server.jobs.executor_registry: Available backends after discovery: local
+2026/10/20 13:39:14 INFO mlflow.server.jobs.executor_registry: Job executor backend 'local' passed requirements check
+2026/10/20 13:39:14 INFO:     Uvicorn running on http://127.0.0.1:5055 (Press CTRL+C to quit)
+2026/10/20 13:39:14 INFO:     Started parent process [3612]
+/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/mlflow/server/fastapi_app.py:23: StarletteDeprecationWarning: starlette.middleware.wsgi is deprecated and will be removed in a future release. Please refer to https://github.com/abersheeran/a2wsgi as a replacement.
+  from starlette.middleware.wsgi import WSGIResponder, build_environ
+2026/10/20 13:39:19 INFO:     Started server process [3617]
+2026/10/20 13:39:19 INFO:     Waiting for application startup.
+2026/10/20 13:39:19 INFO:     Application startup complete.
+2026/10/20 13:39:19 INFO:     127.0.0.1:48766 - "GET /health HTTP/1.1" 200 OK
+/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/mlflow/server/fastapi_app.py:23: StarletteDeprecationWarning: starlette.middleware.wsgi is deprecated and will be removed in a future release. Please refer to https://github.com/abersheeran/a2wsgi as a replacement.
+  from starlette.middleware.wsgi import WSGIResponder, build_environ
+/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/mlflow/server/fastapi_app.py:23: StarletteDeprecationWarning: starlette.middleware.wsgi is deprecated and will be removed in a future release. Please refer to https://github.com/abersheeran/a2wsgi as a replacement.
+  from starlette.middleware.wsgi import WSGIResponder, build_environ
+/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/mlflow/server/fastapi_app.py:23: StarletteDeprecationWarning: starlette.middleware.wsgi is deprecated and will be removed in a future release. Please refer to https://github.com/abersheeran/a2wsgi as a replacement.
+  from starlette.middleware.wsgi import WSGIResponder, build_environ
+2026/10/20 13:39:22 INFO:     Started server process [3618]
+2026/10/20 13:39:22 INFO:     Waiting for application startup.
+2026/10/20 13:39:22 INFO:     Started server process [3616]
+2026/10/20 13:39:22 INFO:     Waiting for application startup.
+2026/10/20 13:39:22 INFO:     Application startup complete.
+2026/10/20 13:39:22 INFO:     Application startup complete.
+2026/10/20 13:39:22 INFO:     Started server process [3615]
+2026/10/20 13:39:22 INFO:     Waiting for application startup.
+2026/10/20 13:39:22 INFO:     Application startup complete.
+2026/10/20 13:39:25 INFO:     127.0.0.1:53772 - "GET / HTTP/1.1" 200 OK
+2026/10/20 13:39:25 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/main.683d7930.js HTTP/1.1" 200 OK
+2026/10/20 13:39:26 INFO:     127.0.0.1:53778 - "GET /static-files/static/css/main.b0f58ef9.css HTTP/1.1" 200 OK
+2026/10/20 13:39:27 INFO:     127.0.0.1:53772 - "GET /static-files/TelemetryLogger.telemetry-worker.d0f8ea2c83c08b63528f.worker.js HTTP/1.1" 200 OK
+2026/10/20 13:39:27 INFO:     127.0.0.1:53772 - "GET /ajax-api/3.0/mlflow/ui-telemetry HTTP/1.1" 200 OK
+2026/10/20 13:39:27 INFO:     127.0.0.1:53772 - "GET /ajax-api/3.0/mlflow/server-info HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/9861.2d6b3bae.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53778 - "GET /static-files/static/js/6507.352ad2e0.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53808 - "GET /static-files/static/js/353.df7e2039.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53818 - "GET /static-files/static/js/3448.da9a79ba.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53832 - "GET /static-files/static/js/2809.4115baa4.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53818 - "GET /static-files/static/js/5439.b5816bbb.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53808 - "GET /ajax-api/3.0/mlflow/assistant/config HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53808 - "GET /ajax-api/3.0/mlflow/assistant/config HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53818 - "GET /ajax-api/2.0/mlflow/users/current HTTP/1.1" 404 Not Found
+2026/10/20 13:39:28 INFO mlflow.server.jobs.utils: Registered online_scoring_scheduler periodic task (runs every 1 minute)
+2026/10/20 13:39:28 INFO mlflow.server.jobs.utils: Registered trace_archival_scheduler periodic task (polls every 1 minute and no-ops when trace archival is disabled or unconfigured)
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /ajax-api/3.0/mlflow/assistant/providers HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO mlflow.server.jobs.utils: SQL trace rollup scheduler was not registered because rollups are disabled
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/css/5439.24118451.chunk.css HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/4863.c17ad67f.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/3198.bb9ac57b.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/css/5343.b4cc2aa3.chunk.css HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/7340.cdf02082.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/9848.664e1dcc.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/855.aefc6d74.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/8209.bb1a8127.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/9360.ea3236af.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/7182.98535e81.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/2369.90891e4f.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/9867.fe03ab1c.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/3121.3be60de2.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/4751.94bc6db7.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/3793.0117dc93.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/9662.9a8db43d.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/6475.82f59d0e.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/5702.205ea7af.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/3878.0467b2c4.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53772 - "GET /static-files/static/js/5343.bbb1f624.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53818 - "GET /ajax-api/3.0/mlflow/assistant/providers HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53778 - "POST /graphql HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53832 - "POST /ajax-api/2.0/mlflow/runs/search HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53808 - "GET /static-files/static/js/8503.9d34794c.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:28 INFO:     127.0.0.1:53808 - "POST /ajax-api/2.0/mlflow/experiments/search-datasets HTTP/1.1" 200 OK
+2026/10/20 13:39:29 INFO:     127.0.0.1:53808 - "GET /static-files/static/css/2685.f073c5c3.chunk.css HTTP/1.1" 200 OK
+2026/10/20 13:39:29 INFO:     127.0.0.1:53832 - "GET /static-files/static/js/1372.38a0e73a.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:29 INFO:     127.0.0.1:53778 - "GET /static-files/static/js/2685.2f8f1b38.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:29 INFO:     127.0.0.1:53832 - "GET /ajax-api/2.0/mlflow/gateway-proxy?gateway_path=api%2F2.0%2Fendpoints%2F HTTP/1.1" 200 OK
+2026/10/20 13:39:29 INFO:     127.0.0.1:53818 - "POST /ajax-api/2.0/mlflow/logged-models/search HTTP/1.1" 200 OK
+2026/10/20 13:39:29 INFO:     127.0.0.1:53794 - "POST /ajax-api/2.0/mlflow/runs/search HTTP/1.1" 200 OK
+2026/10/20 13:39:32 INFO:     127.0.0.1:53794 - "GET /static-files/static/js/3642.0ad7134a.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:32 INFO:     127.0.0.1:53778 - "GET /static-files/static/css/4028.24118451.chunk.css HTTP/1.1" 200 OK
+2026/10/20 13:39:32 INFO:     127.0.0.1:53818 - "GET /static-files/static/js/4028.889f3d43.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:32 INFO:     127.0.0.1:53778 - "GET /ajax-api/2.0/mlflow/registered-models/get?name=careconnect_noshow_xgb HTTP/1.1" 200 OK
+2026/10/20 13:39:32 INFO:     127.0.0.1:53818 - "GET /ajax-api/2.0/mlflow/model-versions/search?filter=name%3D%27careconnect_noshow_xgb%27&max_results=25&order_by=creation_timestamp+DESC HTTP/1.1" 200 OK
+2026/10/20 13:39:36 INFO:     127.0.0.1:53778 - "GET /static-files/static/js/927.2726bd57.chunk.js HTTP/1.1" 200 OK
+2026/10/20 13:39:36 INFO:     127.0.0.1:53818 - "GET /static-files/static/css/927.f3f01f1d.chunk.css HTTP/1.1" 200 OK
+2026/10/20 13:39:36 INFO:     127.0.0.1:53778 - "GET /ajax-api/2.0/mlflow/registered-models/search?filter=&max_results=25&order_by=name+ASC HTTP/1.1" 200 OK
+saved /home/runner/work/BAN6800-Careconnect/BAN6800-Careconnect/docs/evidence/mlflow_experiment_runs.png
+saved /home/runner/work/BAN6800-Careconnect/BAN6800-Careconnect/docs/evidence/mlflow_model_registry.png
+saved /home/runner/work/BAN6800-Careconnect/BAN6800-Careconnect/docs/evidence/mlflow_registered_models.png
+2026/10/20 13:39:39 INFO:     Received SIGTERM, exiting.
+2026/10/20 13:39:39 INFO:     Terminated child process [3615]
+2026/10/20 13:39:39 INFO:     Terminated child process [3616]
+2026/10/20 13:39:39 INFO:     Terminated child process [3617]
+2026/10/20 13:39:39 INFO:     Terminated child process [3618]
+2026/10/20 13:39:39 INFO:     Waiting for child process [3615]
+2026/10/20 13:39:39 INFO:     Shutting down
+2026/10/20 13:39:39 INFO:     Shutting down
+2026/10/20 13:39:39 INFO:     Shutting down
+2026/10/20 13:39:39 INFO:     Shutting down
+2026/10/20 13:39:39 INFO:     Waiting for application shutdown.
+2026/10/20 13:39:39 INFO:     Application shutdown complete.
+2026/10/20 13:39:39 INFO:     Finished server process [3615]
+2026/10/20 13:39:39 INFO:     Waiting for application shutdown.
+2026/10/20 13:39:39 INFO:     Application shutdown complete.
+2026/10/20 13:39:39 INFO:     Finished server process [3617]
+2026/10/20 13:39:39 INFO:     Waiting for child process [3616]
+2026/10/20 13:39:39 INFO:     Waiting for application shutdown.
+2026/10/20 13:39:39 INFO:     Application shutdown complete.
+2026/10/20 13:39:39 INFO:     Finished server process [3616]
+2026/10/20 13:39:39 INFO:     Waiting for application shutdown.
+2026/10/20 13:39:39 INFO:     Application shutdown complete.
+2026/10/20 13:39:39 INFO:     Finished server process [3618]
+2026/10/20 13:39:39 INFO:     Waiting for child process [3617]
+2026/10/20 13:39:39 INFO:     Waiting for child process [3618]
+2026/10/20 13:39:39 INFO:     Stopping parent process [3612]
