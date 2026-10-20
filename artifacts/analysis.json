@@ -1,0 +1,671 @@
+{
+ "model_results": {
+  "n_train": 88411,
+  "n_test": 22103,
+  "pos_rate": 0.20188392420869755,
+  "baselines": {
+   "most_frequent": {
+    "accuracy": 0.7981269510926119,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "roc_auc": 0.5
+   },
+   "stratified": {
+    "accuracy": 0.679862462109216,
+    "precision": 0.20825892857142858,
+    "recall": 0.20909905871806364,
+    "f1": 0.20867814806530977,
+    "roc_auc": 0.5040166797473319
+   }
+  },
+  "models": {
+   "logistic_regression": {
+    "metrics": {
+     "accuracy": 0.6609510021264082,
+     "precision": 0.32054924242424243,
+     "recall": 0.6069027341999104,
+     "f1": 0.4195197521301317,
+     "roc_auc": 0.6899020635961451
+    },
+    "best_params": {
+     "C": 0.01,
+     "class_weight": "balanced"
+    },
+    "cv_auc_subsample": 0.681710231400873,
+    "secs": 5
+   },
+   "xgboost": {
+    "metrics": {
+     "accuracy": 0.8034203501787087,
+     "precision": 0.6833855799373041,
+     "recall": 0.04885701479157328,
+     "f1": 0.09119431081363731,
+     "roc_auc": 0.7516095837009822
+    },
+    "best_params": {
+     "learning_rate": 0.05,
+     "max_depth": 4,
+     "n_estimators": 100,
+     "scale_pos_weight": 1
+    },
+    "cv_auc_subsample": 0.744856135454317,
+    "secs": 52
+   },
+   "random_forest": {
+    "metrics": {
+     "accuracy": 0.8027869519974664,
+     "precision": 0.6943396226415094,
+     "recall": 0.041237113402061855,
+     "f1": 0.07785064522953247,
+     "roc_auc": 0.7545310472926199
+    },
+    "best_params": {
+     "class_weight": null,
+     "max_depth": null,
+     "min_samples_leaf": 5,
+     "n_estimators": 200
+    },
+    "cv_auc_subsample": 0.7435359459031353,
+    "secs": 153
+   }
+  },
+  "best_by_auc": "random_forest"
+ },
+ "operating": {
+  "logistic_regression": {
+   "at_default_0_5": {
+    "threshold": 0.5,
+    "accuracy": 0.6609510021264082,
+    "precision": 0.32054924242424243,
+    "recall": 0.6069027341999104,
+    "f1": 0.4195197521301317,
+    "roc_auc": 0.6899020635961451,
+    "flag_rate": 0.38221055965253586
+   },
+   "at_recall_target": {
+    "threshold": 0.4799999999999999,
+    "accuracy": 0.6364294439668823,
+    "precision": 0.30948827292110875,
+    "recall": 0.6506051098162259,
+    "f1": 0.419448056639214,
+    "roc_auc": 0.6899020635961451,
+    "flag_rate": 0.4243767814323847
+   }
+  },
+  "xgboost": {
+   "at_default_0_5": {
+    "threshold": 0.5,
+    "accuracy": 0.8034203501787087,
+    "precision": 0.6833855799373041,
+    "recall": 0.04885701479157328,
+    "f1": 0.09119431081363731,
+    "roc_auc": 0.7516095837009822,
+    "flag_rate": 0.01443242998687961
+   },
+   "at_recall_target": {
+    "threshold": 0.25249999999999995,
+    "accuracy": 0.6801791611998371,
+    "precision": 0.34946298648804713,
+    "recall": 0.6781712236665173,
+    "f1": 0.4612453319106775,
+    "roc_auc": 0.7516095837009822,
+    "flag_rate": 0.39175677509840295
+   }
+  },
+  "random_forest": {
+   "at_default_0_5": {
+    "threshold": 0.5,
+    "accuracy": 0.8027869519974664,
+    "precision": 0.6943396226415094,
+    "recall": 0.041237113402061855,
+    "f1": 0.07785064522953247,
+    "roc_auc": 0.7545310472926199,
+    "flag_rate": 0.011989322716373343
+   },
+   "at_recall_target": {
+    "threshold": 0.24999999999999994,
+    "accuracy": 0.6850653757408497,
+    "precision": 0.35172659309362764,
+    "recall": 0.6642761093679964,
+    "f1": 0.45992706959422763,
+    "roc_auc": 0.7545310472926199,
+    "flag_rate": 0.3812604623806723
+   }
+  }
+ },
+ "threshold": 0.25249999999999995,
+ "confusion": {
+  "tn": 12008,
+  "fp": 5633,
+  "fn": 1436,
+  "tp": 3026
+ },
+ "deciles": [
+  {
+   "d": 0,
+   "actual": 0.020805065581184983,
+   "pred": 0.031247546896338463,
+   "n": 2211
+  },
+  {
+   "d": 1,
+   "actual": 0.02895927601809955,
+   "pred": 0.03599292039871216,
+   "n": 2210
+  },
+  {
+   "d": 2,
+   "actual": 0.045701357466063346,
+   "pred": 0.045568399131298065,
+   "n": 2210
+  },
+  {
+   "d": 3,
+   "actual": 0.1330316742081448,
+   "pred": 0.1394187957048416,
+   "n": 2210
+  },
+  {
+   "d": 4,
+   "actual": 0.17729534147444595,
+   "pred": 0.20553524792194366,
+   "n": 2211
+  },
+  {
+   "d": 5,
+   "actual": 0.2244343891402715,
+   "pred": 0.2351289987564087,
+   "n": 2210
+  },
+  {
+   "d": 6,
+   "actual": 0.2656108597285068,
+   "pred": 0.26397955417633057,
+   "n": 2210
+  },
+  {
+   "d": 7,
+   "actual": 0.31312217194570136,
+   "pred": 0.298200398683548,
+   "n": 2210
+  },
+  {
+   "d": 8,
+   "actual": 0.34705882352941175,
+   "pred": 0.3384634852409363,
+   "n": 2210
+  },
+  {
+   "d": 9,
+   "actual": 0.4626865671641791,
+   "pred": 0.4301256239414215,
+   "n": 2211
+  }
+ ],
+ "base_rate": 0.20187304890738814,
+ "fairness": {
+  "Gender": {
+   "groups": {
+    "F": {
+     "n": 14391,
+     "no_show_rate": 0.20068098116878605,
+     "flag_rate": 0.39531651726773676,
+     "tpr": 0.6772853185595568,
+     "fpr": 0.32452403720768497,
+     "precision": 0.34382140973809105
+    },
+    "M": {
+     "n": 7712,
+     "no_show_rate": 0.20409751037344398,
+     "flag_rate": 0.38511410788381745,
+     "tpr": 0.6797966963151207,
+     "fpr": 0.3095470837406321,
+     "precision": 0.3602693602693603
+    }
+   },
+   "dpd": 0.010202409383919309,
+   "eod": 0.014976953467052856,
+   "tpr_gap": 0.0025113777555639816,
+   "fpr_gap": 0.014976953467052856,
+   "di_ratio": 0.9741917958439124,
+   "base_rate_gap": 0.003416529204657931,
+   "pass_dpd": true,
+   "pass_eod": true,
+   "pass_di": true
+  },
+  "age_band": {
+   "groups": {
+    "adult": {
+     "n": 6025,
+     "no_show_rate": 0.19717842323651452,
+     "flag_rate": 0.3795850622406639,
+     "tpr": 0.6456228956228957,
+     "fpr": 0.3142443663427745,
+     "precision": 0.3353738522081329
+    },
+    "child": {
+     "n": 4217,
+     "no_show_rate": 0.21176191605406688,
+     "flag_rate": 0.49466445340289306,
+     "tpr": 0.7905935050391937,
+     "fpr": 0.4151624548736462,
+     "precision": 0.33844678811121764
+    },
+    "elderly": {
+     "n": 1115,
+     "no_show_rate": 0.14349775784753363,
+     "flag_rate": 0.12914798206278028,
+     "tpr": 0.26875,
+     "fpr": 0.10575916230366492,
+     "precision": 0.2986111111111111
+    },
+    "senior": {
+     "n": 4412,
+     "no_show_rate": 0.149818676337262,
+     "flag_rate": 0.08567543064369901,
+     "tpr": 0.2027231467473525,
+     "fpr": 0.065049320181285,
+     "precision": 0.3544973544973545
+    },
+    "teen": {
+     "n": 1542,
+     "no_show_rate": 0.2717250324254215,
+     "flag_rate": 0.606355382619974,
+     "tpr": 0.8902147971360382,
+     "fpr": 0.5004452359750667,
+     "precision": 0.39893048128342246
+    },
+    "young_adult": {
+     "n": 4792,
+     "no_show_rate": 0.23810517529215358,
+     "flag_rate": 0.5903589315525877,
+     "tpr": 0.8790534618755478,
+     "fpr": 0.5001369487811559,
+     "precision": 0.35454224107458465
+    }
+   },
+   "dpd": 0.520679951976275,
+   "eod": 0.6874916503886858,
+   "tpr_gap": 0.6874916503886858,
+   "fpr_gap": 0.43539591579378173,
+   "di_ratio": 0.14129573695463515,
+   "base_rate_gap": 0.12822727457788788,
+   "pass_dpd": false,
+   "pass_eod": false,
+   "pass_di": false
+  },
+  "Scholarship_grp": {
+   "groups": {
+    "Bolsa Familia scholarship": {
+     "n": 2156,
+     "no_show_rate": 0.22912801484230055,
+     "flag_rate": 0.5282931354359925,
+     "tpr": 0.854251012145749,
+     "fpr": 0.4314079422382672,
+     "precision": 0.37050043898156276
+    },
+    "No scholarship": {
+     "n": 19947,
+     "no_show_rate": 0.1989271569659598,
+     "flag_rate": 0.3769990474758109,
+     "tpr": 0.65625,
+     "fpr": 0.30765379560673384,
+     "precision": 0.34627659574468084
+    }
+   },
+   "dpd": 0.15129408796018162,
+   "eod": 0.19800101214574894,
+   "tpr_gap": 0.19800101214574894,
+   "fpr_gap": 0.12375414663153333,
+   "di_ratio": 0.7136171609814297,
+   "base_rate_gap": 0.030200857876340748,
+   "pass_dpd": false,
+   "pass_eod": false,
+   "pass_di": false
+  }
+ },
+ "shap": {
+  "importance": {
+   "lead_time_days": 0.8982802629470825,
+   "Age": 0.1533874124288559,
+   "prior_noShow_rate": 0.13262981176376343,
+   "SMS_received": 0.05477364361286163,
+   "prior_appointments": 0.04266708716750145,
+   "appointment_month": 0.03803476691246033,
+   "Neighbourhood": 0.03518696874380112,
+   "prior_noShows": 0.030921226367354393,
+   "age_band": 0.028970275074243546,
+   "Scholarship": 0.020155254751443863,
+   "Gender": 0.01327050942927599,
+   "Alcoholism": 0.007895964197814465,
+   "appointment_dow": 0.0053374613635241985,
+   "Diabetes": 0.0017883111722767353,
+   "Hipertension": 0.0006361650885082781,
+   "Handcap": 0.00021980309975333512
+  },
+  "share": {
+   "lead_time_days": 0.6135144909522846,
+   "Age": 0.10476173654983377,
+   "prior_noShow_rate": 0.09058454783630948,
+   "SMS_received": 0.037409732201503676,
+   "prior_appointments": 0.02914110143988378,
+   "appointment_month": 0.025977283063338942,
+   "Neighbourhood": 0.02403227156097364,
+   "prior_noShows": 0.021118821415655825,
+   "age_band": 0.019786345418088335,
+   "Scholarship": 0.013765793782751909,
+   "Gender": 0.009063596488771317,
+   "Alcoholism": 0.005392847483374999,
+   "appointment_dow": 0.0036454211747641864,
+   "Diabetes": 0.0012213947737469968,
+   "Hipertension": 0.0004344930157513253,
+   "Handcap": 0.0001501228429671573
+  },
+  "direction": {
+   "Age": -0.8156818169608934,
+   "lead_time_days": 0.5815577867880198,
+   "prior_appointments": -0.6015746059838579,
+   "prior_noShows": 0.8418354089047708,
+   "prior_noShow_rate": 0.954881076643115,
+   "Scholarship": 0.11022424697875977,
+   "Hipertension": -0.0005342074437066913,
+   "Diabetes": 0.011616160161793232,
+   "Alcoholism": 0.1407995969057083,
+   "Handcap": 0.7055253579552885,
+   "SMS_received": -0.1133466362953186,
+   "appointment_dow": 0.4210145346791569,
+   "appointment_month": -0.885315084800494
+  }
+ },
+ "samples": [
+  {
+   "tier": "high",
+   "prob": 0.5489028692245483,
+   "features": {
+    "Gender": "F",
+    "Age": 27,
+    "Neighbourhood": "SANTA MARTHA",
+    "Scholarship": 0,
+    "Hipertension": 0,
+    "Diabetes": 0,
+    "Alcoholism": 0,
+    "Handcap": 0,
+    "SMS_received": 0,
+    "lead_time_days": 27,
+    "appointment_dow": 2,
+    "appointment_month": 6,
+    "age_band": "young_adult",
+    "prior_appointments": 3,
+    "prior_noShows": 2,
+    "prior_noShow_rate": 0.6666666666666666
+   },
+   "top": [
+    [
+     "lead_time_days",
+     0.7956315279006958
+    ],
+    [
+     "prior_noShow_rate",
+     0.6258018612861633
+    ],
+    [
+     "SMS_received",
+     0.16966213285923004
+    ],
+    [
+     "appointment_month",
+     -0.14932574331760406
+    ]
+   ],
+   "actual": 1
+  },
+  {
+   "tier": "medium",
+   "prob": 0.3203386664390564,
+   "features": {
+    "Gender": "F",
+    "Age": 39,
+    "Neighbourhood": "MONTE BELO",
+    "Scholarship": 0,
+    "Hipertension": 0,
+    "Diabetes": 0,
+    "Alcoholism": 0,
+    "Handcap": 0,
+    "SMS_received": 1,
+    "lead_time_days": 45,
+    "appointment_dow": 4,
+    "appointment_month": 4,
+    "age_band": "adult",
+    "prior_appointments": 0,
+    "prior_noShows": 0,
+    "prior_noShow_rate": 0.0
+   },
+   "top": [
+    [
+     "lead_time_days",
+     0.6917927265167236
+    ],
+    [
+     "Age",
+     0.08691657334566116
+    ],
+    [
+     "prior_noShow_rate",
+     -0.08638571947813034
+    ],
+    [
+     "SMS_received",
+     -0.08073484152555466
+    ]
+   ],
+   "actual": 0
+  },
+  {
+   "tier": "low",
+   "prob": 0.0341477245092392,
+   "features": {
+    "Gender": "F",
+    "Age": 60,
+    "Neighbourhood": "MARU\u00cdPE",
+    "Scholarship": 0,
+    "Hipertension": 1,
+    "Diabetes": 1,
+    "Alcoholism": 0,
+    "Handcap": 0,
+    "SMS_received": 0,
+    "lead_time_days": 0,
+    "appointment_dow": 0,
+    "appointment_month": 5,
+    "age_band": "senior",
+    "prior_appointments": 2,
+    "prior_noShows": 0,
+    "prior_noShow_rate": 0.0
+   },
+   "top": [
+    [
+     "lead_time_days",
+     -1.623265027999878
+    ],
+    [
+     "Age",
+     -0.17351466417312622
+    ],
+    [
+     "prior_noShow_rate",
+     -0.08379967510700226
+    ],
+    [
+     "age_band",
+     -0.04148442191944923
+    ]
+   ],
+   "actual": 0
+  }
+ ],
+ "whatif_avg_pp": {
+  "Booked 7 days ahead at most (lead time capped at 7 days)": -1.9045052528381348,
+  "Booked 14 days ahead at most (lead time capped at 14 days)": -0.4220758080482483,
+  "Everyone marked as SMS received": -0.845051109790802,
+  "Nobody marked as SMS received": 1.1029067039489746,
+  "No prior missed appointments on record": -1.4401034116744995
+ },
+ "descriptive": {
+  "lead_time": [
+   {
+    "bucket": "Same day",
+    "mean": 0.046473029045643155,
+    "size": 38560
+   },
+   {
+    "bucket": "1-3 days",
+    "mean": 0.2288031624863686,
+    "size": 14672
+   },
+   {
+    "bucket": "4-7 days",
+    "mean": 0.25202741290691033,
+    "size": 17510
+   },
+   {
+    "bucket": "8-14 days",
+    "mean": 0.3046985446985447,
+    "size": 12025
+   },
+   {
+    "bucket": "15-30 days",
+    "mean": 0.32590673575129536,
+    "size": 17370
+   },
+   {
+    "bucket": "31+ days",
+    "mean": 0.3299604895441843,
+    "size": 10377
+   }
+  ],
+  "sms": [
+   {
+    "SMS_received": 0,
+    "mean": 0.16695320725547425,
+    "size": 75033
+   },
+   {
+    "SMS_received": 1,
+    "mean": 0.27575322003325725,
+    "size": 35481
+   }
+  ],
+  "age_band": [
+   {
+    "age_band": "adult",
+    "mean": 0.1970484376041042,
+    "size": 30018
+   },
+   {
+    "age_band": "child",
+    "mean": 0.20470644164487758,
+    "size": 21035
+   },
+   {
+    "age_band": "elderly",
+    "mean": 0.16084695393759288,
+    "size": 5384
+   },
+   {
+    "age_band": "senior",
+    "mean": 0.15525506512301013,
+    "size": 22112
+   },
+   {
+    "age_band": "teen",
+    "mean": 0.26053639846743293,
+    "size": 7830
+   },
+   {
+    "age_band": "young_adult",
+    "mean": 0.23828464885021752,
+    "size": 24135
+   }
+  ],
+  "prior": [
+   {
+    "prior_noShows": 0,
+    "mean": 0.1898373590462984,
+    "size": 93027
+   },
+   {
+    "prior_noShows": 1,
+    "mean": 0.250622277535781,
+    "size": 12856
+   },
+   {
+    "prior_noShows": 2,
+    "mean": 0.26962913464751087,
+    "size": 2993
+   },
+   {
+    "prior_noShows": 3,
+    "mean": 0.3797313797313797,
+    "size": 1638
+   }
+  ],
+  "scholarship": [
+   {
+    "Scholarship": 0,
+    "mean": 0.19801711940433303,
+    "size": 99653
+   },
+   {
+    "Scholarship": 1,
+    "mean": 0.2373630420771568,
+    "size": 10861
+   }
+  ],
+  "gender": [
+   {
+    "Gender": "F",
+    "mean": 0.20309345807403695,
+    "size": 71829
+   },
+   {
+    "Gender": "M",
+    "mean": 0.19963810262375598,
+    "size": 38685
+   }
+  ],
+  "sms_by_lead": [
+   {
+    "bucket": "Same day",
+    "0": 0.046473029045643155,
+    "1": null
+   },
+   {
+    "bucket": "1-3 days",
+    "0": 0.22984163882028186,
+    "1": 0.2130242825607064
+   },
+   {
+    "bucket": "4-7 days",
+    "0": 0.2711124053581829,
+    "1": 0.23971058071791015
+   },
+   {
+    "bucket": "8-14 days",
+    "0": 0.3375821549492133,
+    "1": 0.2811250713877784
+   },
+   {
+    "bucket": "15-30 days",
+    "0": 0.36870529849656986,
+    "1": 0.29803213233197073
+   },
+   {
+    "bucket": "31+ days",
+    "0": 0.3750945298714394,
+    "1": 0.3020280811232449
+   }
+  ],
+  "n": 110514,
+  "overall": 0.20188392420869755
+ }
+}
