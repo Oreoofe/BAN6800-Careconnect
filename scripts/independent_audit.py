@@ -18,6 +18,7 @@ import pandas as pd
 from sklearn.metrics import confusion_matrix, f1_score, precision_score, recall_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 PUB = Path(sys.argv[1])          # build-outputs-14 checkout
 A = PUB / "artifacts"
 OUT = Path(sys.argv[2]); OUT.mkdir(parents=True, exist_ok=True)
