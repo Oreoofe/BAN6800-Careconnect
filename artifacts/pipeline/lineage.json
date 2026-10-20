@@ -1,0 +1,42 @@
+{
+ "generated_utc": "2026-10-20T05:18:08.857987+00:00",
+ "git_sha": "798ad25",
+ "config_hash": "992c9af67325",
+ "sample": false,
+ "stages": [
+  {
+   "stage": "EXTRACT",
+   "rows": 110527
+  },
+  {
+   "stage": "VALIDATE",
+   "rows": 110527,
+   "checks_passed": 21,
+   "checks": 23
+  },
+  {
+   "stage": "CLEAN",
+   "rows": 110514
+  },
+  {
+   "stage": "ANONYMIZE",
+   "rows": 110514
+  },
+  {
+   "stage": "FEATURE_ENGINEERING",
+   "rows": 110514,
+   "columns": 20
+  },
+  {
+   "stage": "BIAS_CHECK",
+   "rows": 110514,
+   "overall_pass": true
+  },
+  {
+   "stage": "PUBLISH",
+   "rows": 110514,
+   "columns": 20,
+   "path": "data/processed/careconnect_modeling.parquet"
+  }
+ ]
+}
