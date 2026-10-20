@@ -59,3 +59,22 @@ artifacts (outputs on `build-outputs-10`).
   user-supplied items marked AWAITING USER MATERIAL.
 - Run identifiers and results for this cycle are recorded on the build-outputs branch for the commit and in the evidence package,
   not in this file, so the verified commit is the final commit.
+
+## Cycle 5 - original Module 4 s.7 monitoring rule; Docker Compose end to end
+
+- Reviewer decisions: Ethics Committee approval stays a blocking gate (not recorded, so NOT ELIGIBLE); C3 (F1 >= 0.55) stays
+  blocking; no acceptance threshold changed.
+- **Governing monitoring rule is the original Module 4 s.7 rule**, implemented as written in `monitor.module4_rule()`: each
+  calendar week, subgroup error-rate disparity (larger of the FNR and FPR gaps) for Gender and age_band (Module 4 s.1), alert
+  > 0.04, halt > 0.05, no minimum group size; groups without defined FNR/FPR are excluded and an attribute with fewer than two
+  comparable groups is 'not evaluable' (never a pass). Expected disparities come from the policy's flag probabilities and a breach
+  is attributed to chance only when the expected disparity is itself within the threshold. The rolling 28-day bootstrap rule is
+  kept as supplementary evidence about uncertainty; it cannot clear a s.7 alert or halt. The earlier statement that the replay rule
+  "departs from the original specification and needs committee approval" is withdrawn: the original rule now governs.
+- The verifier recomputes every week's realised disparity with Fairlearn from re-applied policy decisions, the expected disparity
+  from the policy probabilities, the status thresholds, and the attribution rule.
+- Docker Compose: a `compose-e2e` job in `build.yml` runs the pipeline, MLflow, monitoring, API and dashboard services end to end
+  on the CI runner and publishes its evidence to `compose-e2e-<run>`. Containers receive the commit SHA through
+  `CARECONNECT_GIT_SHA` because `.git` is not copied into images. Nothing is deployed or publicly reachable.
+- Run identifiers and results are recorded on the build-outputs and compose-e2e branches for the commit and in the evidence
+  package, not in this file, so the verified commit is the final commit.
