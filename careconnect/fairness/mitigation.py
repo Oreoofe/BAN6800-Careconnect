@@ -55,7 +55,7 @@ def summary(y, yh, te):
 
 
 ATTRS = ["age_band", "Gender", "Scholarship"]
-N_SEEDS = 200
+N_SEEDS = 1000   # same draws as policy_comparison (seeds 20,000 .. 20,999) so every document reports one distribution
 
 
 def expected_summary(y, pmf, te):
@@ -82,12 +82,13 @@ def seed_distribution(y, pmf, te, n=N_SEEDS):
     """Equalized-odds gap of n independent realisations of the randomised rule."""
     out = {a: [] for a in ATTRS}
     for s in range(n):
-        yh = (np.random.default_rng(10_000 + s).random(len(pmf)) < pmf).astype(int)
+        yh = (np.random.default_rng(20_000 + s).random(len(pmf)) < pmf).astype(int)
         for a in ATTRS:
             out[a].append(fairness_report(y, yh, te[a].astype(str).values)["eod"])
     return {a: {"mean": float(np.mean(v)), "p05": float(np.percentile(v, 5)), "p50": float(np.median(v)),
                 "p95": float(np.percentile(v, 95)), "max": float(np.max(v)),
-                "share_above_limit": float(np.mean(np.array(v) > config.FAIRNESS_LIMIT)), "n_seeds": n}
+                "share_above_limit": float(np.mean(np.array(v) > config.FAIRNESS_LIMIT)), "n_seeds": n,
+                "seeds": f"numpy default_rng(20000) .. default_rng({20_000 + n - 1})"}
             for a, v in out.items()}
 
 

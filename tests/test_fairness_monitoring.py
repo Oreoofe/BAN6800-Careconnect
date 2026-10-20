@@ -139,3 +139,24 @@ def test_module4_rule_attribution_does_not_blame_chance_when_expected_gap_breach
     r2 = module4_rule(y, yh, {"age_band": g, "Gender": sex}, pmf=pmf)
     _, attr2 = explain_module4(r2, "alert", "SMS_received", 2.7)
     assert "random draw" in attr2 and "SMS_received" in attr2
+
+
+# ---- cycle 6: the interval of a randomised rule is a bootstrap of its EXPECTED values ----
+def test_randomised_interval_is_bootstrap_of_expected_values():
+    import pandas as pd
+    from careconnect.fairness.policy_comparison import eod_only, evaluate
+    rng = np.random.default_rng(3)
+    n = 4000
+    g = rng.choice(["a", "b"], n)
+    y = (rng.random(n) < 0.3).astype(int)
+    pred = np.where(g == "a", 0.6, 0.5) * np.where(y == 1, 1.0, 0.5)        # expected gap 0.10 (TPR), 0.05 (FPR)
+    te = pd.DataFrame({"age_band": g, "Gender": g, "Scholarship": g})
+    out = evaluate(y, pred, te, randomised=True, n_boot=200, n_draws=50)
+    lo, hi = out["age_band"]["eod_bootstrap_95ci"]
+    point = eod_only(y, pred, g)
+    assert abs(out["age_band"]["eod"] - point) < 1e-12 and lo <= point <= hi
+    assert "expected-value" in out["age_band"]["ci_method"]
+    assert out["age_band"]["realised_eod"]["n_draws"] == 50
+    assert "superseded_single_draw_bootstrap_95ci" in out["age_band"]
+    det = evaluate(y, (pred > 0.4).astype(float), te, randomised=False, n_boot=50)
+    assert "decision-based" in det["age_band"]["ci_method"] and "realised_eod" not in det["age_band"]

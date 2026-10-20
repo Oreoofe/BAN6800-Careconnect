@@ -398,7 +398,9 @@ elif page.startswith("5"):
     if PCOMP:
         st.markdown("### Comparison of decision policies (same held-out test set)")
         st.caption("Every rule was fitted on training data and evaluated once on the 22,103 test appointments. Randomised rules show expected values. "
-                   "Age gap = equalized-odds difference across the six age groups; the interval is a 95% bootstrap range for the test-set estimate.")
+                   "Age gap = equalized-odds difference across the six age groups; the interval is a 95% percentile bootstrap (300 resamples of test "
+                   "appointments). For randomised rules both the gap and its interval are computed from expected values (flag probabilities); "
+                   "draw-to-draw variation is reported separately.")
         rows = []
         for k, v in PCOMP["policies"].items():
             ag = v["age_band"]

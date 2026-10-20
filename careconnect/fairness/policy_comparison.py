@@ -79,31 +79,58 @@ def overall(y, pred):
             "true_no_shows_flagged_per_1000": float((pred * y).mean() * 1000)}
 
 
-def evaluate(y, pred, te, randomised=False, n_boot=300, n_draws=200, seed=0):
+N_DRAWS = 1000          # realisations of a randomised rule; seeds DRAW_SEED0 .. DRAW_SEED0 + N_DRAWS - 1
+DRAW_SEED0 = 20_000
+
+
+def evaluate(y, pred, te, randomised=False, n_boot=300, n_draws=N_DRAWS, seed=0):
+    """Metrics of a decision rule on the test set.
+
+    Deterministic rule: `pred` is 0/1 and every metric is computed from the decisions.
+    Randomised rule: `pred` is the flag PROBABILITY of each appointment. Headline metrics are expected values:
+    group TPR/FPR = mean flag probability over that group's no-shows/attendances, and recall, precision and F1 are
+    ratios of expected counts (E[TP]/E[no-shows], E[TP]/E[flags]); they are not averages of per-draw metrics.
+
+    Uncertainty (cycle 6 correction). The 95% interval is a percentile bootstrap that resamples test appointments
+    with replacement (`n_boot` resamples, numpy default_rng(seed)) and recomputes the SAME quantity as the point
+    estimate: decisions for a deterministic rule, expected values for a randomised rule. Until cycle 5 the
+    randomised rule's interval bootstrapped one random realisation instead, which is an interval for that draw,
+    not for the expected gap; that superseded interval is still reported, labelled, for the audit trail.
+    Draw-to-draw variation of a randomised rule is reported separately from `n_draws` realisations."""
     out = {"randomised": randomised, **overall(y, pred)}
     out["share_decisions_randomised"] = float(((pred > 0) & (pred < 1)).mean())
+    out["metric_definition"] = ("expected values from flag probabilities (ratios of expected counts)" if randomised
+                                else "computed from 0/1 decisions")
     rng = np.random.default_rng(seed)
+    one_draw = (np.random.default_rng(seed + 1).random(len(pred)) < pred).astype(int) if randomised else None
     for a in ATTRS:
         g = te[a].astype(str).values
         out[a] = group_table(y, pred, g)
-        # bootstrap the audit itself (sampling uncertainty of the test set)
-        if randomised:
-            draws = (rng.random(len(pred)) < pred).astype(int)      # one realisation, then bootstrap it
-        else:
-            draws = pred
-        bs = []
+        bs, bs_old = [], []
         for _ in range(n_boot):
             i = rng.integers(0, len(y), len(y))
-            bs.append(eod_only(y[i], draws[i], g[i]))
+            bs.append(eod_only(y[i], pred[i], g[i]))
+            if randomised:
+                bs_old.append(eod_only(y[i], one_draw[i], g[i]))
         out[a]["eod_bootstrap_95ci"] = [float(np.percentile(bs, 2.5)), float(np.percentile(bs, 97.5))]
+        out[a]["ci_method"] = (f"percentile bootstrap, {n_boot} resamples of test appointments (numpy seed {seed}), "
+                               + ("of the expected-value gap" if randomised else "of the decision-based gap"))
         if randomised:
+            out[a]["superseded_single_draw_bootstrap_95ci"] = [float(np.percentile(bs_old, 2.5)), float(np.percentile(bs_old, 97.5))]
             real = []
             for s in range(n_draws):
-                d = (np.random.default_rng(20_000 + s).random(len(pred)) < pred).astype(int)
+                d = (np.random.default_rng(DRAW_SEED0 + s).random(len(pred)) < pred).astype(int)
                 real.append(eod_only(y, d, g))
+            real = np.array(real)
+            first = real[:200]
             out[a]["realised_eod"] = {"p05": float(np.percentile(real, 5)), "p50": float(np.median(real)),
-                                      "p95": float(np.percentile(real, 95)),
-                                      "share_above_0.05": float(np.mean(np.array(real) > 0.05)), "n_draws": n_draws}
+                                      "p95": float(np.percentile(real, 95)), "mean": float(real.mean()),
+                                      "share_above_0.05": float(np.mean(real > 0.05)), "n_draws": n_draws,
+                                      "seeds": f"numpy default_rng({DRAW_SEED0}) .. default_rng({DRAW_SEED0 + n_draws - 1})",
+                                      "monte_carlo_se_share": float(np.sqrt(np.mean(real > 0.05) * (1 - np.mean(real > 0.05)) / n_draws)),
+                                      "first_200_draws": {"share_above_0.05": float(np.mean(first > 0.05)),
+                                                          "p95": float(np.percentile(first, 95)),
+                                                          "note": "the cycle-5 figures (200 draws, same seeds)"}}
     return out
 
 
