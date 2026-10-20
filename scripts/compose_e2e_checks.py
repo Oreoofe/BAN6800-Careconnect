@@ -1,4 +1,4 @@
-"""End-to-end checks against the running Docker Compose services (standard library only; run on the CI host).
+"""End-to-end checks against the running Docker Compose services (standard library only; run on the CI host by the compose-e2e job in build.yml).
 
     python3 scripts/compose_e2e_checks.py <stage>     stage: pipeline | mlflow | monitoring | api
 
