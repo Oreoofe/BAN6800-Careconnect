@@ -64,6 +64,12 @@ MODEL_SHA = hashlib.sha256((ART / "xgboost.joblib").read_bytes()).hexdigest()
 BUILD_SHA = (RES or {}).get("git_sha", "unknown")
 FIGS = ART / "figures"
 
+# Shown on every page: this hosted app is a demonstration of the v2 evaluation build, not a deployed service.
+_decision = (GATE or {}).get("decision", "not recorded")
+st.warning(f"**Demonstration only - not approved for clinical or operational use.** This page shows the v2 evaluation build "
+           f"(model {VERSION}, commit {BUILD_SHA}). Promotion gate: {_decision}. No public scoring API exists and no CrescentCare "
+           "patient data is used; all figures come from the public Kaggle no-show dataset.")
+
 
 def policy_prob(p, group):
     if not POLICY:
