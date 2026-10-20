@@ -30,19 +30,24 @@ jobs:
           python -m playwright install --with-deps chromium
           pip freeze > requirements-lock.txt
       - name: Run pipeline, training, XAI, fairness, monitoring, model card, promotion gate
-        run: scripts/run_logged.sh python -m careconnect.run_all
+        run: |
+          mkdir -p build-logs
+          scripts/run_logged.sh python -m careconnect.run_all 2>&1 | tee build-logs/01_run_all.log
       - name: Independent verification of results (recomputed from saved model and test set)
         if: success() || failure()
-        run: scripts/run_logged.sh python scripts/verify_results.py
+        run: scripts/run_logged.sh python scripts/verify_results.py 2>&1 | tee build-logs/02_verify_results.log
       - name: API demo against the new model
         if: success() || failure()
-        run: scripts/run_logged.sh python api_demo.py
+        run: scripts/run_logged.sh python api_demo.py 2>&1 | tee build-logs/03_api_demo.log
       - name: Tests against the new artifacts (incl. dashboard rendering)
         if: success() || failure()
-        run: scripts/run_logged.sh pytest -v --junitxml=test-results.xml
+        run: scripts/run_logged.sh pytest -v -rA --junitxml=test-results.xml 2>&1 | tee build-logs/04_pytest.log
       - name: MLflow UI screenshots (experiment + model registry)
         if: success() || failure()
-        run: scripts/run_logged.sh python scripts/mlflow_screenshots.py
+        run: scripts/run_logged.sh python scripts/mlflow_screenshots.py 2>&1 | tee build-logs/05_mlflow_screenshots.log
+      - name: Independent audit (separate code; recomputes from raw data, models and policy; compares with the artifacts)
+        if: success() || failure()
+        run: scripts/run_logged.sh python scripts/independent_audit.py . audit-out 2>&1 | tee build-logs/06_independent_audit.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -72,7 +77,7 @@ jobs:
                    docs/api_demo_output.txt requirements-lock.txt test-results.xml logs/audit.log mlruns/mlflow.db; do
             [ -e "$f" ] && mkdir -p "$OUT/$(dirname $f)" && cp "$f" "$OUT/$f" || true
           done
-          for d in artifacts/figures artifacts/pipeline artifacts/monitoring docs/evidence; do
+          for d in artifacts/figures artifacts/pipeline artifacts/monitoring docs/evidence build-logs audit-out; do
             [ -d "$d" ] && mkdir -p "$OUT/$d" && cp -r "$d/." "$OUT/$d/" || true
           done
           cd "$OUT"
