@@ -374,7 +374,8 @@ def main():
     # 2) cycle-2 rule applied to the same weekly batches (shows how it behaves with small groups)
     # every calendar week is evaluated (no size filter: Module 4 s.7 sets none). These rows carry BOTH the governing
     # Module 4 s.7 result ("module4_rule") and the supplementary bootstrap result ("fairness").
-    weeks_new = [window_report(f"week of {w}", cur, ref, m, policy, T, val_auc, ref_scores, seed=i)
+    weeks_new = [window_report(f"week of {w}", cur, ref, m, policy, T, val_auc, ref_scores, seed=i,
+                               coverage_days=int(cur["AppointmentDay"].dt.normalize().nunique()))
                  for i, (w, cur) in enumerate(te.groupby("week"))]
     # 3) cycle-2 rule on rolling 28-day windows stepped weekly
     start, end = te["AppointmentDay"].min(), te["AppointmentDay"].max()
@@ -430,7 +431,22 @@ def main():
         return {"counts": {k: len(v) for k, v in out.items()}, "windows": out,
                 "governing_status": ("halt" if out["halt"] else "alert" if out["alert"] else
                                      "not evaluable" if out["not evaluable"] else "ok")}
-    summary = {"module4_s7_weekly": {**summarise_m4(weeks_new), "rule": M4_RULE, "role": "GOVERNING (original specification)"},
+    def coverage(rows):
+        """Partial weeks and small groups: a weekly point estimate on few days or few no-shows is imprecise."""
+        out = []
+        for r in rows:
+            a = r["module4_rule"]["attributes"]
+            out.append({"window": r["batch"], "start": r["start"], "end": r["end"], "appointment_days": r["coverage_days"],
+                        "partial_week": (r["coverage_days"] or 0) < 5, "n": r["n"],
+                        "smallest_age_group_no_shows": min(g["no_shows"] for g in a["age_band"]["groups"].values()),
+                        "smallest_age_group": min(a["age_band"]["groups"], key=lambda k: a["age_band"]["groups"][k]["no_shows"]),
+                        "elderly_no_shows": a["age_band"]["groups"].get("elderly", {}).get("no_shows")})
+        return out
+    summary = {"module4_s7_weekly": {**summarise_m4(weeks_new), "rule": M4_RULE, "role": "GOVERNING (original specification)",
+                                     "coverage": coverage(weeks_new),
+                                     "attribute_status_counts": {a: {st: sum(r["module4_rule"]["attributes"][a]["status"] == st for r in weeks_new)
+                                                                     for st in ["halt", "alert", "ok", "not evaluable"]}
+                                                                 for a in ["age_band", "Gender", "Scholarship"]}},
                "rolling_28d_all": summarise(rolling),
                "rolling_28d_full_windows_only": summarise([r for r in rolling if (r["coverage_days"] or 0) >= 28]),
                "calendar_months": summarise(months), "weeks_cycle2_rule": summarise(weeks_new),

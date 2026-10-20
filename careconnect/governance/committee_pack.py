@@ -134,9 +134,18 @@ DIR >= 0.80) and Ethics Committee approval of the Model Card, but not F1. The ca
 rubric was supplied. By reviewer decision C3 is treated as **blocking**; the threshold itself is unchanged.
 
 ## 4. Option B (configured policy): what it achieves and what it costs
-| Group | Expected EOD | 95% CI (test sample) | Realised EOD, 5th-95th pct of {B['age_band']['realised_eod']['n_draws']} draws | Draws above 0.05 |
+| Group | Expected EOD | 95% CI (bootstrap of expected values) | Realised EOD, 5th-95th pct of {B['age_band']['realised_eod']['n_draws']} draws | Draws above 0.05 |
 | --- | --- | --- | --- | --- |
 {b_gaps}
+
+**Method (corrected in cycle 6).** Expected values come from each appointment's flag probability; recall, precision and F1 are
+ratios of expected counts. The 95% interval resamples test appointments (300 bootstrap resamples) and recomputes the
+expected-value gap. Up to cycle 5 the interval bootstrapped one random realisation instead (that superseded interval, recomputed:
+age {B['age_band']['superseded_single_draw_bootstrap_95ci'][0]:.3f}-{B['age_band']['superseded_single_draw_bootstrap_95ci'][1]:.3f}). Draw-to-draw
+variation uses {B['age_band']['realised_eod']['n_draws']} realisations ({B['age_band']['realised_eod']['seeds']}); the realised age gap exceeds
+0.05 in {B['age_band']['realised_eod']['share_above_0.05']:.1%} of them (Monte Carlo standard error {B['age_band']['realised_eod']['monte_carlo_se_share']:.1%}).
+The cycle-5 figure used the first 200 of these draws ({B['age_band']['realised_eod']['first_200_draws']['share_above_0.05']:.1%}); the difference is
+simulation error from the smaller sample. Criterion C8 is unchanged.
 
 **Flags unrelated to predicted risk.** Option B gives some appointments a non-zero flag probability that does not depend on
 their score. {mech['explanation']}
@@ -184,6 +193,13 @@ Expected disparities come from the policy's flag probabilities; a breach is attr
 expected disparity is itself within the threshold.
 
 **Governing status over the replay: {S4['governing_status'].upper()}** ({', '.join(f"{k} {v}" for k, v in S4['counts'].items())}).
+By attribute: {'; '.join(f"{a} - " + ', '.join(f"{k} {v}" for k, v in c.items() if v) for a, c in S4['attribute_status_counts'].items())}
+(scholarship is reported but is not part of the s.7 rule).
+
+**Coverage and precision.** {len([c for c in S4['coverage'] if c['partial_week']])} of {len(S4['coverage'])} weekly windows are partial
+({'; '.join(f"{c['start']} to {c['end']}: {c['appointment_days']} appointment day(s)" for c in S4['coverage'] if c['partial_week'])}). The smallest
+age group in each week had between {min(c['smallest_age_group_no_shows'] for c in S4['coverage'])} and {max(c['smallest_age_group_no_shows'] for c in S4['coverage'])} no-shows
+(elderly in most weeks), so weekly point estimates are imprecise. Sparse weeks are reported, never read as evidence of fairness.
 
 | Week | Appointments | Age disparity (FNR / FPR gap) | Age expected | Gender disparity | Gender expected | Status | Reason | Attribution |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |

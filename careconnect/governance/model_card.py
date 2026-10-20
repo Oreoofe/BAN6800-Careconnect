@@ -177,7 +177,8 @@ reviewer decision: Module 4 s.1 calls it part of "the acceptance threshold" but 
 ## Limitations
 - Trained on Brazilian 2016 public-health data covering about six weeks; CrescentCare's rate (28%) differs from the data's ({pct(R['pos_rate'])}).
 - No insurance field, so Module 1 goal G3 (Medicaid vs private gap) cannot be measured; scholarship is a rough stand-in.
-- Many flags are false alarms (precision {op['precision']:.0%} at the single cut-off; lower under Option B).
+- Many flags are false alarms: precision is {op['precision']:.4f} for the XGBoost score at cut-off {op['threshold']:.2f} (computed from 0/1 decisions),
+  and {b['precision']:.4f} expected under Option B (expected true positives / expected flags, from flag probabilities).
 - Transport, childcare, cost and health-literacy barriers are not in the data.
 - Randomised decisions under Option B must be explained to patients and staff.
 
@@ -187,6 +188,9 @@ PSI on inputs and scores (warn >= 0.10, alert >= 0.20); AUC alert if more than 0
 **Fairness: Module 4 s.7 weekly rule (governing).** Each calendar week, the realised error-rate disparity (larger of the FNR and FPR
 gaps) for Gender and age_band; alert above {R4['alert_above']:.2f}, halt above {R4['halt_above']:.2f}; no minimum group size; an attribute with fewer than
 two comparable groups is 'not evaluable' (never a pass). Replay: **governing status {S4['governing_status'].upper()}** - {m4_counts}.
+By attribute: {'; '.join(f"{a} - " + ', '.join(f"{k} {v}" for k, v in c.items() if v) for a, c in S4['attribute_status_counts'].items())}.
+{len([c for c in S4['coverage'] if c['partial_week']])} of {len(S4['coverage'])} weeks are partial (fewer than 5 appointment days); the smallest weekly age group had
+{min(c['smallest_age_group_no_shows'] for c in S4['coverage'])}-{max(c['smallest_age_group_no_shows'] for c in S4['coverage'])} no-shows.
 {m4_weeks}
 
 **Supplementary uncertainty analysis (does not replace the s.7 rule):** {FR['window']}: a group is evaluated only with >= {FR['min_no_shows_per_group']} no-shows and >= {FR['min_attended_per_group']} attended visits;
