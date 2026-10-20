@@ -1,0 +1,149 @@
+MATCH    | dataset sha256 | reported 9132d3e7d0246617df9041d3764f20ad6f08e7b0d9f0997fa254fc5e52eda27d | recomputed 9132d3e7d0246617df9041d3764f20ad6f08e7b0d9f0997fa254fc5e52eda27d | 
+MATCH    | model sha256 | reported 6d60bea7544ffac64049a66af98f4d133508cb77aa464702a91075706127a385 | recomputed 6d60bea7544ffac64049a66af98f4d133508cb77aa464702a91075706127a385 | 
+MATCH    | policy sha256 | reported e18da7cd12d13fc431a730af9f2afe6cbfa75e7de7928f19ded79a7364e11e1f | recomputed e18da7cd12d13fc431a730af9f2afe6cbfa75e7de7928f19ded79a7364e11e1f | 
+MATCH    | raw rows | reported 110527 | recomputed 110527 | 
+MATCH    | invalid ages removed | reported 8 | recomputed 8 | 
+MATCH    | bookings after appointment removed | reported 5 | recomputed 5 | 
+MATCH    | rows after cleaning | reported 110514 | recomputed 110514 | 
+MATCH    | rows with outcome-known history | reported 30878 | recomputed 30878 | 
+MATCH    | modelling table rows | reported 110514 | recomputed 110514 | 
+MATCH    | pipeline lead time and prior-history columns equal own re-derivation (all rows) | reported True | recomputed True | 
+MATCH    | own stratified split (seed 42) selects the same test rows | reported True | recomputed True | 
+MATCH    | train rows | reported 88411 | recomputed 88411 | 
+MATCH    | test rows | reported 22103 | recomputed 22103 | 
+MATCH    | test no-show rate | reported 0.2019 | recomputed 0.2019 | 
+MATCH    | cut-off | reported 0.25 | recomputed 0.25 | 
+MATCH    | ROC-AUC | reported 0.7455 | recomputed 0.7455 | 
+MATCH    | recall | reported 0.656 | recomputed 0.6558 | 
+MATCH    | precision | reported 0.343 | recomputed 0.3428 | 
+MATCH    | F1 single cut-off | reported 0.45 | recomputed 0.4502 | 
+MATCH    | flag rate | reported 0.386 | recomputed 0.3862 | 
+MATCH    | confusion TN/FP/FN/TP | reported 12031/5610/1536/2926 | recomputed 12031/5610/1536/2926 | 
+MATCH    | tier high share | reported 0.089 | recomputed 0.0885 | 
+MATCH    | tier high no-show rate | reported 0.464 | recomputed 0.4645 | 
+MATCH    | tier medium share | reported 0.298 | recomputed 0.2977 | 
+MATCH    | tier medium no-show rate | reported 0.307 | recomputed 0.3066 | 
+MATCH    | tier low share | reported 0.614 | recomputed 0.6138 | 
+MATCH    | tier low no-show rate | reported 0.113 | recomputed 0.1132 | 
+MATCH    | logistic_regression AUC/recall/precision/F1 (report table vs model_results.json) | reported (0.68, 0.652, 0.305, 0.416) | recomputed (0.68, 0.652, 0.305, 0.416) | baseline models are not published; values taken from the build's JSON, not recomputed
+MATCH    | random_forest AUC/recall/precision/F1 (report table vs model_results.json) | reported (0.743, 0.649, 0.345, 0.45) | recomputed (0.743, 0.649, 0.345, 0.45) | baseline models are not published; values taken from the build's JSON, not recomputed
+MATCH    | Option B expected recall | reported 0.852 | recomputed 0.8521 | expected-value metrics: precision = E[TP]/E[flags] (ratio of expectations)
+MATCH    | Option B expected precision | reported 0.283 | recomputed 0.2832 | expected-value metrics: precision = E[TP]/E[flags] (ratio of expectations)
+MATCH    | Option B expected f1 | reported 0.425 | recomputed 0.4251 | expected-value metrics: precision = E[TP]/E[flags] (ratio of expectations)
+MATCH    | Option B expected flag_rate | reported 0.607 | recomputed 0.6074 | expected-value metrics: precision = E[TP]/E[flags] (ratio of expectations)
+MATCH    | Option B share of appointments with 0 < flag probability < 1 ('81.6% randomised') | reported 0.816 | recomputed 0.8159 | definition: share of APPOINTMENTS whose decision is a random draw; not a share of flags
+MATCH    | Option B expected EOD age_band | reported 0.041 | recomputed 0.0408 | 
+MATCH    | Option B expected EOD Gender | reported 0.031 | recomputed 0.0312 | 
+MATCH    | Option B expected EOD Scholarship | reported 0.029 | recomputed 0.0293 | 
+MATCH    | Option B expected age DPD | reported 0.045 | recomputed 0.0451 | 
+MATCH    | Option B expected age DI | reported 0.929 | recomputed 0.929 | 
+MATCH    | risk-unrelated share of Option B expected flags ('10.8%') | reported 0.108 | recomputed 0.1078 | 
+MATCH    | risk-unrelated flags per 100 appointments ('6.55') | reported 6.55 | recomputed 6.5501 | 
+MATCH    | share of appointments with non-zero flag probability ('91.8%') | reported 0.918 | recomputed 0.9177 | 
+MATCH    | floor flag probability child | reported 0.113 | recomputed 0.1133 | 
+MATCH    | floor flag probability young_adult | reported 0.098 | recomputed 0.0975 | 
+MATCH    | floor flag probability teen | reported 0.079 | recomputed 0.0794 | 
+MATCH    | floor flag probability adult | reported 0.058 | recomputed 0.0582 | 
+MATCH    | floor flag probability elderly | reported 0.026 | recomputed 0.0256 | 
+MATCH    | floor flag probability senior | reported 0.0 | recomputed 0.0 | 
+MATCH    | lowest-score appointment in each group gets exactly the floor | reported True | recomputed True | 
+MATCH    | Option B realised age EOD: share of draws > 0.05 (project seeds 20000+s) | reported 0.385 | recomputed 0.385 | 
+MATCH    | Option B realised age EOD: 95th percentile (project seeds 20000+s) | reported 0.068 | recomputed 0.0678 | 
+MISMATCH | Option B realised age EOD: share of draws > 0.05 (independent seeds 900000+s) | reported 0.385 | recomputed 0.462 | 
+MATCH    | Option B realised age EOD: 95th percentile (independent seeds 900000+s) | reported 0.068 | recomputed 0.0706 | 
+MISMATCH | Option B age CI as published [lo, hi] vs bootstrap of the expected-value gap | reported (0.037, 0.115) | recomputed (0.027, 0.086) | published CI bootstraps ONE random realisation, so it is not an interval around the plotted expected 0.041
+MATCH    | EO TPR 0.85 recall | reported 0.864 | recomputed 0.8635 | 
+MATCH    | EO TPR 0.85 precision | reported 0.3 | recomputed 0.3002 | 
+MATCH    | EO TPR 0.85 f1 | reported 0.446 | recomputed 0.4455 | 
+MATCH    | EO TPR 0.85 flag_rate | reported 0.581 | recomputed 0.5807 | 
+MATCH    | EO TPR 0.85 age | reported 0.1 | recomputed 0.0998 | 
+MATCH    | EO TPR 0.85 Gender | reported 0.043 | recomputed 0.0428 | 
+MATCH    | EO TPR 0.85 Scholarship | reported 0.054 | recomputed 0.0542 | 
+MATCH    | EO TPR 0.85 age TPR gap | reported 0.06 | recomputed 0.0596 | 
+MATCH    | EO TPR 0.85 age FPR gap | reported 0.1 | recomputed 0.0998 | 
+MATCH    | EO TPR 0.85 subgroup sizes (n, no-shows) | reported {'adult': (6021, 1213), 'child': (4247, 879), 'elderly': (1074, 178), 'senior': (4433, 702), 'teen': (1584, 406), 'young_adult': (4744, 1084), 'F': (14270, 2862), 'M': (7833, 1600), '0': (19942, 3964), '1': (2161, 498)} | recomputed {'adult': (6021, 1213), 'child': (4247, 879), 'elderly': (1074, 178), 'senior': (4433, 702), 'teen': (1584, 406), 'young_adult': (4744, 1084), 'F': (14270, 2862), 'M': (7833, 1600), '0': (19942, 3964), '1': (2161, 498)} | 
+MATCH    | EO TPR 0.85 age_band 95% CI (independent bootstrap, 1000) | reported (0.076, 0.138) | recomputed (0.076, 0.135) | different resamples: expect agreement to about +/-0.01, not exact
+MATCH    | EO TPR 0.85 Gender 95% CI (independent bootstrap, 1000) | reported (0.027, 0.057) | recomputed (0.027, 0.059) | different resamples: expect agreement to about +/-0.01, not exact
+MATCH    | EO TPR 0.85 Scholarship 95% CI (independent bootstrap, 1000) | reported (0.028, 0.08) | recomputed (0.025, 0.081) | different resamples: expect agreement to about +/-0.01, not exact
+MATCH    | EO TPR 0.65 recall | reported 0.664 | recomputed 0.6643 | 
+MATCH    | EO TPR 0.65 f1 | reported 0.439 | recomputed 0.4386 | 
+MATCH    | EO TPR 0.65 age | reported 0.064 | recomputed 0.0644 | 
+MATCH    | EO TPR 0.75 recall | reported 0.768 | recomputed 0.768 | 
+MATCH    | EO TPR 0.75 f1 | reported 0.446 | recomputed 0.4458 | 
+MATCH    | EO TPR 0.75 age | reported 0.083 | recomputed 0.0829 | 
+MATCH    | Minimax recall | reported 0.782 | recomputed 0.7817 | 
+MATCH    | Minimax f1 | reported 0.447 | recomputed 0.4465 | 
+MATCH    | Minimax age | reported 0.089 | recomputed 0.0885 | 
+MATCH    | single cut-off age EOD | reported 0.629 | recomputed 0.6293 | 
+MATCH    | number of replayed weeks | reported 7 | recomputed 7 | 
+MATCH    | s.7 2016-04-29..2016-04-29 age_band realised disparity | reported 0.2857 | recomputed 0.2857 | 
+MATCH    | s.7 2016-04-29..2016-04-29 age_band expected disparity | reported 0.2615 | recomputed 0.2615 | 
+MATCH    | s.7 2016-04-29..2016-04-29 age_band status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-04-29..2016-04-29 Gender realised disparity | reported 0.125 | recomputed 0.125 | 
+MATCH    | s.7 2016-04-29..2016-04-29 Gender expected disparity | reported 0.1076 | recomputed 0.1076 | 
+MATCH    | s.7 2016-04-29..2016-04-29 Gender status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-04-25 overall status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-02..2016-05-06 age_band realised disparity | reported 0.1533 | recomputed 0.1533 | 
+MATCH    | s.7 2016-05-02..2016-05-06 age_band expected disparity | reported 0.1043 | recomputed 0.1043 | 
+MATCH    | s.7 2016-05-02..2016-05-06 age_band status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-02..2016-05-06 Gender realised disparity | reported 0.0402 | recomputed 0.0402 | 
+MATCH    | s.7 2016-05-02..2016-05-06 Gender expected disparity | reported 0.0425 | recomputed 0.0425 | 
+MATCH    | s.7 2016-05-02..2016-05-06 Gender status | reported alert | recomputed alert | 
+MATCH    | s.7 2016-05-02 overall status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-09..2016-05-14 age_band realised disparity | reported 0.1188 | recomputed 0.1188 | 
+MATCH    | s.7 2016-05-09..2016-05-14 age_band expected disparity | reported 0.1029 | recomputed 0.1029 | 
+MATCH    | s.7 2016-05-09..2016-05-14 age_band status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-09..2016-05-14 Gender realised disparity | reported 0.0533 | recomputed 0.0533 | 
+MATCH    | s.7 2016-05-09..2016-05-14 Gender expected disparity | reported 0.0358 | recomputed 0.0358 | 
+MATCH    | s.7 2016-05-09..2016-05-14 Gender status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-09 overall status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-16..2016-05-20 age_band realised disparity | reported 0.0949 | recomputed 0.0949 | 
+MATCH    | s.7 2016-05-16..2016-05-20 age_band expected disparity | reported 0.0719 | recomputed 0.0719 | 
+MATCH    | s.7 2016-05-16..2016-05-20 age_band status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-16..2016-05-20 Gender realised disparity | reported 0.0463 | recomputed 0.0463 | 
+MATCH    | s.7 2016-05-16..2016-05-20 Gender expected disparity | reported 0.0463 | recomputed 0.0463 | 
+MATCH    | s.7 2016-05-16..2016-05-20 Gender status | reported alert | recomputed alert | 
+MATCH    | s.7 2016-05-16 overall status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-24..2016-05-25 age_band realised disparity | reported 0.1082 | recomputed 0.1082 | 
+MATCH    | s.7 2016-05-24..2016-05-25 age_band expected disparity | reported 0.0803 | recomputed 0.0803 | 
+MATCH    | s.7 2016-05-24..2016-05-25 age_band status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-24..2016-05-25 Gender realised disparity | reported 0.0187 | recomputed 0.0187 | 
+MATCH    | s.7 2016-05-24..2016-05-25 Gender expected disparity | reported 0.0249 | recomputed 0.0249 | 
+MATCH    | s.7 2016-05-24..2016-05-25 Gender status | reported ok | recomputed ok | 
+MATCH    | s.7 2016-05-23 overall status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-30..2016-06-03 age_band realised disparity | reported 0.1966 | recomputed 0.1966 | 
+MATCH    | s.7 2016-05-30..2016-06-03 age_band expected disparity | reported 0.1404 | recomputed 0.1404 | 
+MATCH    | s.7 2016-05-30..2016-06-03 age_band status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-05-30..2016-06-03 Gender realised disparity | reported 0.0281 | recomputed 0.0281 | 
+MATCH    | s.7 2016-05-30..2016-06-03 Gender expected disparity | reported 0.0304 | recomputed 0.0304 | 
+MATCH    | s.7 2016-05-30..2016-06-03 Gender status | reported ok | recomputed ok | 
+MATCH    | s.7 2016-05-30 overall status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-06-06..2016-06-08 age_band realised disparity | reported 0.1326 | recomputed 0.1326 | 
+MATCH    | s.7 2016-06-06..2016-06-08 age_band expected disparity | reported 0.0957 | recomputed 0.0957 | 
+MATCH    | s.7 2016-06-06..2016-06-08 age_band status | reported halt | recomputed halt | 
+MATCH    | s.7 2016-06-06..2016-06-08 Gender realised disparity | reported 0.0267 | recomputed 0.0267 | 
+MATCH    | s.7 2016-06-06..2016-06-08 Gender expected disparity | reported 0.0129 | recomputed 0.0129 | 
+MATCH    | s.7 2016-06-06..2016-06-08 Gender status | reported ok | recomputed ok | 
+MATCH    | s.7 2016-06-06 overall status | reported halt | recomputed halt | 
+MATCH    | supplementary rolling_28d status counts (recomputed from stored CIs) | reported {'halt': 3, 'inconclusive': 3} | recomputed {'halt': 3, 'inconclusive': 3} | interval values themselves come from the replay's bootstrap; only the status logic is recomputed
+MATCH    | supplementary calendar_months status counts (recomputed from stored CIs) | reported {'halt': 1, 'inconclusive': 1, 'insufficient data': 1} | recomputed {'insufficient data': 1, 'inconclusive': 1, 'halt': 1} | interval values themselves come from the replay's bootstrap; only the status logic is recomputed
+MATCH    | supplementary weeks_cycle2_rule status counts (recomputed from stored CIs) | reported {'halt': 5, 'inconclusive': 1, 'insufficient data': 1} | recomputed {'insufficient data': 1, 'halt': 5, 'inconclusive': 1} | interval values themselves come from the replay's bootstrap; only the status logic is recomputed
+MATCH    | SHAP additivity: max |sum(contributions incl. bias) - margin| < 1e-3 | reported True | recomputed True | 
+MATCH    | SHAP: sigmoid(margin) equals predict_proba | reported True | recomputed True | 
+MATCH    | SHAP share lead_time_days | reported 0.555 | recomputed 0.5551 | 
+MATCH    | SHAP share Age | reported 0.134 | recomputed 0.1342 | 
+MATCH    | SHAP share Neighbourhood | reported 0.075 | recomputed 0.0746 | 
+MATCH    | SHAP share SMS_received | reported 0.042 | recomputed 0.042 | 
+MATCH    | SHAP share Gender + Scholarship < 4% | reported True | recomputed True | 
+MATCH    | counterfactual high: lowest reachable flag probability | reported 0.113 | recomputed 0.113 | 
+MATCH    | counterfactual medium: lowest reachable flag probability | reported 0.098 | recomputed 0.098 | 
+MATCH    | counterfactual low: lowest reachable flag probability | reported 0.098 | recomputed 0.098 | 
+MATCH    | blocking gate failures | reported ['C8', 'C3', 'Ethics'] | recomputed ['C8', 'C3', 'Ethics'] | 
+WEEK {'week': '2016-04-25', 'start': '2016-04-29', 'end': '2016-04-29', 'days': 1, 'n': 669, 'age': (np.float64(0.2857142857142857), np.float64(0.261540697298815), 'halt'), 'gender': (np.float64(0.12500000000000006), np.float64(0.10757207726025575), 'halt'), 'overall': 'halt', 'min_group_no_shows': 6}
+WEEK {'week': '2016-05-02', 'start': '2016-05-02', 'end': '2016-05-06', 'days': 5, 'n': 4175, 'age': (np.float64(0.15325670498084287), np.float64(0.10431957615413556), 'halt'), 'gender': (np.float64(0.04023459254957318), np.float64(0.042541146056990775), 'alert'), 'overall': 'halt', 'min_group_no_shows': 29}
+WEEK {'week': '2016-05-09', 'start': '2016-05-09', 'end': '2016-05-14', 'days': 6, 'n': 4382, 'age': (np.float64(0.11884057971014494), np.float64(0.10287213105448068), 'halt'), 'gender': (np.float64(0.05327125867289306), np.float64(0.035797053310164584), 'halt'), 'overall': 'halt', 'min_group_no_shows': 30}
+WEEK {'week': '2016-05-16', 'start': '2016-05-16', 'end': '2016-05-20', 'days': 5, 'n': 4278, 'age': (np.float64(0.09492133882377785), np.float64(0.07191301812146778), 'halt'), 'gender': (np.float64(0.0463318139935639), np.float64(0.046317120953819235), 'alert'), 'overall': 'halt', 'min_group_no_shows': 31}
+WEEK {'week': '2016-05-23', 'start': '2016-05-24', 'end': '2016-05-25', 'days': 2, 'n': 1606, 'age': (np.float64(0.10815047021943575), np.float64(0.08026397316709843), 'halt'), 'gender': (np.float64(0.018690875801037565), np.float64(0.0249389790024368), 'ok'), 'overall': 'halt', 'min_group_no_shows': 23}
+WEEK {'week': '2016-05-30', 'start': '2016-05-30', 'end': '2016-06-03', 'days': 5, 'n': 4198, 'age': (np.float64(0.19660042494688168), np.float64(0.14039148849423433), 'halt'), 'gender': (np.float64(0.028081445842925823), np.float64(0.030438755357493963), 'ok'), 'overall': 'halt', 'min_group_no_shows': 36}
+WEEK {'week': '2016-06-06', 'start': '2016-06-06', 'end': '2016-06-08', 'days': 3, 'n': 2795, 'age': (np.float64(0.1325854156042835), np.float64(0.09566491278708472), 'halt'), 'gender': (np.float64(0.02668482742422973), np.float64(0.012877988917503913), 'ok'), 'overall': 'halt', 'min_group_no_shows': 23}
+SUMMARY 139 match, 2 mismatch

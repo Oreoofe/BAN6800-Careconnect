@@ -1,0 +1,1423 @@
+{
+ "rows": [
+  {
+   "item": "dataset sha256",
+   "reported": "9132d3e7d0246617df9041d3764f20ad6f08e7b0d9f0997fa254fc5e52eda27d",
+   "recomputed": "9132d3e7d0246617df9041d3764f20ad6f08e7b0d9f0997fa254fc5e52eda27d",
+   "source": "raw CSV downloaded in this run",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "model sha256",
+   "reported": "6d60bea7544ffac64049a66af98f4d133508cb77aa464702a91075706127a385",
+   "recomputed": "6d60bea7544ffac64049a66af98f4d133508cb77aa464702a91075706127a385",
+   "source": "build-outputs-14",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "policy sha256",
+   "reported": "e18da7cd12d13fc431a730af9f2afe6cbfa75e7de7928f19ded79a7364e11e1f",
+   "recomputed": "e18da7cd12d13fc431a730af9f2afe6cbfa75e7de7928f19ded79a7364e11e1f",
+   "source": "build-outputs-14",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "raw rows",
+   "reported": 110527,
+   "recomputed": 110527,
+   "source": "raw CSV",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "invalid ages removed",
+   "reported": 8,
+   "recomputed": 8,
+   "source": "own cleaning of raw CSV",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "bookings after appointment removed",
+   "reported": 5,
+   "recomputed": 5,
+   "source": "own cleaning of raw CSV",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "rows after cleaning",
+   "reported": 110514,
+   "recomputed": 110514,
+   "source": "own cleaning of raw CSV",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "rows with outcome-known history",
+   "reported": 30878,
+   "recomputed": 30878,
+   "source": "own brute-force history from raw CSV",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "modelling table rows",
+   "reported": 110514,
+   "recomputed": 110514,
+   "source": "pipeline output",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "pipeline lead time and prior-history columns equal own re-derivation (all rows)",
+   "reported": true,
+   "recomputed": true,
+   "source": "row-by-row comparison",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "own stratified split (seed 42) selects the same test rows",
+   "reported": true,
+   "recomputed": true,
+   "source": "own sklearn split",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "train rows",
+   "reported": 88411,
+   "recomputed": 88411,
+   "source": "split",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "test rows",
+   "reported": 22103,
+   "recomputed": 22103,
+   "source": "split",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "test no-show rate",
+   "reported": 0.2019,
+   "recomputed": 0.2019,
+   "source": "split",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "cut-off",
+   "reported": 0.25,
+   "recomputed": 0.25,
+   "source": "operating_point.json",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "ROC-AUC",
+   "reported": 0.7455,
+   "recomputed": 0.7455,
+   "source": "sklearn on test set",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "recall",
+   "reported": 0.656,
+   "recomputed": 0.6557597489914836,
+   "source": "sklearn",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "precision",
+   "reported": 0.343,
+   "recomputed": 0.3427835051546392,
+   "source": "sklearn",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "F1 single cut-off",
+   "reported": 0.45,
+   "recomputed": 0.4502231112478843,
+   "source": "sklearn",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "flag rate",
+   "reported": 0.386,
+   "recomputed": 0.3861919196489164,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "confusion TN/FP/FN/TP",
+   "reported": "12031/5610/1536/2926",
+   "recomputed": "12031/5610/1536/2926",
+   "source": "sklearn",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "tier high share",
+   "reported": 0.089,
+   "recomputed": 0.08854001719223635,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "tier high no-show rate",
+   "reported": 0.464,
+   "recomputed": 0.46448645886561063,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "tier medium share",
+   "reported": 0.298,
+   "recomputed": 0.2976519024566801,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "tier medium no-show rate",
+   "reported": 0.307,
+   "recomputed": 0.3065815473476212,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "tier low share",
+   "reported": 0.614,
+   "recomputed": 0.6138080803510836,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "tier low no-show rate",
+   "reported": 0.113,
+   "recomputed": 0.11321589150143731,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "logistic_regression AUC/recall/precision/F1 (report table vs model_results.json)",
+   "reported": [
+    0.68,
+    0.652,
+    0.305,
+    0.416
+   ],
+   "recomputed": [
+    0.68,
+    0.652,
+    0.305,
+    0.416
+   ],
+   "source": "model_results.json (not retrained here)",
+   "result": "MATCH",
+   "note": "baseline models are not published; values taken from the build's JSON, not recomputed"
+  },
+  {
+   "item": "random_forest AUC/recall/precision/F1 (report table vs model_results.json)",
+   "reported": [
+    0.743,
+    0.649,
+    0.345,
+    0.45
+   ],
+   "recomputed": [
+    0.743,
+    0.649,
+    0.345,
+    0.45
+   ],
+   "source": "model_results.json (not retrained here)",
+   "result": "MATCH",
+   "note": "baseline models are not published; values taken from the build's JSON, not recomputed"
+  },
+  {
+   "item": "Option B expected recall",
+   "reported": 0.852,
+   "recomputed": 0.8521186928476249,
+   "source": "own flag probabilities from fairness_policy.json",
+   "result": "MATCH",
+   "note": "expected-value metrics: precision = E[TP]/E[flags] (ratio of expectations)"
+  },
+  {
+   "item": "Option B expected precision",
+   "reported": 0.283,
+   "recomputed": 0.2832158337842793,
+   "source": "own flag probabilities from fairness_policy.json",
+   "result": "MATCH",
+   "note": "expected-value metrics: precision = E[TP]/E[flags] (ratio of expectations)"
+  },
+  {
+   "item": "Option B expected f1",
+   "reported": 0.425,
+   "recomputed": 0.4251319772577566,
+   "source": "own flag probabilities from fairness_policy.json",
+   "result": "MATCH",
+   "note": "expected-value metrics: precision = E[TP]/E[flags] (ratio of expectations)"
+  },
+  {
+   "item": "Option B expected flag_rate",
+   "reported": 0.607,
+   "recomputed": 0.6073805841207056,
+   "source": "own flag probabilities from fairness_policy.json",
+   "result": "MATCH",
+   "note": "expected-value metrics: precision = E[TP]/E[flags] (ratio of expectations)"
+  },
+  {
+   "item": "Option B share of appointments with 0 < flag probability < 1 ('81.6% randomised')",
+   "reported": 0.816,
+   "recomputed": 0.8158621001673981,
+   "source": "own",
+   "result": "MATCH",
+   "note": "definition: share of APPOINTMENTS whose decision is a random draw; not a share of flags"
+  },
+  {
+   "item": "Option B expected EOD age_band",
+   "reported": 0.041,
+   "recomputed": 0.04078421918128994,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Option B expected EOD Gender",
+   "reported": 0.031,
+   "recomputed": 0.031192608008635103,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Option B expected EOD Scholarship",
+   "reported": 0.029,
+   "recomputed": 0.029344547304396285,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Option B expected age DPD",
+   "reported": 0.045,
+   "recomputed": 0.04507957779358518,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Option B expected age DI",
+   "reported": 0.929,
+   "recomputed": 0.9289719859786876,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "risk-unrelated share of Option B expected flags ('10.8%')",
+   "reported": 0.108,
+   "recomputed": 0.10784133578197513,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "risk-unrelated flags per 100 appointments ('6.55')",
+   "reported": 6.55,
+   "recomputed": 6.550073351961321,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "share of appointments with non-zero flag probability ('91.8%')",
+   "reported": 0.918,
+   "recomputed": 0.9177034791657241,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "floor flag probability child",
+   "reported": 0.113,
+   "recomputed": 0.11334247503230198,
+   "source": "fairness_policy.json",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "floor flag probability young_adult",
+   "reported": 0.098,
+   "recomputed": 0.09751823389682747,
+   "source": "fairness_policy.json",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "floor flag probability teen",
+   "reported": 0.079,
+   "recomputed": 0.07941432831588562,
+   "source": "fairness_policy.json",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "floor flag probability adult",
+   "reported": 0.058,
+   "recomputed": 0.05821851821712267,
+   "source": "fairness_policy.json",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "floor flag probability elderly",
+   "reported": 0.026,
+   "recomputed": 0.025553748303181103,
+   "source": "fairness_policy.json",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "floor flag probability senior",
+   "reported": 0.0,
+   "recomputed": 0.0,
+   "source": "fairness_policy.json",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "lowest-score appointment in each group gets exactly the floor",
+   "reported": true,
+   "recomputed": true,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Option B realised age EOD: share of draws > 0.05 (project seeds 20000+s)",
+   "reported": 0.385,
+   "recomputed": 0.385,
+   "source": "own simulation",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Option B realised age EOD: 95th percentile (project seeds 20000+s)",
+   "reported": 0.068,
+   "recomputed": 0.06778266097267709,
+   "source": "own simulation",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Option B realised age EOD: share of draws > 0.05 (independent seeds 900000+s)",
+   "reported": 0.385,
+   "recomputed": 0.462,
+   "source": "own simulation",
+   "result": "MISMATCH",
+   "note": ""
+  },
+  {
+   "item": "Option B realised age EOD: 95th percentile (independent seeds 900000+s)",
+   "reported": 0.068,
+   "recomputed": 0.07059222047525915,
+   "source": "own simulation",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Option B age CI as published [lo, hi] vs bootstrap of the expected-value gap",
+   "reported": [
+    0.037,
+    0.115
+   ],
+   "recomputed": [
+    0.027,
+    0.086
+   ],
+   "source": "own bootstrap (300) of expected values",
+   "result": "MISMATCH",
+   "note": "published CI bootstraps ONE random realisation, so it is not an interval around the plotted expected 0.041"
+  },
+  {
+   "item": "EO TPR 0.85 recall",
+   "reported": 0.864,
+   "recomputed": 0.8635141192290453,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 precision",
+   "reported": 0.3,
+   "recomputed": 0.30019477989871446,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 f1",
+   "reported": 0.446,
+   "recomputed": 0.44551078221656937,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 flag_rate",
+   "reported": 0.581,
+   "recomputed": 0.5806904040175542,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 age",
+   "reported": 0.1,
+   "recomputed": 0.09976777231082462,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 Gender",
+   "reported": 0.043,
+   "recomputed": 0.042811608866439255,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 Scholarship",
+   "reported": 0.054,
+   "recomputed": 0.05417938150178925,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 age TPR gap",
+   "reported": 0.06,
+   "recomputed": 0.05960498095329558,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 age FPR gap",
+   "reported": 0.1,
+   "recomputed": 0.09976777231082462,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 subgroup sizes (n, no-shows)",
+   "reported": {
+    "adult": [
+     6021,
+     1213
+    ],
+    "child": [
+     4247,
+     879
+    ],
+    "elderly": [
+     1074,
+     178
+    ],
+    "senior": [
+     4433,
+     702
+    ],
+    "teen": [
+     1584,
+     406
+    ],
+    "young_adult": [
+     4744,
+     1084
+    ],
+    "F": [
+     14270,
+     2862
+    ],
+    "M": [
+     7833,
+     1600
+    ],
+    "0": [
+     19942,
+     3964
+    ],
+    "1": [
+     2161,
+     498
+    ]
+   },
+   "recomputed": {
+    "adult": [
+     6021,
+     1213
+    ],
+    "child": [
+     4247,
+     879
+    ],
+    "elderly": [
+     1074,
+     178
+    ],
+    "senior": [
+     4433,
+     702
+    ],
+    "teen": [
+     1584,
+     406
+    ],
+    "young_adult": [
+     4744,
+     1084
+    ],
+    "F": [
+     14270,
+     2862
+    ],
+    "M": [
+     7833,
+     1600
+    ],
+    "0": [
+     19942,
+     3964
+    ],
+    "1": [
+     2161,
+     498
+    ]
+   },
+   "source": "own counts",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.85 age_band 95% CI (independent bootstrap, 1000)",
+   "reported": [
+    0.076,
+    0.138
+   ],
+   "recomputed": [
+    0.076,
+    0.135
+   ],
+   "source": "own bootstrap",
+   "result": "MATCH",
+   "note": "different resamples: expect agreement to about +/-0.01, not exact"
+  },
+  {
+   "item": "EO TPR 0.85 Gender 95% CI (independent bootstrap, 1000)",
+   "reported": [
+    0.027,
+    0.057
+   ],
+   "recomputed": [
+    0.027,
+    0.059
+   ],
+   "source": "own bootstrap",
+   "result": "MATCH",
+   "note": "different resamples: expect agreement to about +/-0.01, not exact"
+  },
+  {
+   "item": "EO TPR 0.85 Scholarship 95% CI (independent bootstrap, 1000)",
+   "reported": [
+    0.028,
+    0.08
+   ],
+   "recomputed": [
+    0.025,
+    0.081
+   ],
+   "source": "own bootstrap",
+   "result": "MATCH",
+   "note": "different resamples: expect agreement to about +/-0.01, not exact"
+  },
+  {
+   "item": "EO TPR 0.65 recall",
+   "reported": 0.664,
+   "recomputed": 0.6642761093679964,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.65 f1",
+   "reported": 0.439,
+   "recomputed": 0.438591299200947,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.65 age",
+   "reported": 0.064,
+   "recomputed": 0.06444053274516454,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.75 recall",
+   "reported": 0.768,
+   "recomputed": 0.7680412371134021,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.75 f1",
+   "reported": 0.446,
+   "recomputed": 0.44581761415376614,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "EO TPR 0.75 age",
+   "reported": 0.083,
+   "recomputed": 0.08291800984051578,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Minimax recall",
+   "reported": 0.782,
+   "recomputed": 0.7817122366651725,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Minimax f1",
+   "reported": 0.447,
+   "recomputed": 0.4465211547078026,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "Minimax age",
+   "reported": 0.089,
+   "recomputed": 0.0885366230193817,
+   "source": "own, from published per-group cut-offs",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "single cut-off age EOD",
+   "reported": 0.629,
+   "recomputed": 0.6292506982162154,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "number of replayed weeks",
+   "reported": 7,
+   "recomputed": 7,
+   "source": "own grouping",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-04-29..2016-04-29 age_band realised disparity",
+   "reported": 0.2857,
+   "recomputed": 0.2857,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-04-29..2016-04-29 age_band expected disparity",
+   "reported": 0.2615,
+   "recomputed": 0.2615,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-04-29..2016-04-29 age_band status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-04-29..2016-04-29 Gender realised disparity",
+   "reported": 0.125,
+   "recomputed": 0.125,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-04-29..2016-04-29 Gender expected disparity",
+   "reported": 0.1076,
+   "recomputed": 0.1076,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-04-29..2016-04-29 Gender status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-04-25 overall status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-02..2016-05-06 age_band realised disparity",
+   "reported": 0.1533,
+   "recomputed": 0.1533,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-02..2016-05-06 age_band expected disparity",
+   "reported": 0.1043,
+   "recomputed": 0.1043,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-02..2016-05-06 age_band status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-02..2016-05-06 Gender realised disparity",
+   "reported": 0.0402,
+   "recomputed": 0.0402,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-02..2016-05-06 Gender expected disparity",
+   "reported": 0.0425,
+   "recomputed": 0.0425,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-02..2016-05-06 Gender status",
+   "reported": "alert",
+   "recomputed": "alert",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-02 overall status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-09..2016-05-14 age_band realised disparity",
+   "reported": 0.1188,
+   "recomputed": 0.1188,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-09..2016-05-14 age_band expected disparity",
+   "reported": 0.1029,
+   "recomputed": 0.1029,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-09..2016-05-14 age_band status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-09..2016-05-14 Gender realised disparity",
+   "reported": 0.0533,
+   "recomputed": 0.0533,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-09..2016-05-14 Gender expected disparity",
+   "reported": 0.0358,
+   "recomputed": 0.0358,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-09..2016-05-14 Gender status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-09 overall status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-16..2016-05-20 age_band realised disparity",
+   "reported": 0.0949,
+   "recomputed": 0.0949,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-16..2016-05-20 age_band expected disparity",
+   "reported": 0.0719,
+   "recomputed": 0.0719,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-16..2016-05-20 age_band status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-16..2016-05-20 Gender realised disparity",
+   "reported": 0.0463,
+   "recomputed": 0.0463,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-16..2016-05-20 Gender expected disparity",
+   "reported": 0.0463,
+   "recomputed": 0.0463,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-16..2016-05-20 Gender status",
+   "reported": "alert",
+   "recomputed": "alert",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-16 overall status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-24..2016-05-25 age_band realised disparity",
+   "reported": 0.1082,
+   "recomputed": 0.1082,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-24..2016-05-25 age_band expected disparity",
+   "reported": 0.0803,
+   "recomputed": 0.0803,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-24..2016-05-25 age_band status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-24..2016-05-25 Gender realised disparity",
+   "reported": 0.0187,
+   "recomputed": 0.0187,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-24..2016-05-25 Gender expected disparity",
+   "reported": 0.0249,
+   "recomputed": 0.0249,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-24..2016-05-25 Gender status",
+   "reported": "ok",
+   "recomputed": "ok",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-23 overall status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-30..2016-06-03 age_band realised disparity",
+   "reported": 0.1966,
+   "recomputed": 0.1966,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-30..2016-06-03 age_band expected disparity",
+   "reported": 0.1404,
+   "recomputed": 0.1404,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-30..2016-06-03 age_band status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-30..2016-06-03 Gender realised disparity",
+   "reported": 0.0281,
+   "recomputed": 0.0281,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-30..2016-06-03 Gender expected disparity",
+   "reported": 0.0304,
+   "recomputed": 0.0304,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-30..2016-06-03 Gender status",
+   "reported": "ok",
+   "recomputed": "ok",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-05-30 overall status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-06-06..2016-06-08 age_band realised disparity",
+   "reported": 0.1326,
+   "recomputed": 0.1326,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-06-06..2016-06-08 age_band expected disparity",
+   "reported": 0.0957,
+   "recomputed": 0.0957,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-06-06..2016-06-08 age_band status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-06-06..2016-06-08 Gender realised disparity",
+   "reported": 0.0267,
+   "recomputed": 0.0267,
+   "source": "own replay",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-06-06..2016-06-08 Gender expected disparity",
+   "reported": 0.0129,
+   "recomputed": 0.0129,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-06-06..2016-06-08 Gender status",
+   "reported": "ok",
+   "recomputed": "ok",
+   "source": "own thresholds",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "s.7 2016-06-06 overall status",
+   "reported": "halt",
+   "recomputed": "halt",
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "supplementary rolling_28d status counts (recomputed from stored CIs)",
+   "reported": {
+    "halt": 3,
+    "inconclusive": 3
+   },
+   "recomputed": {
+    "halt": 3,
+    "inconclusive": 3
+   },
+   "source": "monitoring.json intervals",
+   "result": "MATCH",
+   "note": "interval values themselves come from the replay's bootstrap; only the status logic is recomputed"
+  },
+  {
+   "item": "supplementary calendar_months status counts (recomputed from stored CIs)",
+   "reported": {
+    "halt": 1,
+    "inconclusive": 1,
+    "insufficient data": 1
+   },
+   "recomputed": {
+    "insufficient data": 1,
+    "inconclusive": 1,
+    "halt": 1
+   },
+   "source": "monitoring.json intervals",
+   "result": "MATCH",
+   "note": "interval values themselves come from the replay's bootstrap; only the status logic is recomputed"
+  },
+  {
+   "item": "supplementary weeks_cycle2_rule status counts (recomputed from stored CIs)",
+   "reported": {
+    "halt": 5,
+    "inconclusive": 1,
+    "insufficient data": 1
+   },
+   "recomputed": {
+    "insufficient data": 1,
+    "halt": 5,
+    "inconclusive": 1
+   },
+   "source": "monitoring.json intervals",
+   "result": "MATCH",
+   "note": "interval values themselves come from the replay's bootstrap; only the status logic is recomputed"
+  },
+  {
+   "item": "SHAP additivity: max |sum(contributions incl. bias) - margin| < 1e-3",
+   "reported": true,
+   "recomputed": true,
+   "source": "own TreeSHAP call",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "SHAP: sigmoid(margin) equals predict_proba",
+   "reported": true,
+   "recomputed": true,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "SHAP share lead_time_days",
+   "reported": 0.555,
+   "recomputed": 0.5550522624255184,
+   "source": "own TreeSHAP on the same 4,000-row test sample",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "SHAP share Age",
+   "reported": 0.134,
+   "recomputed": 0.13418891203865718,
+   "source": "own TreeSHAP on the same 4,000-row test sample",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "SHAP share Neighbourhood",
+   "reported": 0.075,
+   "recomputed": 0.0746080905351293,
+   "source": "own TreeSHAP on the same 4,000-row test sample",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "SHAP share SMS_received",
+   "reported": 0.042,
+   "recomputed": 0.042030083680967965,
+   "source": "own TreeSHAP on the same 4,000-row test sample",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "SHAP share Gender + Scholarship < 4%",
+   "reported": true,
+   "recomputed": true,
+   "source": "own",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "counterfactual high: lowest reachable flag probability",
+   "reported": 0.113,
+   "recomputed": 0.113,
+   "source": "own grid search",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "counterfactual medium: lowest reachable flag probability",
+   "reported": 0.098,
+   "recomputed": 0.098,
+   "source": "own grid search",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "counterfactual low: lowest reachable flag probability",
+   "reported": 0.098,
+   "recomputed": 0.098,
+   "source": "own grid search",
+   "result": "MATCH",
+   "note": ""
+  },
+  {
+   "item": "blocking gate failures",
+   "reported": [
+    "C8",
+    "C3",
+    "Ethics"
+   ],
+   "recomputed": [
+    "C8",
+    "C3",
+    "Ethics"
+   ],
+   "source": "promotion_decision.json",
+   "result": "MATCH",
+   "note": ""
+  }
+ ],
+ "weekly_s7_own": [
+  {
+   "week": "2016-04-25",
+   "start": "2016-04-29",
+   "end": "2016-04-29",
+   "days": 1,
+   "n": 669,
+   "age": [
+    0.2857142857142857,
+    0.261540697298815,
+    "halt"
+   ],
+   "gender": [
+    0.12500000000000006,
+    0.10757207726025575,
+    "halt"
+   ],
+   "overall": "halt",
+   "min_group_no_shows": 6
+  },
+  {
+   "week": "2016-05-02",
+   "start": "2016-05-02",
+   "end": "2016-05-06",
+   "days": 5,
+   "n": 4175,
+   "age": [
+    0.15325670498084287,
+    0.10431957615413556,
+    "halt"
+   ],
+   "gender": [
+    0.04023459254957318,
+    0.042541146056990775,
+    "alert"
+   ],
+   "overall": "halt",
+   "min_group_no_shows": 29
+  },
+  {
+   "week": "2016-05-09",
+   "start": "2016-05-09",
+   "end": "2016-05-14",
+   "days": 6,
+   "n": 4382,
+   "age": [
+    0.11884057971014494,
+    0.10287213105448068,
+    "halt"
+   ],
+   "gender": [
+    0.05327125867289306,
+    0.035797053310164584,
+    "halt"
+   ],
+   "overall": "halt",
+   "min_group_no_shows": 30
+  },
+  {
+   "week": "2016-05-16",
+   "start": "2016-05-16",
+   "end": "2016-05-20",
+   "days": 5,
+   "n": 4278,
+   "age": [
+    0.09492133882377785,
+    0.07191301812146778,
+    "halt"
+   ],
+   "gender": [
+    0.0463318139935639,
+    0.046317120953819235,
+    "alert"
+   ],
+   "overall": "halt",
+   "min_group_no_shows": 31
+  },
+  {
+   "week": "2016-05-23",
+   "start": "2016-05-24",
+   "end": "2016-05-25",
+   "days": 2,
+   "n": 1606,
+   "age": [
+    0.10815047021943575,
+    0.08026397316709843,
+    "halt"
+   ],
+   "gender": [
+    0.018690875801037565,
+    0.0249389790024368,
+    "ok"
+   ],
+   "overall": "halt",
+   "min_group_no_shows": 23
+  },
+  {
+   "week": "2016-05-30",
+   "start": "2016-05-30",
+   "end": "2016-06-03",
+   "days": 5,
+   "n": 4198,
+   "age": [
+    0.19660042494688168,
+    0.14039148849423433,
+    "halt"
+   ],
+   "gender": [
+    0.028081445842925823,
+    0.030438755357493963,
+    "ok"
+   ],
+   "overall": "halt",
+   "min_group_no_shows": 36
+  },
+  {
+   "week": "2016-06-06",
+   "start": "2016-06-06",
+   "end": "2016-06-08",
+   "days": 3,
+   "n": 2795,
+   "age": [
+    0.1325854156042835,
+    0.09566491278708472,
+    "halt"
+   ],
+   "gender": [
+    0.02668482742422973,
+    0.012877988917503913,
+    "ok"
+   ],
+   "overall": "halt",
+   "min_group_no_shows": 23
+  }
+ ]
+}
