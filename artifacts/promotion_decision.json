@@ -1,0 +1,96 @@
+{
+ "generated_utc": "2026-10-20T14:15:50.197334+00:00",
+ "model_version": "2.0.0",
+ "configured_policy": "P4_option_B_equalized_odds",
+ "configured_policy_status": "evaluation only - not approved for operational use",
+ "checks": [
+  {
+   "check": "data contract passed",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "representation-bias gate passed",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "patient-grouped AUC within 0.02 of random-split AUC",
+   "value": 0.7407,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C1 ROC-AUC >= 0.70 (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C2 Recall >= 0.65 (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C4 Equalized-odds gap <= 0.05 for age band AND gender (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C5 Demographic-parity gap <= 0.05 for age band AND gender (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C6 Disparate-impact ratio >= 0.80 for age band AND gender (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C7 Equalized-odds gap <= 0.05 for scholarship (G3 stand-in) (configured policy: Option B)",
+   "value": true,
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)",
+   "value": false,
+   "passed": false,
+   "blocking": true
+  },
+  {
+   "check": "C3 F1 >= 0.55",
+   "value": 0.4502,
+   "passed": false,
+   "blocking": true,
+   "source_note": "Module 4 s.1 'The acceptance threshold is: ROC-AUC >= 0.70, Recall >= 0.65, F1 >= 0.55'; omitted from the Module 4 s.7 staging list; treated as blocking by reviewer decision"
+  },
+  {
+   "check": "Ethics Committee has reviewed and approved the Model Card (Module 4 s.7)",
+   "value": "not recorded",
+   "passed": false,
+   "blocking": true
+  }
+ ],
+ "blocking_failures": [
+  "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)",
+  "C3 F1 >= 0.55",
+  "Ethics Committee has reviewed and approved the Model Card (Module 4 s.7)"
+ ],
+ "original_criteria_not_met": [
+  "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)",
+  "C3 F1 >= 0.55",
+  "Ethics Committee has reviewed and approved the Model Card (Module 4 s.7)"
+ ],
+ "no_evaluated_policy_reliably_meets_fairness": true,
+ "decision": "NOT ELIGIBLE under the original acceptance criteria; evidence package prepared for an Ethics Committee decision",
+ "automatic_promotion": false,
+ "recommendation": "Do not deploy until a better model or sufficient additional evidence is available",
+ "deployment_status": "not deployed (no public API; live dashboard serves v1 from main)"
+}
