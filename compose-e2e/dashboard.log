@@ -1,0 +1,28 @@
+dashboard-1  | 2026-10-20 06:21:56.454 
+dashboard-1  | 'server.enableCORS=false' tells Streamlit not to limit cross-origin access.
+dashboard-1  | Streamlit sends the header 'Access-Control-Allow-Origin: *', except on the file
+dashboard-1  | upload routes, which stay pinned to the app address and still require a valid
+dashboard-1  | XSRF token.
+dashboard-1  | Streamlit also accepts a WebSocket connection from any origin.
+dashboard-1  | Streamlit does not set 'server.enableCORS' to 'true' for you.
+dashboard-1  | 'server.enableXsrfProtection=true' does not stop a cross-origin WebSocket
+dashboard-1  | connection, because Streamlit does not need a valid XSRF token to open one.
+dashboard-1  | 
+dashboard-1  | To limit cross-origin access, do these steps:
+dashboard-1  |   1. Set 'server.enableCORS=true'.
+dashboard-1  |   2. Put the origins that you trust in 'server.corsAllowedOrigins'.
+dashboard-1  | 
+dashboard-1  | 'server.allowedHosts' can also limit the hostnames that Streamlit accepts on a
+dashboard-1  | WebSocket connection.
+dashboard-1  | 
+dashboard-1  | 
+dashboard-1  | Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.
+dashboard-1  | 
+dashboard-1  | 2026-10-20 06:21:56.634 Uvicorn server started on 0.0.0.0:8501
+dashboard-1  | 
+dashboard-1  |   You can now view your Streamlit app in your browser.
+dashboard-1  | 
+dashboard-1  |   Local URL: http://localhost:8501
+dashboard-1  |   Network URL: http://172.18.0.5:8501
+dashboard-1  |   External URL: http://20.115.146.228:8501
+dashboard-1  | 

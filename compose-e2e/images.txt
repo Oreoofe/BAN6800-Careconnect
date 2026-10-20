@@ -1,0 +1,5 @@
+CONTAINER                          REPOSITORY                      TAG                 PLATFORM            IMAGE ID            SIZE                CREATED
+ban6800-careconnect-api-1          ban6800-careconnect-api         latest              linux/amd64         8bd1609be43a        926MB               34 seconds ago
+ban6800-careconnect-dashboard-1    ban6800-careconnect-dashboard   latest              linux/amd64         3c9e27182aa6        1.27GB              34 seconds ago
+ban6800-careconnect-mlflow-1       ban6800-careconnect-mlflow      latest              linux/amd64         45ae24ecf495        1.84GB              22 minutes ago
+ban6800-careconnect-monitoring-1   python                          3.12-slim           linux/amd64         df18428df8a0        119MB               292 years ago
