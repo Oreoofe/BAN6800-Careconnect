@@ -269,12 +269,15 @@ def main():
         rep["option_B_mechanism"] = mech
 
     # ---------- documentation states the measured findings ----------
-    must = {"docs/governance.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "no evaluated policy"],
+    must = {"docs/governance.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "no evaluated policy",
+                                   "governing monitoring rule", "supplementary"],
             "docs/algorithmic_impact_assessment.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity"],
             "docs/public_trust_statement.md": ["regardless of", "not yet met"],
-            "docs/model_card.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "No evaluated policy"],
+            "docs/model_card.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "No evaluated policy",
+                           "Module 4 s.7 weekly rule (governing)"],
             "docs/committee_decision_pack.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "No evaluated policy",
-                                                "do not deploy", "not approved", "C3 source and ambiguity", "Monitoring rule versus the original specification"]}
+                                                "do not deploy", "not approved", "C3 source and ambiguity", "Governing rule: the original Module 4 s.7 weekly rule",
+                                                "Relationship between the two methods"]}
     for f, phrases in must.items():
         path = config.ROOT / f
         txt = path.read_text() if path.exists() else ""
@@ -379,6 +382,61 @@ def main():
               and S["calendar_months"]["windows_with_expected_gap_above_0.05"] == S["calendar_months"]["windows_with_expected_gap_evaluable"],
               (S["rolling_28d_all"]["expected_gap_range"], S["calendar_months"]["expected_gap_range"]))
         check("latest rolling window: realised age gap reproduces", abs(e2 - (last["fairness"]["eod"] or -1)) < 1e-9, round(e2, 4))
+        # ---- governing Module 4 s.7 weekly rule (alert > 0.04, halt > 0.05; Gender and age_band; no minimum size) ----
+        R4 = MON.get("module4_rule")
+        check("monitoring: governing rule is the original Module 4 s.7 weekly rule with unchanged thresholds",
+              MON.get("governing_rule") == "module4_s7_weekly" and R4 and R4["alert_above"] == 0.04 and R4["halt_above"] == 0.05
+              and R4["attributes"] == ["age_band", "Gender"] and R4["minimum_group_size"] is None, R4 and R4["source"])
+        tw = te.copy()
+        tw["week"] = tw["AppointmentDay"].dt.to_period("W-SUN").dt.start_time.dt.strftime("%Y-%m-%d")
+        weeks_ = list(tw.groupby("week"))
+        stored = MON["weeks_cycle2_rule"]
+        check("Module 4 rule: every calendar week in the test period is evaluated (no size filter)",
+              [f"week of {w}" for w, _ in weeks_] == [r["batch"] for r in stored], len(stored))
+        mism, stat_bad, notev_ok, rnd_bad = [], [], [], []
+        for i, ((wk, cur), r) in enumerate(zip(weeks_, stored)):
+            m4 = r["module4_rule"]
+            pw_ = m.predict_proba(cur[config.FEATURES])[:, 1]
+            ga = cur["age_band"].astype(str).values
+            pmf_, yh_ = _ap(pw_, ga, POL, seed=i)
+            yv = cur[config.TARGET].values
+            for att in ["age_band", "Gender", "Scholarship"]:
+                a = m4["attributes"][att]
+                gv = cur[att].astype(str).values
+                k = np.isin(gv, a["groups_compared"])
+                if a["disparity"] is not None:
+                    d = float(equalized_odds_difference(yv[k], yh_[k], sensitive_features=gv[k]))
+                    if abs(d - a["disparity"]) > 1e-9:
+                        mism.append((r["batch"], att, round(d, 4), round(a["disparity"], 4)))
+                    ev_ = [(1 - pmf_[k & (gv == v) & (yv == 1)].mean(), pmf_[k & (gv == v) & (yv == 0)].mean()) for v in a["groups_compared"]]
+                    e_ = max(max(x[0] for x in ev_) - min(x[0] for x in ev_), max(x[1] for x in ev_) - min(x[1] for x in ev_))
+                    if abs(e_ - a["expected_disparity"]) > 1e-9:
+                        mism.append((r["batch"], att, "expected", round(e_, 4), round(a["expected_disparity"], 4)))
+                want = ("not evaluable" if a["disparity"] is None else "halt" if a["disparity"] > 0.05 else
+                        "alert" if a["disparity"] > 0.04 else "ok")
+                if a["status"] != want:
+                    stat_bad.append((r["batch"], att))
+                if a["status"] in ("halt", "alert") and f"{att}: random draw" in r["module4_rule"]["attribution"] \
+                        and a["expected_disparity"] > (0.05 if a["status"] == "halt" else 0.04):
+                    rnd_bad.append((r["batch"], att))
+            gs = [m4["attributes"][x]["status"] for x in ["age_band", "Gender"]]
+            want_all = "halt" if "halt" in gs else "alert" if "alert" in gs else "not evaluable" if "not evaluable" in gs else "ok"
+            if m4["status"] != want_all:
+                stat_bad.append((r["batch"], "overall"))
+            if m4["status"] == "ok" and "not evaluable" in gs:
+                notev_ok.append(r["batch"])
+        check("Module 4 rule: realised and expected weekly disparities reproduce (Fairlearn, recomputed decisions)", not mism, mism[:5] or None)
+        check("Module 4 rule: each week's status follows > 0.04 alert / > 0.05 halt; overall = worst of Gender and age_band",
+              not stat_bad, stat_bad or None)
+        check("Module 4 rule: 'not evaluable' is never reported as ok", not notev_ok, notev_ok or None)
+        check("Module 4 rule: no breach attributed to random variation where the expected disparity itself breaches", not rnd_bad, rnd_bad or None)
+        S4 = S["module4_s7_weekly"]
+        check("Module 4 rule: summary counts and governing status match the weekly rows",
+              sum(S4["counts"].values()) == len(stored) and S4["governing_status"] == (
+                  "halt" if S4["counts"]["halt"] else "alert" if S4["counts"]["alert"] else
+                  "not evaluable" if S4["counts"]["not evaluable"] else "ok"), S4["counts"])
+        check("S2 stress test also halts under the Module 4 s.7 rule", st["S2"]["module4_rule"]["status"] == "halt",
+              st["S2"]["module4_rule"]["status"])
         rep["monitoring"] = {
             "rule": MON["fairness_rule"], "evidently": MON["evidently"],
             "rolling_28d": [{"window": r["batch"], "n": r["n"], "auc": r["auc"], "max_psi": r["max_feature_psi"], "max_psi_feature": r["max_psi_feature"],
@@ -391,6 +449,10 @@ def main():
                        for r in MON["calendar_months"]],
             "stress": [{"name": t["name"], "expect": t["expect"], "fairness": t["fairness"]["status"], "status": t["status"]} for t in MON["stress_tests"]],
             "summary": MON["summary"],
+            "module4_s7_weekly": [{"week": w["batch"], "start": w["start"], "end": w["end"], "n": w["n"], "status": w["module4_rule"]["status"],
+                                   "disparity": {a: v["disparity"] for a, v in w["module4_rule"]["attributes"].items()},
+                                   "expected": {a: v["expected_disparity"] for a, v in w["module4_rule"]["attributes"].items()},
+                                   "attribution": w["module4_rule"]["attribution"]} for w in MON["weeks_cycle2_rule"]],
             "expected_vs_realised": [{"window": r["batch"], "realised": r["fairness"]["eod"], "expected": r["expected_age_eod_evaluated_groups"],
                                       "status": r["fairness"]["status"]} for r in MON["rolling_28d"] + MON["calendar_months"]]}
     else:

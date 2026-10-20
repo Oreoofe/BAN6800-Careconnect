@@ -77,6 +77,20 @@ def main():
     low_week = ", ".join(f"{w['start']} to {w['end']} (expected {w['expected_age_eod_evaluated_groups']:.3f}; {w['fairness']['attribution']})"
                          for w in MON["weeks_cycle2_rule"]
                          if w["expected_age_eod_evaluated_groups"] is not None and w["expected_age_eod_evaluated_groups"] <= 0.05) or "none"
+    R4 = MON["module4_rule"]
+    S4 = S["module4_s7_weekly"]
+
+    def _d(a):
+        return "not evaluable" if a["disparity"] is None else f"{a['disparity']:.3f} ({a['fnr_gap']:.3f} / {a['fpr_gap']:.3f})"
+
+    def _e(a):
+        return "-" if a["expected_disparity"] is None else f"{a['expected_disparity']:.3f}"
+    m4rows = "\n".join(f"| {w['start']} to {w['end']} | {w['n']} | {_d(w['module4_rule']['attributes']['age_band'])} | "
+                        f"{_e(w['module4_rule']['attributes']['age_band'])} | {_d(w['module4_rule']['attributes']['Gender'])} | "
+                        f"{_e(w['module4_rule']['attributes']['Gender'])} | {w['module4_rule']['status']} | "
+                        f"{w['module4_rule']['reason'].replace('|', '/')} | {w['module4_rule']['attribution']} |"
+                        for w in MON["weeks_cycle2_rule"])
+    st2 = next(t["module4_rule"]["status"] for t in MON["stress_tests"] if t["name"].startswith("S2"))
     model_sha = hashlib.sha256((A / "xgboost.joblib").read_bytes()).hexdigest()
     policy_sha = hashlib.sha256((A / "fairness_policy.json").read_bytes()).hexdigest()
 
@@ -160,6 +174,25 @@ Against Option B: recall {EO['recall']:.3f} vs {B['recall']:.3f}, precision {EO[
 age-group false-positive gap ({EO['age_band']['fpr_gap']:.3f}) and scholarship gap ({EO['Scholarship']['eod']:.3f}) exceed 0.05.
 
 ## 6. Monitoring evidence (replay of held-out appointments; not live data)
+
+### 6.1 Governing rule: the original Module 4 s.7 weekly rule
+Module 4 s.7: "subgroup error-rate disparity tracked weekly; alert at >4%, halt at >5%"; Module 4 s.1 names Gender and age_band.
+Implemented as written: each calendar week, the realised disparity (larger of the FNR and FPR gaps) for Gender and for age_band;
+**alert above {R4['alert_above']:.2f}, halt above {R4['halt_above']:.2f}**; no minimum group size (none is specified). A group with no
+no-shows or no attended visits cannot be compared; an attribute with fewer than two comparable groups is 'not evaluable', never a pass.
+Expected disparities come from the policy's flag probabilities; a breach is attributed to the random draw or sampling only when the
+expected disparity is itself within the threshold.
+
+**Governing status over the replay: {S4['governing_status'].upper()}** ({', '.join(f"{k} {v}" for k, v in S4['counts'].items())}).
+
+| Week | Appointments | Age disparity (FNR / FPR gap) | Age expected | Gender disparity | Gender expected | Status | Reason | Attribution |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+{m4rows}
+
+Scholarship (G3 stand-in) is computed for every week but is not part of the s.7 rule; see `monitoring.json`.
+Under the S2 stress test (older patients' flags removed) the s.7 rule returns {st2}.
+
+### 6.2 Supplementary: rolling-window uncertainty analysis (does not replace 6.1)
 Rule: {MON['fairness_rule']['window']}; groups need >= {MON['fairness_rule']['min_no_shows_per_group']} no-shows and >= {MON['fairness_rule']['min_attended_per_group']}
 attended visits; halt only if the whole 95% interval is above 0.05; ok only if wholly at or below; otherwise inconclusive;
 fewer than two eligible groups = insufficient data. {S['reading']}
@@ -176,16 +209,17 @@ individual time periods. Weekly windows: expected gap above 0.05 in {S['weeks_cy
 {S['weeks_cycle2_rule']['windows_with_expected_gap_evaluable']} evaluable weeks; the exception is the week of {low_week}, so the
 "every monitored time window" statement applies to the rolling and monthly windows used by the rule, not to every week.
 
-**Monitoring rule versus the original specification.** Module 4 s.7 specifies "subgroup error-rate disparity tracked weekly;
-alert at >4%, halt at >5%". The replay rule evaluates rolling 28-day windows weekly with minimum group sizes and a bootstrap
-interval, and has no 4% alert level. The original weekly point-estimate rule is kept in the replay (it halted every week). Adopting
-the replacement rule is a change to the original monitoring specification and needs committee approval; it is not settled here.
+**Relationship between the two methods.** The Module 4 s.7 weekly rule (6.1) is the governing monitoring rule; it is not replaced.
+The rolling 28-day bootstrap analysis (6.2) is supplementary: it shows how much of a weekly breach could be sampling noise (small
+weekly groups) and whether the gap persists over longer windows. It cannot clear a s.7 alert or halt; if the two disagree, the s.7
+result stands and the disagreement is reported. The cycle-1 weekly rule (age only, groups under 30 no-shows skipped) is a
+superseded approximation of s.7, kept for audit.
 
 | Window | Appointments | Expected age EOD | Realised age EOD | 95% CI (realised) | Status | Groups not evaluated |
 | --- | --- | --- | --- | --- | --- | --- |
 {win}
 
-| Week | Cycle-1 rule (point / status) | Expected EOD | Realised EOD | Current rule status | Not evaluated | Attribution |
+| Week | Cycle-1 rule (point / status) | Expected EOD | Realised EOD | Bootstrap rule status | Not evaluated | Attribution |
 | --- | --- | --- | --- | --- | --- | --- |
 {week}
 

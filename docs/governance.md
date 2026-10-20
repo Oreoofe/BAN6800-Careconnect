@@ -7,10 +7,10 @@ Status: capstone design document (October 2026). Controls marked **implemented**
 | Principle | Charter wording (Module 1) | Refinement from later evidence | Control | Status |
 | --- | --- | --- | --- | --- |
 | P1 Do no harm | Never used to deny care, penalise or restrict access | Unchanged | API returns support-only flags; prohibited uses in Model Card and `/model_info` | Implemented |
-| P2 Fairness by design | Error-rate disparity between groups must not exceed 5%; automatic halt if breached | The Charter text mixed demographic parity with error-rate parity. Age groups have different true no-show rates (15.5%-26.1%), so the limit is applied to the **equalized-odds gap** (largest TPR or FPR difference). Parity and disparate impact are reported, not enforced. | Fairness gate in `careconnect/run_all.py`; Option B post-processing configured **pending committee decision**: it meets the limit in expectation only (single sets of decisions exceed 0.05 in roughly 4 of 10 simulated draws); deterministic alternatives compared in `artifacts/policy_comparison.json`; rolling 28-day fairness rule with minimum group sizes and confidence intervals | Implemented (gate, policy, comparison, replay); designed (production halt) |
+| P2 Fairness by design | Error-rate disparity between groups must not exceed 5%; automatic halt if breached | The Charter text mixed demographic parity with error-rate parity. Age groups have different true no-show rates (15.5%-26.1%), so the limit is applied to the **equalized-odds gap** (largest TPR or FPR difference). Parity and disparate impact are reported, not enforced. | Fairness gate in `careconnect/run_all.py`; Option B post-processing configured **pending committee decision**: it meets the limit in expectation only (single sets of decisions exceed 0.05 in roughly 4 of 10 simulated draws); deterministic alternatives compared in `artifacts/policy_comparison.json`; governing monitoring rule: the original Module 4 s.7 weekly rule (alert > 0.04, halt > 0.05); rolling 28-day confidence-interval analysis as supplementary evidence | Implemented (gate, policy, comparison, replay); designed (production halt) |
 | P3 Transparency | Black-box models prohibited | XGBoost is retained as a **documented exception**: exact TreeSHAP reason codes per prediction, LIME second opinion, logistic regression kept as an interpretable fallback (AUC below target). Exception requires Ethics Committee sign-off. | Reason codes in every API response; XAI dashboard page | Implemented; sign-off pending |
 | P4 Human accountability | No automated decisions | Under Option B some flags are randomised; the coordinator still decides every action, and each draw is logged | Explanation store with request id, draw and reasons | Implemented |
-| P5 Continuous monitoring | Monthly bias audits; immediate suspension if harm detected | A weekly point-estimate check was tried and rejected: it halted in every replayed week because weekly age groups are too small to measure a 0.05 gap. The rule now uses rolling 28-day windows, minimum group sizes (50 no-shows, 50 attended) and a bootstrap 95% interval; 'insufficient data' and 'inconclusive' are explicit outcomes | `careconnect/monitoring/monitor.py`; monthly `build-and-retrain` workflow | Implemented (replay); designed (live) |
+| P5 Continuous monitoring | Monthly bias audits; immediate suspension if harm detected | **The governing monitoring rule is the original Module 4 s.7 rule**, implemented as written: subgroup error-rate disparity (larger of the FNR and FPR gaps) for Gender and age_band, tracked weekly; alert above 0.04, halt above 0.05; no minimum group size; an attribute without two comparable groups is 'not evaluable' (never a pass). A **supplementary** rolling 28-day analysis (minimum 50 no-shows and 50 attended per group, bootstrap 95% interval; halt / inconclusive / insufficient data) shows how much of a weekly result could be sampling noise. It does not replace or override the s.7 rule (reviewer decision, cycle 5) | `careconnect/monitoring/monitor.py`; monthly `build-and-retrain` workflow | Implemented (replay); designed (live) |
 
 ## 2. Governance structure
 
@@ -27,19 +27,19 @@ Status: capstone design document (October 2026). Controls marked **implemented**
 
 ## 3. Retraining, approval and rollback
 
-1. **Triggers:** monthly schedule (`.github/workflows/build.yml`), any input PSI >= 0.20 that is not a known artefact (e.g. the data-window cold start for prior visits), AUC more than 0.03 below validation, a fairness 'halt', or 'inconclusive' in two consecutive rolling windows.
+1. **Triggers:** monthly schedule (`.github/workflows/build.yml`), any input PSI >= 0.20 that is not a known artefact (e.g. the data-window cold start for prior visits), AUC more than 0.03 below validation, a Module 4 s.7 weekly fairness 'halt' or 'alert', or (supplementary) 'inconclusive' in two consecutive rolling windows.
 2. **Run:** `python -m careconnect.run_all` - same pipeline, data contract, bias gate, training, fairness mitigation, explanations, monitoring and Model Card generation.
 3. **Automated gate** (`artifacts/promotion_decision.json`): data contract and bias gate pass; patient-grouped AUC within 0.02; the original criteria C1-C8 for the configured policy (Module 4 s.1 and s.7 plus the Charter halt rule, including reliability C8); and the s.7 condition that the Ethics Committee has reviewed and approved the Model Card. **F1 >= 0.55 (C3) is blocking.** Source of the ambiguity: Module 4 s.1 states "The acceptance threshold is: ROC-AUC >= 0.70, Recall >= 0.65, F1 >= 0.55", while the s.7 list ("The model is accepted for staging if") names ROC-AUC, recall, fairness and Ethics Committee approval but not F1; the capstone brief sets no numeric threshold and no marking rubric was available. The reviewer decided (cycle 4) to treat C3 as blocking unless the rubric clearly establishes otherwise. No threshold was changed.
 4. **Human approval:** Ethics Committee reviews the Model Card, the gate output, the committee decision pack and the policy comparison; approval recorded in the MLflow version tags (approver, date, decision).
 5. **Release:** API image rebuilt with the approved artifacts; previous version kept for rollback.
-6. **Post-release:** rolling 28-day fairness windows reviewed weekly; groups that are 'not evaluated' (too few cases) are reviewed by hand rather than assumed fair.
+6. **Post-release:** the Module 4 s.7 weekly rule is evaluated every week (governing); the supplementary rolling 28-day analysis is reviewed alongside it; groups that are 'not evaluated' (too few cases) are reviewed by hand rather than assumed fair.
 
 ## 4. Ethical incident response
 
 | Severity | Example | First response | Owner | Time limit |
 | --- | --- | --- | --- | --- |
-| S1 Critical | Fairness rule returns 'halt' (whole 95% interval above 0.05); flags used to deny or delay care; data breach | Suspend flagging (API returns scores to Data Science only); notify Ethics Committee and Privacy Officer | Model owner | Suspend within 4 h; committee within 24 h |
-| S2 High | Fairness 'inconclusive' in two consecutive windows, or a group repeatedly 'not evaluated'; input PSI >= 0.20; AUC below alert line | Root-cause review; retraining review; increased human review of flags | Model owner | 5 working days |
+| S1 Critical | Module 4 s.7 weekly rule returns 'halt' (disparity > 0.05 for Gender or age_band); supplementary rolling analysis returns 'halt' (whole 95% interval above 0.05); flags used to deny or delay care; data breach | Suspend flagging (API returns scores to Data Science only); notify Ethics Committee and Privacy Officer | Model owner | Suspend within 4 h; committee within 24 h |
+| S2 High | Module 4 s.7 weekly 'alert' (disparity > 0.04) or 'not evaluable'; supplementary 'inconclusive' in two consecutive windows, or a group repeatedly 'not evaluated'; input PSI >= 0.20; AUC below alert line | Root-cause review; retraining review; increased human review of flags | Model owner | 5 working days |
 | S3 Moderate | Patient complaint about outreach; unexplained reason codes; a single 'inconclusive' window | Log, respond to patient, check explanation store record | Product owner | 10 working days |
 | S4 Low | Documentation or dashboard error | Correct and note in change log | Product owner | Next sprint |
 
@@ -76,16 +76,18 @@ summarise them and must be read with those files.
   the groups the model predicts best, prevents counterfactual "what would remove this flag" answers in those groups, and means
   SHAP reason codes do not explain those flags. For exact equalized odds by post-processing this randomisation is unavoidable when
   the groups' ROC curves differ (Hardt et al., 2016).
-- **The expected Option B age-group gap exceeds 0.05 in every monitored time window** used by the monitoring rule (all rolling
+- **The expected Option B age-group gap exceeds 0.05 in every monitored time window** used by the supplementary rolling analysis (all rolling
   28-day windows and both evaluable calendar months; April 2016 had insufficient data), although it is within 0.05 on the pooled
   test set. Monitoring outcomes are recorded separately as halt, inconclusive and insufficient data; insufficient data and
   unevaluated groups are never treated as a pass.
   In weekly windows the expected gap exceeds 0.05 in 5 of 6 evaluable weeks; the exception is 16-20 May 2016 (expected 0.047),
   whose halt is attributed to the random draw or sampling together with a concurrent SMS_received data-drift alert (PSI 2.73).
-- **The monitoring rule departs from the original specification and needs committee approval.** Module 4 s.7 specifies "subgroup
-  error-rate disparity tracked weekly; alert at >4%, halt at >5%". The replay rule uses rolling 28-day windows evaluated weekly,
-  minimum group sizes and a bootstrap interval, with no 4% alert level. The original weekly rule is kept in the replay output
-  (it halted every week). Adopting the replacement is not settled here.
+- **The governing monitoring rule is the original Module 4 s.7 weekly rule** ("subgroup error-rate disparity tracked weekly;
+  alert at >4%, halt at >5%"), applied to Gender and age_band as Module 4 s.1 specifies, with no minimum group size. Its weekly
+  results, reasons and attributions are in `docs/committee_decision_pack.md` s.6.1 and `artifacts/monitoring/monitoring.json`
+  (`summary.module4_s7_weekly`). The rolling 28-day bootstrap analysis is **supplementary**: it quantifies sampling uncertainty
+  and persistence, cannot clear a s.7 alert or halt, and any disagreement is reported with the s.7 result standing. The cycle-1
+  weekly rule (age only; groups under 30 no-shows skipped) was an approximation of s.7 and is kept for audit only.
 - **Deterministic equal opportunity at TPR 0.85 is presented as an alternative, not as compliant.** Equal opportunity equalises
   only the true-positive rate; equalized odds (the Charter requirement) also requires equal false-positive rates. This policy
   equalises catch rates closely but leaves age-group false-positive and scholarship gaps above 0.05, so it fails C4, C5, C7 and C8.

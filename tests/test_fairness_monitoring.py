@@ -89,3 +89,53 @@ def test_equal_opportunity_cutoffs_equalise_tpr():
     yh = apply_cutoffs(s, g, tpr_cutoffs(y, s, g, 0.75))
     tprs = [yh[(g == v) & (y == 1)].mean() for v in ["x", "y"]]
     assert all(abs(t - 0.75) < 0.01 for t in tprs)
+
+
+# ---- cycle 5: original Module 4 s.7 weekly rule (governing): alert > 0.04, halt > 0.05, no minimum group size ----
+def _m4_case(fnr_b):
+    """Group a has FNR 0 and FPR 0; group b has FNR = fnr_b and FPR 0 (100 no-shows per group)."""
+    y = np.array([1] * 100 + [0] * 100 + [1] * 100 + [0] * 100)
+    g = np.array(["a"] * 200 + ["b"] * 200)
+    yh = y.copy()
+    yh[200:200 + int(round(fnr_b * 100))] = 0
+    return y, yh, g
+
+
+def test_module4_rule_thresholds():
+    from careconnect.monitoring.monitor import module4_rule
+    for fnr_b, want in [(0.03, "ok"), (0.04, "ok"), (0.045 + 0.005, "alert"), (0.05, "alert"), (0.06, "halt")]:
+        y, yh, g = _m4_case(fnr_b)
+        r = module4_rule(y, yh, {"age_band": g, "Gender": np.array(["F", "M"] * 200)})
+        assert r["attributes"]["age_band"]["status"] == want, (fnr_b, r["attributes"]["age_band"])
+    # boundaries are strict: exactly 0.04 is ok, exactly 0.05 is an alert, not a halt
+    y, yh, g = _m4_case(0.05)
+    assert module4_rule(y, yh, {"age_band": g})["status"] == "alert"
+
+
+def test_module4_rule_any_governing_attribute_halts_and_undefined_is_not_a_pass():
+    from careconnect.monitoring.monitor import module4_rule
+    y, yh, g = _m4_case(0.0)
+    sex = np.array(["F"] * 200 + ["M"] * 200)
+    halt = module4_rule(y, yh, {"age_band": np.array(["x"] * 400), "Gender": sex})          # one age group only
+    assert halt["attributes"]["age_band"]["status"] == "not evaluable"
+    assert halt["status"] == "not evaluable"                                              # never "ok"
+    yh2 = yh.copy()
+    yh2[200:210] = 0                                                                        # Gender gap 0.10
+    assert module4_rule(y, yh2, {"age_band": g, "Gender": sex})["status"] == "halt"
+    # a group with no no-shows has an undefined FNR and is excluded from the comparison, not treated as fair
+    y3 = np.array([0] * 50 + [1, 0] * 50)
+    r = module4_rule(y3, y3.copy(), {"age_band": np.array(["c"] * 50 + ["d"] * 100)})
+    assert r["attributes"]["age_band"]["groups_not_comparable"] == ["c"] and r["status"] == "not evaluable"
+
+
+def test_module4_rule_attribution_does_not_blame_chance_when_expected_gap_breaches():
+    from careconnect.monitoring.monitor import explain_module4, module4_rule
+    y, yh, g = _m4_case(0.08)
+    sex = np.array(["F", "M"] * 200)
+    r = module4_rule(y, yh, {"age_band": g, "Gender": sex}, pmf=yh.astype(float))   # expected == realised (deterministic)
+    _, attr = explain_module4(r, "ok")
+    assert "expected disparity" in attr and "random" not in attr
+    pmf = np.where(y == 1, 1.0, 0.0)                                                   # expected gap 0; breach is the draw
+    r2 = module4_rule(y, yh, {"age_band": g, "Gender": sex}, pmf=pmf)
+    _, attr2 = explain_module4(r2, "alert", "SMS_received", 2.7)
+    assert "random draw" in attr2 and "SMS_received" in attr2

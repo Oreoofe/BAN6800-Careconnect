@@ -462,8 +462,29 @@ elif page.startswith("7"):
     st.write("")
     FR, TH = MON["fairness_rule"], MON["thresholds"]
     emoji = {"ok": "🟢 ok", "warn": "🟠 warn", "alert": "🔴 alert", "halt": "⛔ halt", "inconclusive": "⚪ inconclusive",
-             "insufficient data": "▫️ insufficient data"}
-    st.markdown(f"**Fairness rule ({FR['window']}).** A group is evaluated only with at least {FR['min_no_shows_per_group']} no-shows and "
+             "insufficient data": "▫️ insufficient data", "not evaluable": "▫️ not evaluable"}
+    R4 = MON.get("module4_rule")
+    if R4:
+        S4 = MON["summary"]["module4_s7_weekly"]
+        st.markdown("#### Governing rule: original Module 4 §7 weekly fairness monitoring")
+        st.markdown(f"Each calendar week, the realised error-rate disparity (the larger of the false-negative-rate and false-positive-rate "
+                    f"gaps) is computed for **Gender** and **age group**. **Alert** above {R4['alert_above']:.2f}, **halt** above "
+                    f"{R4['halt_above']:.2f}; no minimum group size (none is specified). A group with no no-shows or no attended visits "
+                    "cannot be compared, and an attribute with fewer than two comparable groups is **not evaluable** - never a pass.")
+        st.error(f"**Governing status over the replay: {S4['governing_status'].upper()}** - "
+                 + ", ".join(f"{v} week(s) {k}" for k, v in S4["counts"].items()) + ".")
+        st.dataframe(pd.DataFrame([{
+            "Week": f"{w['start']} to {w['end']}", "Appointments": w["n"],
+            "Age disparity (expected)": "-" if w["module4_rule"]["attributes"]["age_band"]["disparity"] is None else
+            f"{w['module4_rule']['attributes']['age_band']['disparity']:.3f} ({w['module4_rule']['attributes']['age_band']['expected_disparity']:.3f})",
+            "Gender disparity (expected)": "-" if w["module4_rule"]["attributes"]["Gender"]["disparity"] is None else
+            f"{w['module4_rule']['attributes']['Gender']['disparity']:.3f} ({w['module4_rule']['attributes']['Gender']['expected_disparity']:.3f})",
+            "Status": emoji[w["module4_rule"]["status"]], "Attribution": w["module4_rule"]["attribution"]}
+            for w in MON["weeks_cycle2_rule"]]), hide_index=True, width="stretch")
+        st.caption("Scholarship (the G3 stand-in) is computed too but is not part of the §7 rule. The rolling-window analysis below is "
+                   "supplementary evidence about uncertainty; it does not replace or override this rule.")
+    st.markdown("#### Supplementary: rolling-window uncertainty analysis (not the governing rule)")
+    st.markdown(f"**Supplementary rule ({FR['window']}).** A group is evaluated only with at least {FR['min_no_shows_per_group']} no-shows and "
                 f"{FR['min_attended_per_group']} attended visits. The age-group gap gets a {FR['bootstrap']}-sample bootstrap 95% interval: "
                 "**halt** only if the whole interval is above 0.05, **ok** only if it is wholly at or below 0.05, otherwise **inconclusive**. "
                 "Too few eligible groups gives **insufficient data**, which is never read as fair or unfair.")
@@ -483,21 +504,22 @@ elif page.startswith("7"):
         st.dataframe(pd.DataFrame([{"Window set": n, **SUM[k]["counts"],
                                     "Expected gap > 0.05": f"{SUM[k]['windows_with_expected_gap_above_0.05']} of {SUM[k]['windows_with_expected_gap_evaluable']} evaluable"}
                                    for n, k in [("Rolling 28-day (all)", "rolling_28d_all"), ("Rolling 28-day (full windows)", "rolling_28d_full_windows_only"),
-                                                ("Calendar months", "calendar_months"), ("Weekly (current rule)", "weeks_cycle2_rule")]]),
+                                                ("Calendar months", "calendar_months"), ("Weekly (bootstrap rule)", "weeks_cycle2_rule")]]),
                      hide_index=True, width="stretch")
-        st.warning("Under Option B the expected age-group gap exceeds 0.05 in every monitored time window used by the rule (rolling 28-day windows and "
+        st.warning("Under Option B the expected age-group gap exceeds 0.05 in every monitored time window used by the supplementary rolling analysis (rolling 28-day windows and "
                    "evaluable calendar months), even though it is within 0.05 on the pooled test set. 'Insufficient data' is never counted as a pass.")
     st.markdown("#### Rolling 28-day windows")
     st.dataframe(wtable(MON["rolling_28d"]), hide_index=True, width="stretch")
-    st.markdown("#### Same seven weeks: cycle-1 rule vs current rule")
+    st.markdown("#### Same seven weeks: cycle-1 rule vs supplementary bootstrap rule")
     cmp_ = pd.DataFrame([{"Week": a["batch"], "Cycle-1 gap": round(a["age_eod"], 3), "Cycle-1 status": emoji[a["status"]["bias_drift"]],
-                          "Current status": emoji[b["fairness"]["status"]],
-                          "Current 95% interval": "-" if not b["fairness"]["ci95"] else f"{b['fairness']['ci95'][0]:.3f}-{b['fairness']['ci95'][1]:.3f}",
+                          "Bootstrap status": emoji[b["fairness"]["status"]],
+                          "Bootstrap 95% interval": "-" if not b["fairness"]["ci95"] else f"{b['fairness']['ci95'][0]:.3f}-{b['fairness']['ci95'][1]:.3f}",
                           "Not evaluated": ", ".join(b["fairness"]["groups_not_evaluated"]) or "none"}
                          for a, b in zip(MON["weeks_cycle1_rule"], MON["weeks_cycle2_rule"])])
     st.dataframe(cmp_, hide_index=True, width="stretch")
-    st.caption("The cycle-1 rule halted every week because weekly age groups are too small to measure a 0.05 gap. "
-               "Weekly windows mostly cannot support a conclusion either way, which is why the rule uses 28-day windows.")
+    st.caption("The cycle-1 rule (age only, groups with fewer than 30 no-shows skipped) halted every week. Weekly age groups are small, "
+               "so a weekly point estimate is noisy; the supplementary 28-day bootstrap analysis shows that uncertainty. The governing "
+               "decision remains the original Module 4 §7 weekly rule above.")
     st.markdown("#### Synthetic stress tests (labelled, not real data)")
     st.dataframe(pd.DataFrame([{"Test": t["name"], "Expected": t["expect"], "Fairness status": emoji[t["fairness"]["status"]],
                                 "Data drift": emoji[t["status"]["data_drift"]], "Prediction drift": emoji[t["status"]["prediction_drift"]],

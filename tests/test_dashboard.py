@@ -107,3 +107,16 @@ def test_recommendation_and_deployment_status_rendered():
     t = _text(at) + "\n".join(str(e.value) for e in at.error) + "\n".join(str(c.value) for c in at.sidebar.caption)
     assert not at.exception
     assert "Do not deploy until a better model" in t and "No public API exists" in t and "v1" in t
+
+
+def test_monitoring_page_shows_governing_module4_rule():
+    mon = config.ARTIFACTS / "monitoring" / "monitoring.json"
+    if not mon.exists() or "module4_rule" not in json.load(open(mon)):
+        pytest.skip("cycle-5 monitoring not built")
+    M = json.load(open(mon))
+    at = _app()
+    at.sidebar.radio[0].set_value(next(p for p in at.sidebar.radio[0].options if p.startswith("7"))).run()
+    t = _text(at) + "\n".join(str(e.value) for e in at.error)
+    assert not at.exception
+    assert "Governing rule: original Module 4 §7" in t and "not the governing rule" in t
+    assert f"Governing status over the replay: {M['summary']['module4_s7_weekly']['governing_status'].upper()}" in t

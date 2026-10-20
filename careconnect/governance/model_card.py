@@ -68,6 +68,13 @@ def main():
     mon_txt = (f"{len(MON['rolling_28d'])} rolling windows -> " + ", ".join(f"{v} {k}" for k, v in cnt.items())
                + "; stress tests -> " + "; ".join(f"{t['name'].split(':')[0]}: {t['fairness']['status']}" for t in MON["stress_tests"]) + ".")
     n_halt1 = sum(w["status"]["bias_drift"] == "halt" for w in MON["weeks_cycle1_rule"])
+    R4, S4 = MON["module4_rule"], S["module4_s7_weekly"]
+    m4_counts = ", ".join(f"{v} week(s) {k}" for k, v in S4["counts"].items())
+    m4_weeks = "Weeks: " + "; ".join(
+        f"{w['start']} to {w['end']} {w['module4_rule']['status']} (age "
+        + ("n/a" if w["module4_rule"]["attributes"]["age_band"]["disparity"] is None else f"{w['module4_rule']['attributes']['age_band']['disparity']:.3f}")
+        + ", gender " + ("n/a" if w["module4_rule"]["attributes"]["Gender"]["disparity"] is None else f"{w['module4_rule']['attributes']['Gender']['disparity']:.3f}")
+        + ")" for w in MON["weeks_cycle2_rule"]) + "."
     gate = "\n".join(f"| {c['check']} | {c['value']} | {'pass' if c['passed'] else 'FAIL'} |" for c in G["checks"])
     md = f"""# Model Card - CareConnect no-show risk model v{config.MODEL_VERSION}
 
@@ -175,8 +182,14 @@ reviewer decision: Module 4 s.1 calls it part of "the acceptance threshold" but 
 - Randomised decisions under Option B must be explained to patients and staff.
 
 ## Monitoring and retraining
-PSI on inputs and scores (warn >= 0.10, alert >= 0.20); AUC alert if more than 0.03 below validation. Fairness uses
-{FR['window']}: a group is evaluated only with >= {FR['min_no_shows_per_group']} no-shows and >= {FR['min_attended_per_group']} attended visits;
+PSI on inputs and scores (warn >= 0.10, alert >= 0.20); AUC alert if more than 0.03 below validation.
+
+**Fairness: Module 4 s.7 weekly rule (governing).** Each calendar week, the realised error-rate disparity (larger of the FNR and FPR
+gaps) for Gender and age_band; alert above {R4['alert_above']:.2f}, halt above {R4['halt_above']:.2f}; no minimum group size; an attribute with fewer than
+two comparable groups is 'not evaluable' (never a pass). Replay: **governing status {S4['governing_status'].upper()}** - {m4_counts}.
+{m4_weeks}
+
+**Supplementary uncertainty analysis (does not replace the s.7 rule):** {FR['window']}: a group is evaluated only with >= {FR['min_no_shows_per_group']} no-shows and >= {FR['min_attended_per_group']} attended visits;
 the age-group gap gets a bootstrap 95% interval; halt only if the whole interval is above 0.05, ok only if it is wholly at or below,
 otherwise inconclusive; too few eligible groups = insufficient data (never read as fair or unfair).
 Replay result: {mon_txt}

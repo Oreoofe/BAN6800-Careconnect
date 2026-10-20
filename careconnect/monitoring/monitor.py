@@ -12,11 +12,16 @@ Signals and thresholds (Module 4 monitoring hooks):
 * data drift     - Population Stability Index per feature; warn >= 0.10, alert >= 0.20 (retrain trigger)
 * prediction drift - PSI of the risk score
 * performance    - ROC-AUC and recall per week; alert if AUC falls > 0.03 below validation
-* bias drift     - equalized-odds gap by age group under the configured (not approved) policy; cycle-1 rule: warn > 0.04, halt > 0.05
+* bias drift     - governing: Module 4 s.7 weekly error-rate disparity (Gender, age_band), alert > 0.04, halt > 0.05;
+                   cycle-1 approximation (age only, small groups skipped) kept for audit
 Concept drift (a changed relationship between inputs and outcomes) shows up as falling performance
 with little data drift; that pattern is reported separately.
 
 Also writes an Evidently data-drift report (HTML) for the last 28 days when Evidently is installed.
+
+GOVERNING RULE (cycle 5, reviewer decision): the original Module 4 s.7 weekly rule, implemented as written in
+module4_rule() (Gender and age_band; alert > 0.04, halt > 0.05; no minimum group size). Everything below about the
+bootstrap rule is SUPPLEMENTARY evidence and does not replace it.
 
 Cycle 2 (after verification): the weekly rule halted every week because weekly age groups are too small
 to measure a 0.05 gap. The replay now also applies a rule with minimum group sizes and a bootstrap 95%
@@ -206,6 +211,97 @@ def explain_status(fr, exp_eod, drift_status, limit=0.05, drift_feature=None, dr
     return base, attr
 
 
+# ---------------------------------------------------------------------------------------------------
+# GOVERNING RULE (cycle 5, reviewer decision): the original Module 4 s.7 monitoring signal, implemented as written.
+#   Module 4 s.7: "Fairness drift: subgroup error-rate disparity tracked weekly; alert at >4%, halt at >5%".
+#   Module 4 s.1: halt if "false-positive or false-negative rates differ by >5 percentage points between Gender or age_band groups".
+# Disparity = max(FNR gap, FPR gap) across the groups of each attribute, on the week's realised decisions (point estimate).
+# s.7 sets no minimum group size, so none is applied. A group whose FNR or FPR is undefined (no no-shows, or no attended
+# visits, that week) cannot enter the comparison; an attribute with fewer than two such groups is 'not evaluable', which is
+# never a pass. The rolling-window bootstrap rule (FAIR_RULE) is SUPPLEMENTARY evidence about uncertainty; it does not
+# replace or override this rule.
+M4_RULE = {"source": "Module 4 s.7 (weekly; alert > 0.04, halt > 0.05) with Module 4 s.1 attributes (Gender, age_band)",
+           "attributes": ["age_band", "Gender"], "metric": "max(FNR gap, FPR gap) between groups, realised decisions, point estimate",
+           "alert_above": 0.04, "halt_above": 0.05, "minimum_group_size": None, "window": "calendar week (Mon-Sun) of appointment day",
+           "supplementary_attributes": ["Scholarship"],
+           "statuses": {"ok": "every governing attribute evaluable and disparity <= 0.04",
+                        "alert": "highest disparity > 0.04 and <= 0.05: review",
+                        "halt": "any governing attribute's disparity > 0.05: suspend flagging, notify Ethics Committee",
+                        "not evaluable": "an attribute has fewer than two groups with defined FNR and FPR; never a pass"}}
+
+
+def _attr_disparity(y, yh, g, pmf=None):
+    rows, ok = {}, []
+    for v in np.unique(g):
+        k = g == v
+        pos, neg = int(y[k].sum()), int((y[k] == 0).sum())
+        fnr = float(((yh[k] == 0) & (y[k] == 1)).sum() / pos) if pos else None
+        fpr = float(((yh[k] == 1) & (y[k] == 0)).sum() / neg) if neg else None
+        e_fnr = float(1 - pmf[k & (y == 1)].mean()) if (pmf is not None and pos) else None
+        e_fpr = float(pmf[k & (y == 0)].mean()) if (pmf is not None and neg) else None
+        rows[str(v)] = {"n": int(k.sum()), "no_shows": pos, "attended": neg, "fnr": fnr, "fpr": fpr,
+                        "expected_fnr": e_fnr, "expected_fpr": e_fpr}
+        if fnr is not None and fpr is not None:
+            ok.append(str(v))
+    out = {"groups": rows, "groups_compared": ok, "groups_not_comparable": [v for v in rows if v not in ok]}
+    if len(ok) < 2:
+        return {**out, "fnr_gap": None, "fpr_gap": None, "disparity": None, "expected_disparity": None}
+    gap = lambda key: max(rows[v][key] for v in ok) - min(rows[v][key] for v in ok)
+    out.update(fnr_gap=gap("fnr"), fpr_gap=gap("fpr"))
+    out["disparity"] = max(out["fnr_gap"], out["fpr_gap"])
+    out["expected_disparity"] = max(gap("expected_fnr"), gap("expected_fpr")) if pmf is not None else None
+    return out
+
+
+def module4_rule(y, yh, attrs: dict, pmf=None, rule=M4_RULE):
+    """Original Module 4 s.7 weekly rule. attrs maps attribute name -> group labels per appointment."""
+    y, yh = np.asarray(y), np.asarray(yh)
+    pmf = None if pmf is None else np.asarray(pmf, dtype=float)
+    res = {a: _attr_disparity(y, yh, np.asarray(g).astype(str), pmf) for a, g in attrs.items()}
+    gov = [a for a in rule["attributes"] if a in res]
+    for a, r in res.items():
+        d = r["disparity"]
+        r["status"] = ("not evaluable" if d is None else "halt" if d > rule["halt_above"] else
+                       "alert" if d > rule["alert_above"] else "ok")
+        r["governing"] = a in gov
+    st = [res[a]["status"] for a in gov]
+    status = ("halt" if "halt" in st else "alert" if "alert" in st else "not evaluable" if "not evaluable" in st else "ok")
+    return {"status": status, "attributes": res,
+            "worst_attribute": max(gov, key=lambda a: -1 if res[a]["disparity"] is None else res[a]["disparity"])}
+
+
+def explain_module4(m4, drift_status, drift_feature=None, drift_psi=None, small=30):
+    """Reason and attribution for the governing weekly status. Expected disparity is computed from the policy's flag
+    probabilities; a breach is attributed to random variation only if the expected disparity is itself within the limit."""
+    lim, parts, attr = M4_RULE["halt_above"], [], []
+    for a in M4_RULE["attributes"]:
+        r = m4["attributes"][a]
+        if r["disparity"] is None:
+            parts.append(f"{a}: not evaluable ({', '.join(r['groups_not_comparable'])} lack no-shows or attended visits)")
+            continue
+        e = r["expected_disparity"]
+        parts.append(f"{a}: disparity {r['disparity']:.3f} (FNR gap {r['fnr_gap']:.3f}, FPR gap {r['fpr_gap']:.3f}; "
+                     + (f"expected {e:.3f}" if e is not None else "expected n/a") + f") -> {r['status']}")
+        if r["status"] in ("halt", "alert"):
+            thr = M4_RULE["alert_above"] if r["status"] == "alert" else lim
+            if e is None:
+                attr.append(f"{a}: realised disparity (expected value not available)")
+            elif e > thr:
+                attr.append(f"{a}: policy's expected disparity (expected {e:.3f} above {thr:.2f})")
+            else:
+                attr.append(f"{a}: random draw / sampling (expected {e:.3f} within {thr:.2f})")
+            sm = [f"{v} {r['groups'][v]['no_shows']} no-shows" for v in r["groups_compared"] if r["groups"][v]["no_shows"] < small]
+            if sm:
+                attr.append(f"{a}: small subgroup(s) ({', '.join(sm)}) - point estimate imprecise")
+        if r["groups_not_comparable"]:
+            parts[-1] += f"; not comparable: {', '.join(r['groups_not_comparable'])}"
+    if drift_status == "alert" and m4["status"] in ("halt", "alert", "not evaluable"):
+        attr.append(f"concurrent data-drift alert ({drift_feature} PSI {drift_psi:.2f})" if drift_feature else "concurrent data-drift alert")
+    if m4["status"] == "not evaluable" and not attr:
+        attr.append("insufficient sample (not a pass)")
+    return "; ".join(parts) + ".", "; ".join(attr) or "within limit"
+
+
 def window_report(name, cur, ref, model, policy, T, val_auc, ref_scores, seed, coverage_days=None, override=None):
     X = cur[config.FEATURES]
     y = cur[config.TARGET].values
@@ -243,6 +339,18 @@ def window_report(name, cur, ref, model, policy, T, val_auc, ref_scores, seed, c
         r["fairness"]["attribution"] = "synthetic stress perturbation (decisions altered after the policy)"
         r["fairness"]["reason"] += " Decisions were altered synthetically for this stress test."
     r["fairness"]["ci_method"] = f"percentile bootstrap, {FAIR_RULE['bootstrap']} resamples of the window's appointments, realised decisions"
+    # governing Module 4 s.7 rule on the SAME realised decisions (point estimate, no minimum group size)
+    m4 = module4_rule(y, yh, {"age_band": g, "Gender": cur["Gender"].values, "Scholarship": cur["Scholarship"].values},
+                      pmf=None if override is not None else pmf)
+    if override is not None:      # decisions altered after the policy: expected disparity is not defined
+        for a in m4["attributes"].values():
+            a["expected_disparity"] = None
+        reason = "; ".join(f"{a}: disparity {v['disparity']:.3f} -> {v['status']}" if v["disparity"] is not None else f"{a}: not evaluable"
+                           for a, v in m4["attributes"].items() if v["governing"]) + ". Decisions were altered synthetically."
+        m4["reason"], m4["attribution"] = reason, "synthetic stress perturbation (decisions altered after the policy)"
+    else:
+        m4["reason"], m4["attribution"] = explain_module4(m4, r["status"]["data_drift"], r["max_psi_feature"], r["max_feature_psi"])
+    r["module4_rule"] = m4
     return r
 
 
@@ -264,8 +372,10 @@ def main():
     weeks = [batch_report(f"week of {w}", cur, ref, m, policy, T, val_auc, ref_scores)
              for w, cur in te.groupby("week") if len(cur) >= 500]
     # 2) cycle-2 rule applied to the same weekly batches (shows how it behaves with small groups)
+    # every calendar week is evaluated (no size filter: Module 4 s.7 sets none). These rows carry BOTH the governing
+    # Module 4 s.7 result ("module4_rule") and the supplementary bootstrap result ("fairness").
     weeks_new = [window_report(f"week of {w}", cur, ref, m, policy, T, val_auc, ref_scores, seed=i)
-                 for i, (w, cur) in enumerate(te.groupby("week")) if len(cur) >= 500]
+                 for i, (w, cur) in enumerate(te.groupby("week"))]
     # 3) cycle-2 rule on rolling 28-day windows stepped weekly
     start, end = te["AppointmentDay"].min(), te["AppointmentDay"].max()
     ends = sorted(set(pd.date_range(start + pd.Timedelta(days=6), end, freq="7D").tolist() + [end]))
@@ -313,7 +423,15 @@ def main():
                 "windows_with_expected_gap_evaluable": len(exp),
                 "expected_gap_range": [min(exp), max(exp)] if exp else None,
                 "windows_with_any_group_not_evaluated": [r["batch"] for r in rows if r["fairness"]["groups_not_evaluated"]]}
-    summary = {"rolling_28d_all": summarise(rolling),
+    def summarise_m4(rows):
+        out = {"halt": [], "alert": [], "ok": [], "not evaluable": []}
+        for r in rows:
+            out[r["module4_rule"]["status"]].append(r["batch"])
+        return {"counts": {k: len(v) for k, v in out.items()}, "windows": out,
+                "governing_status": ("halt" if out["halt"] else "alert" if out["alert"] else
+                                     "not evaluable" if out["not evaluable"] else "ok")}
+    summary = {"module4_s7_weekly": {**summarise_m4(weeks_new), "rule": M4_RULE, "role": "GOVERNING (original specification)"},
+               "rolling_28d_all": summarise(rolling),
                "rolling_28d_full_windows_only": summarise([r for r in rolling if (r["coverage_days"] or 0) >= 28]),
                "calendar_months": summarise(months), "weeks_cycle2_rule": summarise(weeks_new),
                "weeks_cycle1_rule_halts": sum(w["status"]["bias_drift"] == "halt" for w in weeks),
@@ -321,6 +439,8 @@ def main():
                            "'inconclusive' means the 95% interval straddles 0.05 and supports no conclusion either way.")}
     res = {"generated_utc": datetime.now(timezone.utc).isoformat(), "model_version": config.MODEL_VERSION,
            "mode": "replay of held-out appointments (not live production data)", "thresholds": TH,
+           "governing_rule": "module4_s7_weekly", "module4_rule": M4_RULE,
+           "fairness_rule_role": "SUPPLEMENTARY uncertainty analysis; does not replace the Module 4 s.7 rule",
            "fairness_rule": FAIR_RULE, "validation_auc": val_auc, "policy": policy["name"] if policy else "single cut-off",
            "weeks_cycle1_rule": weeks, "weeks_cycle2_rule": weeks_new, "rolling_28d": rolling, "calendar_months": months,
            "stress_tests": stress, "summary": summary, "evidently": ev, "evidently_window": "last 28 days of test appointments vs training sample",
@@ -334,6 +454,10 @@ def main():
             f = r["fairness"]
             print(label, r["batch"], r["n"], f["status"], None if f["eod"] is None else round(f["eod"], 3),
                   f["ci95"] and [round(x, 3) for x in f["ci95"]], list(f["groups_not_evaluated"]), r["status"]["data_drift"])
+    for r in weeks_new:
+        m4 = r["module4_rule"]
+        print("module4 s7 weekly", r["batch"], r["n"], m4["status"],
+              {a: (None if v["disparity"] is None else round(v["disparity"], 3)) for a, v in m4["attributes"].items()}, m4["attribution"])
     print("evidently:", ev)
 
 

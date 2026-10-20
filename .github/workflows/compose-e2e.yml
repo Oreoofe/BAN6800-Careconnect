@@ -1,0 +1,88 @@
+# End-to-end test of the Docker Compose stack: pipeline -> MLflow -> monitoring -> API + dashboard.
+# Every service runs in its own container on the CI runner; nothing is deployed or published as a service.
+# Each stage runs even if an earlier one fails, so every failure is visible; the job fails if any stage fails.
+# Evidence (logs, check report, checksums, generated documents) is pushed to compose-e2e-<run_number>.
+name: compose-e2e
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write    # only used to publish this run's evidence to a separate compose-e2e-<run> branch
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    env:
+      CARECONNECT_SALT: ${{ secrets.CARECONNECT_SALT }}
+      CARECONNECT_GIT_SHA: ${{ github.sha }}
+      CARECONNECT_CV_FOLDS: "5"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose file (all profiles)
+        run: scripts/run_logged.sh docker compose --profile build --profile tracking config --quiet
+      - name: Build images (pipeline, mlflow, api, dashboard, monitoring)
+        run: |
+          mkdir -p compose-e2e
+          scripts/run_logged.sh docker compose --profile build --profile tracking build 2>&1 | tail -n 40
+      - name: Pipeline service - full run in its container (data, training + MLflow, XAI, fairness, monitoring, docs, gate)
+        id: pipeline
+        run: |
+          set -o pipefail
+          scripts/run_logged.sh docker compose --profile build run --rm pipeline 2>&1 | tee compose-e2e/pipeline.log | tail -n 80
+      - name: Independent verification inside the pipeline container
+        if: success() || failure()
+        run: |
+          set -o pipefail
+          scripts/run_logged.sh docker compose --profile build run --rm pipeline python scripts/verify_results.py 2>&1 \
+            | tee compose-e2e/verification.log | tail -n 40
+      - name: Check pipeline outputs
+        if: success() || failure()
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" artifacts docs mlruns logs data || true
+          scripts/run_logged.sh python3 scripts/compose_e2e_checks.py pipeline
+      - name: MLflow service - start and query runs and registry over REST
+        if: success() || failure()
+        run: |
+          scripts/run_logged.sh docker compose --profile tracking up -d mlflow
+          scripts/run_logged.sh python3 scripts/compose_e2e_checks.py mlflow
+      - name: Monitoring service - start and fetch the served reports
+        if: success() || failure()
+        run: |
+          scripts/run_logged.sh docker compose up -d monitoring
+          scripts/run_logged.sh python3 scripts/compose_e2e_checks.py monitoring
+      - name: API + dashboard - rebuilt with the pipeline's artifacts, then smoke-tested
+        if: success() || failure()
+        run: |
+          scripts/run_logged.sh docker compose up -d --build api dashboard
+          scripts/run_logged.sh bash scripts/smoke_api.sh
+          scripts/run_logged.sh python3 scripts/compose_e2e_checks.py api
+      - name: Container status and logs
+        if: always()
+        run: |
+          docker compose --profile build --profile tracking ps -a | tee compose-e2e/ps.txt
+          for s in mlflow monitoring api dashboard; do docker compose --profile tracking logs --tail=60 "$s" > "compose-e2e/$s.log" 2>&1 || true; done
+          docker compose --profile build --profile tracking images | tee compose-e2e/images.txt || true
+      - name: Publish evidence to branch compose-e2e-${{ github.run_number }}
+        if: always()
+        run: |
+          set -e
+          sudo chown -R "$(id -u):$(id -g)" . || true
+          OUT=$(mktemp -d)
+          cp -r compose-e2e "$OUT/" || true
+          for f in artifacts/verification_report.json artifacts/promotion_decision.json artifacts/model_results.json \
+                   artifacts/monitoring/monitoring.json docs/model_card.md docs/committee_decision_pack.md logs/audit.log; do
+            [ -e "$f" ] && mkdir -p "$OUT/$(dirname $f)" && cp "$f" "$OUT/$f" || true
+          done
+          (cd "$OUT" && find . -type f ! -path './.git/*' -exec sha256sum {} + | sort -k2 > SHA256SUMS.txt)
+          [ -e artifacts/xgboost.joblib ] && sha256sum artifacts/xgboost.joblib artifacts/fairness_policy.json >> "$OUT/SHA256SUMS.txt" || true
+          cd "$OUT"
+          git init -q -b "compose-e2e-${{ github.run_number }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Compose end-to-end evidence: run ${{ github.run_id }} from ${{ github.ref_name }}@${{ github.sha }}"
+          git push -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/compose-e2e-${{ github.run_number }}"
+      - name: Stop containers
+        if: always()
+        run: docker compose --profile build --profile tracking down -v || true
