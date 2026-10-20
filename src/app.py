@@ -129,6 +129,8 @@ st.sidebar.caption(f"BAN 6800 capstone - model v{VERSION}. Trained on the public
 if POLICY:
     st.sidebar.caption(f"Outreach rule: **{POLICY['name']}** - {POLICY.get('status', '')}.")
 st.sidebar.caption(f"Model artifact sha256 `{MODEL_SHA[:12]}` · built from commit `{BUILD_SHA}`")
+st.sidebar.caption("Deployment: not deployed. No public API exists; the hosted dashboard serves the v1 results from `main` "
+                   "until a merge is approved.")
 
 # ═════════ 1 ═════════
 if page.startswith("1"):
@@ -160,10 +162,12 @@ attendance, age and whether a reminder SMS was sent.
             ("Scholarship gap, Option B (expected)", "≤ 0.05", f"{MB['Scholarship']['eod']:.3f}", MB["Scholarship"]["eod"] <= 0.05)]
     st.dataframe(pd.DataFrame([{"Measure": a, "Target": b, "Result": c_, "Met?": "✅ Yes" if d else "❌ No"} for a, b, c_, d in rows]),
                  hide_index=True, width="stretch")
-    st.caption("Results are on a 20% hold-out set the model never saw during training. The outreach rule actually applied is "
+    st.caption("Results are on a 20% hold-out set the model never saw during training. The outreach rule configured for evaluation (not approved, not in operational use) is "
                f"Option B (equalized odds by age group), which flags {MB['flag_rate']:.0%} of appointments and catches {MB['recall']:.0%} of no-shows.")
     if GATE:
         st.info(f"**Promotion gate:** {GATE['decision']}. Automatic promotion is disabled; the AI Ethics Committee approves every version.")
+        if GATE.get("recommendation"):
+            st.error(f"**Recommendation: {GATE['recommendation']}.** Deployment status: {GATE.get('deployment_status', 'not deployed')}.")
 
 # ═════════ 2 ═════════
 elif page.startswith("2"):
@@ -388,7 +392,7 @@ elif page.startswith("5"):
 * **Option A** narrows the age gap to {MIT['A_group_thresholds']['age_band']['eod']:.2f} while keeping the catch rate near {MIT['A_group_thresholds']['recall']:.0%}, but does not reach 0.05.
 * **Option B (configured, not approved)** gives expected age-group, gender and scholarship gaps of {MB['age_band']['eod']:.3f}, {MB['Gender']['eod']:.3f} and {MB['Scholarship']['eod']:.3f}, but flags {MB['flag_rate']:.0%} of appointments instead of {MIT['before']['flag_rate']:.0%}, and part of the rule is randomised.
 * **Option B numbers are expected values.** Because part of the rule is randomised, any single month's decisions scatter around them{spread_txt}. Option B therefore meets the limit **on average, not reliably in any one set of decisions**.
-* **Status:** Option B is the configured rule pending an Ethics Committee decision; the full comparison of alternatives is below. **What it costs:** more outreach per real no-show, so coordinator capacity (Module 2 assumption A-3) must be confirmed before use.
+* **Status:** Option B is configured for evaluation only and is not approved for operational use. The project team recommends no deployment until a better model or sufficient additional evidence is available; equal opportunity at TPR 0.85 is an alternative assessed, not a compliant solution. The full comparison of alternatives is below. **What it costs:** more outreach per real no-show, so coordinator capacity (Module 2 assumption A-3) must be confirmed before use.
 * **Why not equal flag rates:** older patients genuinely miss fewer visits, so equal *flag rates* (demographic parity) would mean ignoring real differences. The Charter limit is applied to *error rates* instead.
 """)
     if PCOMP:

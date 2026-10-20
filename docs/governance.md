@@ -29,7 +29,7 @@ Status: capstone design document (October 2026). Controls marked **implemented**
 
 1. **Triggers:** monthly schedule (`.github/workflows/build.yml`), any input PSI >= 0.20 that is not a known artefact (e.g. the data-window cold start for prior visits), AUC more than 0.03 below validation, a fairness 'halt', or 'inconclusive' in two consecutive rolling windows.
 2. **Run:** `python -m careconnect.run_all` - same pipeline, data contract, bias gate, training, fairness mitigation, explanations, monitoring and Model Card generation.
-3. **Automated gate** (`artifacts/promotion_decision.json`): data contract and bias gate pass; patient-grouped AUC within 0.02; and the original criteria C1, C2 and C4-C8 for the configured policy (Module 4 s.7 staging list plus the Charter halt rule, including reliability C8). F1 >= 0.55 (C3) appears in Module 4 s.1 as a success criterion but not in the s.7 staging list; the gate reports it as an unmet original criterion and does not block on it. That reading is an ambiguity in the source documents and is referred to the committee for a decision, not settled here.
+3. **Automated gate** (`artifacts/promotion_decision.json`): data contract and bias gate pass; patient-grouped AUC within 0.02; the original criteria C1-C8 for the configured policy (Module 4 s.1 and s.7 plus the Charter halt rule, including reliability C8); and the s.7 condition that the Ethics Committee has reviewed and approved the Model Card. **F1 >= 0.55 (C3) is blocking.** Source of the ambiguity: Module 4 s.1 states "The acceptance threshold is: ROC-AUC >= 0.70, Recall >= 0.65, F1 >= 0.55", while the s.7 list ("The model is accepted for staging if") names ROC-AUC, recall, fairness and Ethics Committee approval but not F1; the capstone brief sets no numeric threshold and no marking rubric was available. The reviewer decided (cycle 4) to treat C3 as blocking unless the rubric clearly establishes otherwise. No threshold was changed.
 4. **Human approval:** Ethics Committee reviews the Model Card, the gate output, the committee decision pack and the policy comparison; approval recorded in the MLflow version tags (approver, date, decision).
 5. **Release:** API image rebuilt with the approved artifacts; previous version kept for rollback.
 6. **Post-release:** rolling 28-day fairness windows reviewed weekly; groups that are 'not evaluated' (too few cases) are reviewed by hand rather than assumed fair.
@@ -63,7 +63,12 @@ summarise them and must be read with those files.
 
 - **No evaluated policy reliably met the 0.05 equalized-odds limit across all required groups** (age band, gender, scholarship as
   the G3 stand-in). Eight policies were tested against the original acceptance criteria C1-C8; the criteria were not changed after
-  the results were seen. No policy meets F1 >= 0.55 either.
+  the results were seen. No policy meets F1 >= 0.55 (C3, blocking) either.
+- **Recommendation: do not deploy until a better model or sufficient additional evidence is available.** Option B remains
+  configured for evaluation only and is not approved for operational use. Deterministic equal opportunity at TPR 0.85 is
+  documented as an alternative assessed, not as a compliant solution. The original fairness criteria are unchanged.
+- **Deployment status.** Nothing is deployed: no public API exists (the API runs locally and in Docker only), and the hosted
+  dashboard deploys from `main` and still shows the v1 results. The v2 dashboard has been tested headlessly only.
 - **Option B (configured, not approved) creates flags unrelated to predicted risk.** Fairlearn's equalized-odds post-processing
   equalises error rates by ignoring the score for a share of appointments in every age group whose ROC curve lies above the lowest
   group's (senior), and flagging those at the common false-positive rate. In the verified build this is a score-independent flag
@@ -75,6 +80,12 @@ summarise them and must be read with those files.
   28-day windows and both evaluable calendar months; April 2016 had insufficient data), although it is within 0.05 on the pooled
   test set. Monitoring outcomes are recorded separately as halt, inconclusive and insufficient data; insufficient data and
   unevaluated groups are never treated as a pass.
+  In weekly windows the expected gap exceeds 0.05 in 5 of 6 evaluable weeks; the exception is 16-20 May 2016 (expected 0.047),
+  whose halt is attributed to the random draw or sampling together with a concurrent SMS_received data-drift alert (PSI 2.73).
+- **The monitoring rule departs from the original specification and needs committee approval.** Module 4 s.7 specifies "subgroup
+  error-rate disparity tracked weekly; alert at >4%, halt at >5%". The replay rule uses rolling 28-day windows evaluated weekly,
+  minimum group sizes and a bootstrap interval, with no 4% alert level. The original weekly rule is kept in the replay output
+  (it halted every week). Adopting the replacement is not settled here.
 - **Deterministic equal opportunity at TPR 0.85 is presented as an alternative, not as compliant.** Equal opportunity equalises
   only the true-positive rate; equalized odds (the Charter requirement) also requires equal false-positive rates. This policy
   equalises catch rates closely but leaves age-group false-positive and scholarship gaps above 0.05, so it fails C4, C5, C7 and C8.

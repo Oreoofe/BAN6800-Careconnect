@@ -97,3 +97,13 @@ def test_committee_disclosures_rendered():
     if mon.exists() and "summary" in json.load(open(mon)):
         at.sidebar.radio[0].set_value(next(p for p in pages if p.startswith("7"))).run()
         assert not at.exception and "every monitored time window" in _text(at)
+
+
+def test_recommendation_and_deployment_status_rendered():
+    g = config.ARTIFACTS / "promotion_decision.json"
+    if not g.exists() or "recommendation" not in json.load(open(g)):
+        pytest.skip("cycle-4 gate output not built")
+    at = _app()
+    t = _text(at) + "\n".join(str(e.value) for e in at.error) + "\n".join(str(c.value) for c in at.sidebar.caption)
+    assert not at.exception
+    assert "Do not deploy until a better model" in t and "No public API exists" in t and "v1" in t

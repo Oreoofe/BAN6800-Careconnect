@@ -273,7 +273,8 @@ def main():
             "docs/algorithmic_impact_assessment.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity"],
             "docs/public_trust_statement.md": ["regardless of", "not yet met"],
             "docs/model_card.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "No evaluated policy"],
-            "docs/committee_decision_pack.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "No evaluated policy"]}
+            "docs/committee_decision_pack.md": ["unrelated to predicted risk", "every monitored time window", "equal opportunity", "No evaluated policy",
+                                                "do not deploy", "not approved", "C3 source and ambiguity", "Monitoring rule versus the original specification"]}
     for f, phrases in must.items():
         path = config.ROOT / f
         txt = path.read_text() if path.exists() else ""
@@ -318,6 +319,16 @@ def main():
     G = load("promotion_decision.json")
     check("promotion gate ran and did not auto-promote", bool(G) and G["automatic_promotion"] is False, G and G["decision"])
     rep["promotion_gate"] = G
+    if G:
+        c3 = [r for r in G["checks"] if r["check"].startswith("C3 ")]
+        check("gate: C3 (F1 >= 0.55) is blocking (reviewer decision) and recomputed", len(c3) == 1 and c3[0]["blocking"] is True
+              and c3[0]["passed"] == (R["models"]["xgboost"]["at_recall_target"]["f1"] >= 0.55), c3 and c3[0]["value"])
+        ec = [r for r in G["checks"] if "Ethics Committee" in r["check"]]
+        check("gate: Ethics Committee approval (Module 4 s.7) is blocking and not recorded as passed",
+              len(ec) == 1 and ec[0]["blocking"] and not ec[0]["passed"])
+        check("gate: every failed blocking criterion is listed and the decision is NOT ELIGIBLE",
+              G["blocking_failures"] == [r["check"] for r in G["checks"] if r["blocking"] and not r["passed"]]
+              and G["decision"].startswith("NOT ELIGIBLE") and "not deploy" in G["recommendation"].lower(), len(G["blocking_failures"]))
     MON = load("monitoring/monitoring.json")
     if MON:
         check("Evidently HTML report written", (A / "monitoring" / "evidently_drift_report.html").exists(), MON["evidently"])
@@ -358,6 +369,10 @@ def main():
                if r["fairness"]["status"] in ("halt", "inconclusive") and (r["expected_age_eod_evaluated_groups"] or 0) > 0.05
                and "random" in r["fairness"]["attribution"]]
         check("monitoring: no halt attributed to random variation where the expected gap itself exceeds 0.05", not mis, mis or None)
+        nod = [r["batch"] for st_ in ["rolling_28d", "calendar_months", "weeks_cycle2_rule"] for r in MON[st_]
+               if r["fairness"]["status"] in ("halt", "inconclusive") and r["status"]["data_drift"] == "alert"
+               and r["max_psi_feature"] not in r["fairness"]["attribution"]]
+        check("monitoring: every halt/inconclusive window with a data-drift alert names the drift in its attribution", not nod, nod or None)
         S = MON["summary"]
         check("monitoring: expected Option B age gap > 0.05 in every evaluable window (rolling + months)",
               S["rolling_28d_all"]["windows_with_expected_gap_above_0.05"] == S["rolling_28d_all"]["windows_with_expected_gap_evaluable"]

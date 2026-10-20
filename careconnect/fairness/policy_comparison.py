@@ -169,7 +169,7 @@ def threshold_optimizer(oof, y_tr, g_tr, constraint):
 CRITERIA = [
     ("C1", "ROC-AUC >= 0.70", "Module 4 s.7"),
     ("C2", "Recall >= 0.65", "Module 4 s.7"),
-    ("C3", "F1 >= 0.55", "Module 4 s.1 (success criterion; not in the s.7 staging list)"),
+    ("C3", "F1 >= 0.55", "Module 4 s.1 ('the acceptance threshold'; omitted from the s.7 staging list) - blocking by reviewer decision"),
     ("C4", "Equalized-odds gap <= 0.05 for age band AND gender", "Module 4 s.7 / Charter P2"),
     ("C5", "Demographic-parity gap <= 0.05 for age band AND gender", "Module 4 s.7 ('all fairness metrics')"),
     ("C6", "Disparate-impact ratio >= 0.80 for age band AND gender", "Module 4 s.7"),

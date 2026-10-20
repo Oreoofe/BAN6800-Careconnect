@@ -173,7 +173,7 @@ def fairness_rule(y, yh, groups, seed=0, rule=FAIR_RULE):
             "note": ("not all groups evaluated" if skipped else "all groups evaluated")}
 
 
-def explain_status(fr, exp_eod, drift_status, limit=0.05):
+def explain_status(fr, exp_eod, drift_status, limit=0.05, drift_feature=None, drift_psi=None):
     """Plain reason for a window's fairness status, and what the evidence attributes it to."""
     cnt = ", ".join(f"{g} {c['no_shows']} no-shows/{c['attended']} attended" for g, c in fr["groups_not_evaluated"].items())
     if fr["status"] == "insufficient data":
@@ -192,13 +192,17 @@ def explain_status(fr, exp_eod, drift_status, limit=0.05):
         base += f" Expected gap {exp_eod:.3f} is itself above 0.05, so this is not just the random draw."
     elif fr["eod"] > limit:
         attr = "random draw / sampling (expected gap within the limit)"
-        base += f" Expected gap {exp_eod:.3f} is within 0.05: the excess comes from this draw or sampling noise."
+        base += (f" Expected gap {exp_eod:.3f} is within 0.05: the excess comes from this draw or sampling noise"
+                 + (", or from the concurrent data drift noted below." if drift_status == "alert" else "."))
     else:
         attr = "within limit"
     if fr["groups_not_evaluated"]:
         base += f" Not evaluated (too few cases, not counted as passing): {cnt}."
     if drift_status != "ok":
-        base += f" Data-drift status in this window: {drift_status}."
+        base += f" Data-drift status in this window: {drift_status}" + (f" ({drift_feature} PSI {drift_psi:.2f})." if drift_feature else ".")
+    if drift_status == "alert" and attr != "within limit":
+        # a concurrent input-drift alert is a competing explanation; name it next to the fairness attribution
+        attr += f"; concurrent data-drift alert ({drift_feature} PSI {drift_psi:.2f})" if drift_feature else "; concurrent data-drift alert"
     return base, attr
 
 
@@ -233,7 +237,8 @@ def window_report(name, cur, ref, model, policy, T, val_auc, ref_scores, seed, c
                    "bias_drift": fr["status"]}
     r["start"] = str(cur["AppointmentDay"].min().date())
     r["end"] = str(cur["AppointmentDay"].max().date())
-    r["fairness"]["reason"], r["fairness"]["attribution"] = explain_status(fr, exp_eod, r["status"]["data_drift"])
+    r["fairness"]["reason"], r["fairness"]["attribution"] = explain_status(fr, exp_eod, r["status"]["data_drift"],
+                                                                      drift_feature=r["max_psi_feature"], drift_psi=r["max_feature_psi"])
     if override is not None:
         r["fairness"]["attribution"] = "synthetic stress perturbation (decisions altered after the policy)"
         r["fairness"]["reason"] += " Decisions were altered synthetically for this stress test."

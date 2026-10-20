@@ -33,10 +33,29 @@ Independent verification: 60 PASS, 0 FAIL. pytest (against v2 artifacts): 29 pas
 | Counterfactuals (policy-aware) | None of three tier examples can be un-flagged under Option B (lowest reachable flag probability 0.10-0.11) | Negative finding, kept |
 | Monitoring rule | Rolling windows: 3 halt, 3 inconclusive; months: 1 halt, 1 inconclusive, 1 insufficient data; stress tests behave as designed | Rule works; outcome adverse |
 
-## Cycle 3 - documentation and acceptance criteria (this commit)
+## Cycle 3 - documentation and acceptance criteria
 
 - Acceptance matrix against the original criteria C1-C8 computed in `policy_comparison.py` (criteria quoted from Modules 1, 4, 5).
 - Promotion gate realigned to the original Module 4 s.7 list plus the Charter halt rule. The cycle-2 gate had made the realised-gap
   check non-blocking after cycle-1 results were known; that was a relaxation and is reversed. Gate outcome is now expected to be
   "not eligible".
 - Option B mechanism quantified and checked independently; committee decision pack generated from artifacts.
+
+Cycle 3 result: build run 39326455618 on commit 7fb5e7d, independent verification 84 pass / 0 fail, 30 tests pass on v2
+artifacts (outputs on `build-outputs-10`).
+
+## Cycle 4 - reviewer decisions applied
+
+- Recommendation recorded: **do not deploy until a better model or sufficient additional evidence is available**. Option B stays
+  configured for evaluation only; equal opportunity at TPR 0.85 documented as an alternative assessed, not as compliant.
+- C3 (F1 >= 0.55) made **blocking** by reviewer decision. Source of the ambiguity: Module 4 s.1 calls it part of "the acceptance
+  threshold"; the Module 4 s.7 staging list omits it; the capstone brief sets no numeric threshold. No threshold changed.
+- The Module 4 s.7 staging condition "Ethics Committee reviews and approves the Model Card" added to the gate as a blocking check
+  (not recorded, so not passed).
+- Monitoring attribution now names a concurrent data-drift alert next to the fairness explanation (week of 16-20 May: random
+  draw / sampling plus SMS_received PSI 2.73). The departure of the replay rule from the Module 4 s.7 weekly rule (alert > 4%,
+  halt > 5%) is disclosed and referred for approval.
+- `docs/committee_decision_pack.md` added to the published build outputs; submission checklist rechecked against the brief, with
+  user-supplied items marked AWAITING USER MATERIAL.
+- Run identifiers and results for this cycle are recorded on the build-outputs branch for the commit and in the evidence package,
+  not in this file, so the verified commit is the final commit.

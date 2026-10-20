@@ -1,8 +1,8 @@
 """Render docs/committee_decision_pack.md: the evidence an AI Ethics Committee needs to decide on the outreach policy.
 
 Every figure is read from the build artifacts (policy_comparison.json, monitoring.json, explanations.json,
-promotion_decision.json, model_results.json), so the pack cannot drift from the evidence. It presents options and
-trade-offs; it does not choose a policy.
+promotion_decision.json, model_results.json), so the pack cannot drift from the evidence. It presents options, trade-offs
+and the project team's recommendation (do not deploy); the decision itself belongs to the AI Ethics Committee.
 """
 import hashlib
 import json
@@ -66,7 +66,7 @@ def main():
                     f"{r['fairness']['status']} | {', '.join(r['fairness']['groups_not_evaluated']) or 'none'} |"
                     for r in MON["rolling_28d"] + MON["calendar_months"])
     week = "\n".join(f"| {a['batch']} | {a['age_eod']:.3f} / {a['status']['bias_drift']} | {f3(b['expected_age_eod_evaluated_groups'])} | "
-                     f"{f3(b['fairness']['eod'])} | {b['fairness']['status']} | {', '.join(b['fairness']['groups_not_evaluated']) or 'none'} |"
+                     f"{f3(b['fairness']['eod'])} | {b['fairness']['status']} | {', '.join(b['fairness']['groups_not_evaluated']) or 'none'} | {b['fairness']['attribution']} |"
                      for a, b in zip(MON["weeks_cycle1_rule"], MON["weeks_cycle2_rule"]))
     cnt = lambda key: ", ".join(f"{k}: {v}" for k, v in S[key]["counts"].items())
     loc = [e for e in X["lime"] if e["config"] == "local_sampling"]
@@ -74,6 +74,9 @@ def main():
     cfs = "\n".join(f"| {c['example']} ({c['age_band']}) | {c['original_score']:.3f} | {c['original_policy_flag_probability']:.3f} | "
                     + ("yes" if c["counterfactual"] else "no") + f" | {c['lowest_reachable']['policy_flag_probability']:.3f} |" for c in X["counterfactuals"])
     pop = X["population"]
+    low_week = ", ".join(f"{w['start']} to {w['end']} (expected {w['expected_age_eod_evaluated_groups']:.3f}; {w['fairness']['attribution']})"
+                         for w in MON["weeks_cycle2_rule"]
+                         if w["expected_age_eod_evaluated_groups"] is not None and w["expected_age_eod_evaluated_groups"] <= 0.05) or "none"
     model_sha = hashlib.sha256((A / "xgboost.joblib").read_bytes()).hexdigest()
     policy_sha = hashlib.sha256((A / "fairness_policy.json").read_bytes()).hexdigest()
 
@@ -81,13 +84,19 @@ def main():
 
 *Generated {date.today().isoformat()} by `careconnect/governance/committee_pack.py` from the build artifacts of commit
 `{R.get('git_sha')}` (GitHub run {os.environ.get('GITHUB_RUN_ID', 'local')}). Model sha256 `{model_sha[:16]}...`, policy sha256
-`{policy_sha[:16]}...`. Numbers are not edited by hand. This pack presents evidence and options; it does not select a policy.*
+`{policy_sha[:16]}...`. Numbers are not edited by hand. This pack presents evidence, options and a recommendation; it does not approve a policy.*
 
 ## 1. Decision required
 Which outreach decision policy, if any, may be piloted with the no-show model (v{config.MODEL_VERSION}), given the finding below.
 
 **No evaluated policy reliably met the 0.05 equalized-odds limit across all required groups** (age band, gender, and scholarship as the G3 stand-in).
 The promotion gate result under the original criteria is: **{G['decision']}**.
+
+**Project team recommendation: {G['recommendation']}.** Option B remains configured for evaluation only and is not approved
+for operational use. Deterministic equal opportunity at TPR 0.85 is documented as an alternative assessed, not as a compliant
+solution. The original fairness criteria are unchanged. Deployment status: {G['deployment_status']}.
+
+Blocking criteria not met: {'; '.join(G['blocking_failures'])}.
 
 ## 2. Original acceptance criteria (as written before results; not changed)
 | ID | Criterion | Source |
@@ -104,6 +113,11 @@ The promotion gate result under the original criteria is: **{G['decision']}**.
 {perf}
 
 Model: ROC-AUC {xm['roc_auc']:.4f} (C1 met). Randomised rules are reported as expected values. No policy meets C3 (F1 >= 0.55).
+
+**C3 source and ambiguity.** Module 4 s.1 (Success criteria) states "The acceptance threshold is: ROC-AUC >= 0.70, Recall >= 0.65,
+F1 >= 0.55". Module 4 s.7 ("The model is accepted for staging if") lists ROC-AUC, recall, all fairness metrics PASS (<5% disparity,
+DIR >= 0.80) and Ethics Committee approval of the Model Card, but not F1. The capstone brief sets no numeric threshold and no
+rubric was supplied. By reviewer decision C3 is treated as **blocking**; the threshold itself is unchanged.
 
 ## 4. Option B (configured policy): what it achieves and what it costs
 | Group | Expected EOD | 95% CI (test sample) | Realised EOD, 5th-95th pct of {B['age_band']['realised_eod']['n_draws']} draws | Draws above 0.05 |
@@ -159,14 +173,20 @@ calendar months - {cnt('calendar_months')}; weekly windows under the same rule -
 and both evaluable calendar months (range {S['calendar_months']['expected_gap_range'][0]:.3f}-{S['calendar_months']['expected_gap_range'][1]:.3f}); April 2016
 had insufficient data. Option B was fitted on all training data pooled, and its expected-value guarantee does not carry over to
 individual time periods. Weekly windows: expected gap above 0.05 in {S['weeks_cycle2_rule']['windows_with_expected_gap_above_0.05']} of
-{S['weeks_cycle2_rule']['windows_with_expected_gap_evaluable']} evaluable weeks.
+{S['weeks_cycle2_rule']['windows_with_expected_gap_evaluable']} evaluable weeks; the exception is the week of {low_week}, so the
+"every monitored time window" statement applies to the rolling and monthly windows used by the rule, not to every week.
+
+**Monitoring rule versus the original specification.** Module 4 s.7 specifies "subgroup error-rate disparity tracked weekly;
+alert at >4%, halt at >5%". The replay rule evaluates rolling 28-day windows weekly with minimum group sizes and a bootstrap
+interval, and has no 4% alert level. The original weekly point-estimate rule is kept in the replay (it halted every week). Adopting
+the replacement rule is a change to the original monitoring specification and needs committee approval; it is not settled here.
 
 | Window | Appointments | Expected age EOD | Realised age EOD | 95% CI (realised) | Status | Groups not evaluated |
 | --- | --- | --- | --- | --- | --- | --- |
 {win}
 
-| Week | Cycle-1 rule (point / status) | Expected EOD | Realised EOD | Current rule status | Not evaluated |
-| --- | --- | --- | --- | --- | --- |
+| Week | Cycle-1 rule (point / status) | Expected EOD | Realised EOD | Current rule status | Not evaluated | Attribution |
+| --- | --- | --- | --- | --- | --- | --- |
 {week}
 
 Stress tests (synthetic): {'; '.join(f"{t['name']} -> fairness {t['fairness']['status']}, data drift {t['status']['data_drift']}" for t in MON['stress_tests'])}.
@@ -190,12 +210,12 @@ un-flagged, {pop['share_flag_probability_reducible']:.1%} can have their flag pr
 ## 8. Options for the committee (trade-offs only; no option is presented as meeting the full fairness requirement)
 | Option | What it gives | What it fails or costs |
 | --- | --- | --- |
-| Do not pilot; obtain CrescentCare data first | No patient exposure to an unvalidated rule; local base rates and an insurance field (G3) | Delays benefit; the Brazilian 2016 data may not represent CrescentCare |
-| Pilot Option B with disclosure | Expected gaps within 0.05 for all three attributes (C4-C7) | Fails C8 and C3; {mech['share_of_flags_unrelated_to_risk']:.0%} of flags unrelated to risk; expected gap > 0.05 in every evaluable window; randomised decisions to explain to patients |
-| Pilot equal opportunity at TPR 0.85 with disclosure | Equal catch rates (TPR gap {EO['age_band']['tpr_gap']:.3f} age), deterministic, higher precision and F1 than Option B | Fails {', '.join(c for c in CS if not EO['acceptance'][c])}; unequal false-alarm rates across age groups |
+| **Recommended: do not deploy; obtain a better model or CrescentCare data first** | No patient exposure to an unvalidated rule; local base rates and an insurance field (G3) | Delays benefit; the Brazilian 2016 data may not represent CrescentCare |
+| Pilot Option B with disclosure (not recommended) | Expected gaps within 0.05 for all three attributes (C4-C7) | Fails C8 and C3; {mech['share_of_flags_unrelated_to_risk']:.0%} of flags unrelated to risk; expected gap > 0.05 in every evaluable window; randomised decisions to explain to patients |
+| Pilot equal opportunity at TPR 0.85 with disclosure (alternative assessed; not compliant) | Equal catch rates (TPR gap {EO['age_band']['tpr_gap']:.3f} age), deterministic, higher precision and F1 than Option B | Fails {', '.join(c for c in CS if not EO['acceptance'][c])}; unequal false-alarm rates across age groups |
 | Amend the Charter fairness criterion | Possible only as a separate, documented ethics decision | Must not be done to fit these results; this pack does not propose it |
 
-Original success criterion C3 (F1 >= 0.55) is not met by any policy; the best is {max(v['f1'] for v in P.values()):.3f}.
+Original criterion C3 (F1 >= 0.55, blocking by reviewer decision) is not met by any policy; the best is {max(v['f1'] for v in P.values()):.3f}.
 """
     (config.DOCS).mkdir(exist_ok=True)
     (config.DOCS / "committee_decision_pack.md").write_text(md)

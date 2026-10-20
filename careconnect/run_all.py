@@ -32,15 +32,25 @@ def gate() -> dict:
     rows = [{"check": c, "value": v, "passed": bool(p), "blocking": True} for c, v, p in checks]
     for cid in ["C1", "C2", "C4", "C5", "C6", "C7", "C8"]:            # Module 4 s.7 staging list + Charter P2
         rows.append({"check": f"{cid} {crit[cid]} (configured policy: Option B)", "value": acc[cid], "passed": acc[cid], "blocking": True})
-    rows.append({"check": f"C3 {crit['C3']}", "value": round(x["f1"], 4), "passed": acc["C3"], "blocking": False})
+    # C3: Module 4 s.1 calls ROC-AUC, recall AND F1 "the acceptance threshold"; the s.7 staging list omits F1. The capstone brief
+    # sets no numeric threshold. Reviewer decision (cycle 4): treat F1 >= 0.55 as BLOCKING unless the rubric clearly says otherwise.
+    rows.append({"check": f"C3 {crit['C3']}", "value": round(x["f1"], 4), "passed": acc["C3"], "blocking": True,
+                 "source_note": "Module 4 s.1 'The acceptance threshold is: ROC-AUC >= 0.70, Recall >= 0.65, F1 >= 0.55'; "
+                                "omitted from the Module 4 s.7 staging list; treated as blocking by reviewer decision"})
+    # Module 4 s.7 staging condition: "Ethics Committee reviews and approves the Model Card" - a human decision, never automated.
+    rows.append({"check": "Ethics Committee has reviewed and approved the Model Card (Module 4 s.7)", "value": "not recorded",
+                 "passed": False, "blocking": True})
     blocking = [r["check"] for r in rows if r["blocking"] and not r["passed"]]
     decision = ("eligible for Ethics Committee review" if not blocking else
                 "NOT ELIGIBLE under the original acceptance criteria; evidence package prepared for an Ethics Committee decision")
     out = {"generated_utc": datetime.now(timezone.utc).isoformat(), "model_version": config.MODEL_VERSION,
-           "configured_policy": configured, "checks": rows, "blocking_failures": blocking,
+           "configured_policy": configured, "configured_policy_status": "evaluation only - not approved for operational use",
+           "checks": rows, "blocking_failures": blocking,
            "original_criteria_not_met": [r["check"] for r in rows if not r["passed"]],
            "no_evaluated_policy_reliably_meets_fairness": PC["no_policy_reliably_meets_fairness"],
-           "decision": decision, "automatic_promotion": False}
+           "decision": decision, "automatic_promotion": False,
+           "recommendation": "Do not deploy until a better model or sufficient additional evidence is available",
+           "deployment_status": "not deployed (no public API; live dashboard serves v1 from main)"}
     json.dump(out, open(config.ARTIFACTS / "promotion_decision.json", "w"), indent=1)
     return out
 

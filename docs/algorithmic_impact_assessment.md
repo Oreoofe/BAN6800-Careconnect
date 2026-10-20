@@ -36,7 +36,7 @@
 | ER-13 | Fairness measurement noise: small groups (e.g. 1,074 elderly test appointments, 178 no-shows) make a 0.05 gap hard to confirm or rule out | Verification cycle 1 | High | Open | Bootstrap intervals reported; minimum group sizes; 28-day windows; 'insufficient data' never read as fair |
 | ER-14 | LIME explanations with low local fidelity could mislead staff | Verification cycles 1-2 | Medium | **Confirmed**: 0/6 adequate with local sampling, 2/6 with the original sampling | SHAP is the explanation of record; LIME reported as a failed cross-check |
 | ER-15 | Option B issues flags unrelated to predicted risk (score-independent flag probability between 0 (senior) and about 0.11 (child) by age group; about 11% of its flags) | Verification cycle 2 | High | Open - committee decision | Disclosed in model card, committee pack and trust statement; deterministic equal opportunity offered as an alternative (fails the full criterion) |
-| ER-16 | Fairness guarantee does not hold over time: expected Option B age gap > 0.05 in every monitored time window used by the rule | Verification cycle 2 | High | Open | Rolling 28-day monitoring with explicit halt / inconclusive / insufficient-data outcomes; committee review |
+| ER-16 | Fairness guarantee does not hold over time: expected Option B age gap > 0.05 in every monitored time window used by the rule (all rolling 28-day windows and evaluable months; 5 of 6 evaluable weeks - the week of 16-20 May has 0.047 and a concurrent SMS_received drift alert) | Verification cycle 2 | High | Open | Rolling 28-day monitoring with explicit halt / inconclusive / insufficient-data outcomes; committee review |
 
 ## Review
 Reviewed at each model release and quarterly by the AI Ethics Committee; updated after every S1/S2 incident.
@@ -47,3 +47,8 @@ on pooled data, creates flags unrelated to predicted risk, and its expected age-
 window used by the monitoring rule. Deterministic equal opportunity at TPR 0.85 equalises catch rates but not false-alarm rates,
 so it does not satisfy equalized odds. Residual risk for older patients therefore remains open under every option; see
 `docs/committee_decision_pack.md`.
+
+**Recommendation (cycle 4): do not deploy until a better model or sufficient additional evidence is available.** Option B stays
+configured for evaluation only and is not approved for operational use; equal opportunity at TPR 0.85 is an alternative assessed,
+not a compliant solution. No policy meets F1 >= 0.55 (C3, blocking by reviewer decision). The original criteria are unchanged.
+Nothing is deployed: there is no public API, and the hosted dashboard still serves v1 from `main`.

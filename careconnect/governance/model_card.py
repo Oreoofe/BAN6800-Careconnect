@@ -130,7 +130,7 @@ decisions**, and fairness is not "solved" by it.
 
 **No evaluated policy reliably met the 0.05 equalized-odds limit across all required groups** (age band, gender, scholarship as
 the G3 stand-in), judged against the original acceptance criteria C1-C8 (see `docs/committee_decision_pack.md`). Option B meets
-C4-C7 in expectation but fails C8 (reliability) and C3 (F1).
+C4-C7 in expectation but fails C8 (reliability) and C3 (F1, blocking).
 
 **Option B creates flags unrelated to predicted risk.** To give every age group the same error rates, Fairlearn's equalized-odds
 post-processing pulls groups the model predicts well down to the lowest group's ROC curve by ignoring the score with probability
@@ -151,6 +151,11 @@ Age groups have different true no-show rates, so equal flag rates (demographic p
 {gate}
 
 **Decision:** {G['decision']}. Original criteria not met: {'; '.join(G['original_criteria_not_met'])}.
+
+**Recommendation:** {G['recommendation']}. Option B is configured for evaluation only and is not approved for operational use;
+deterministic equal opportunity at TPR 0.85 is an alternative assessed, not a compliant solution. C3 (F1 >= 0.55) is blocking by
+reviewer decision: Module 4 s.1 calls it part of "the acceptance threshold" but the s.7 staging list omits it.
+**Deployment status:** {G['deployment_status']}.
 
 ## Explanations
 - **SHAP (explanation of record), with limits:** exact TreeSHAP for the XGBoost score (contributions sum to the log-odds; checked).
