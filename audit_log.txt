@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/home/runner/work/BAN6800-Careconnect/BAN6800-Careconnect/scripts/independent_audit.py", line 45, in <module>
+    from careconnect import config  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'careconnect'
+::error title=Failed: python scripts/independent_audit.py pub audit-out::Traceback (most recent call last):%0A  File "/home/runner/work/BAN6800-Careconnect/BAN6800-Careconnect/scripts/independent_audit.py", line 45, in <module>%0A    from careconnect import config  # noqa: E402%0A    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^%0AModuleNotFoundError: No module named 'careconnect'
