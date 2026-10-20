@@ -1,164 +1,51 @@
-# Full build / scheduled retraining. Produces the model, MLflow runs, explanations, fairness results,
-# monitoring report, model card, promotion decision and an independent verification report as
-# downloadable artifacts. It never commits or promotes a model: a person reviews the outputs and the
-# Ethics Committee approves. Later steps run even if an earlier one fails, so every failure is visible.
+# AUDIT BRANCH ONLY (audit-27943a1): independent re-computation of the Cycle 5 evidence.
+# This replaces the build workflow on this branch only; capstone-verify and main are unchanged.
 name: build-and-retrain
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 6 1 * *"        # monthly retraining review (1st of each month, 06:00 UTC)
 
 permissions:
-  contents: write    # only used to publish this run's outputs to a separate build-outputs-<run> branch
+  contents: write    # only to publish the audit output to audit-outputs-<run>
 
 jobs:
-  build:
+  audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 90
     env:
-      CARECONNECT_CV_FOLDS: "5"
       CARECONNECT_SALT: ${{ secrets.CARECONNECT_SALT }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
       - name: Install dependencies
+        run: scripts/run_logged.sh pip install -r requirements-build.txt -r requirements.txt
+      - name: Fetch the published Cycle 5 outputs (build-outputs-14)
         run: |
-          scripts/run_logged.sh pip install -r requirements-build.txt -r requirements.txt playwright
-          python -m playwright install --with-deps chromium
-          pip freeze > requirements-lock.txt
-      - name: Run pipeline, training, XAI, fairness, monitoring, model card, promotion gate
-        run: scripts/run_logged.sh python -m careconnect.run_all
-      - name: Independent verification of results (recomputed from saved model and test set)
-        if: success() || failure()
-        run: scripts/run_logged.sh python scripts/verify_results.py
-      - name: API demo against the new model
-        if: success() || failure()
-        run: scripts/run_logged.sh python api_demo.py
-      - name: Tests against the new artifacts (incl. dashboard rendering)
-        if: success() || failure()
-        run: scripts/run_logged.sh pytest -v --junitxml=test-results.xml
-      - name: MLflow UI screenshots (experiment + model registry)
-        if: success() || failure()
-        run: scripts/run_logged.sh python scripts/mlflow_screenshots.py
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: careconnect-build-${{ github.run_number }}
-          retention-days: 30
-          path: |
-            artifacts/*.json
-            artifacts/xgboost.joblib
-            artifacts/xgboost_minimal.joblib
-            artifacts/figures/
-            artifacts/pipeline/
-            artifacts/monitoring/
-            docs/model_card.md
-            docs/committee_decision_pack.md
-            docs/api_demo_output.txt
-            docs/evidence/
-            mlruns/mlflow.db
-            logs/audit.log
-            requirements-lock.txt
-            test-results.xml
-      - name: Publish outputs to branch build-outputs-${{ github.run_number }} (readable without artifact storage)
+          git fetch origin build-outputs-14
+          git worktree add pub origin/build-outputs-14
+          (cd pub && git log --oneline -1)
+      - name: Rebuild the modelling table from the raw data (project pipeline)
+        run: scripts/run_logged.sh python -m careconnect.pipeline.run
+      - name: Independent audit
+        run: |
+          mkdir -p audit-out
+          set -o pipefail
+          scripts/run_logged.sh python scripts/independent_audit.py pub audit-out 2>&1 | tee audit-out/audit_log.txt
+      - name: Publish audit output to audit-outputs-${{ github.run_number }}
         if: always()
         run: |
           set -e
           OUT=$(mktemp -d)
-          for f in artifacts/*.json artifacts/xgboost.joblib artifacts/xgboost_minimal.joblib docs/model_card.md docs/committee_decision_pack.md \
-                   docs/api_demo_output.txt requirements-lock.txt test-results.xml logs/audit.log mlruns/mlflow.db; do
-            [ -e "$f" ] && mkdir -p "$OUT/$(dirname $f)" && cp "$f" "$OUT/$f" || true
-          done
-          for d in artifacts/figures artifacts/pipeline artifacts/monitoring docs/evidence; do
-            [ -d "$d" ] && mkdir -p "$OUT/$d" && cp -r "$d/." "$OUT/$d/" || true
-          done
+          cp -r audit-out/. "$OUT/" || true
+          cp scripts/independent_audit.py "$OUT/" || true
           cd "$OUT"
-          git init -q -b "build-outputs-${{ github.run_number }}"
+          git init -q -b "audit-outputs-${{ github.run_number }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -q -m "Build outputs: run ${{ github.run_id }} from ${{ github.ref_name }}@${{ github.sha }}"
-          git push -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/build-outputs-${{ github.run_number }}"
-
-  # Docker Compose end-to-end test (runs in parallel with the build job; nothing is deployed).
-  # Each service runs in its own container on the runner; evidence is pushed to compose-e2e-<run_number>.
-  compose-e2e:
-    name: docker compose end-to-end (pipeline, MLflow, monitoring, API, dashboard)
-    runs-on: ubuntu-latest
-    timeout-minutes: 150
-    env:
-      CARECONNECT_SALT: ${{ secrets.CARECONNECT_SALT }}
-      CARECONNECT_GIT_SHA: ${{ github.sha }}
-      CARECONNECT_CV_FOLDS: "5"
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate compose file (all profiles)
-        run: scripts/run_logged.sh docker compose --profile build --profile tracking config --quiet
-      - name: Build images (pipeline, mlflow, api, dashboard, monitoring)
-        run: |
-          mkdir -p compose-e2e
-          scripts/run_logged.sh docker compose --profile build --profile tracking build 2>&1 | tail -n 40
-      - name: Pipeline service - full run in its container (data, training + MLflow, XAI, fairness, monitoring, docs, gate)
-        id: pipeline
-        run: |
-          set -o pipefail
-          scripts/run_logged.sh docker compose --profile build run --rm pipeline 2>&1 | tee compose-e2e/pipeline.log | tail -n 80
-      - name: Independent verification inside the pipeline container
-        if: success() || failure()
-        run: |
-          set -o pipefail
-          scripts/run_logged.sh docker compose --profile build run --rm pipeline python scripts/verify_results.py 2>&1 \
-            | tee compose-e2e/verification.log | tail -n 40
-      - name: Check pipeline outputs
-        if: success() || failure()
-        run: |
-          sudo chown -R "$(id -u):$(id -g)" artifacts docs mlruns logs data || true
-          scripts/run_logged.sh python3 scripts/compose_e2e_checks.py pipeline
-      - name: MLflow service - start and query runs and registry over REST
-        if: success() || failure()
-        run: |
-          scripts/run_logged.sh docker compose --profile tracking up -d mlflow
-          scripts/run_logged.sh python3 scripts/compose_e2e_checks.py mlflow
-      - name: Monitoring service - start and fetch the served reports
-        if: success() || failure()
-        run: |
-          scripts/run_logged.sh docker compose up -d monitoring
-          scripts/run_logged.sh python3 scripts/compose_e2e_checks.py monitoring
-      - name: API + dashboard - rebuilt with the pipeline's artifacts, then smoke-tested
-        if: success() || failure()
-        run: |
-          scripts/run_logged.sh docker compose up -d --build api dashboard
-          scripts/run_logged.sh bash scripts/smoke_api.sh
-          scripts/run_logged.sh python3 scripts/compose_e2e_checks.py api
-      - name: Container status and logs
-        if: always()
-        run: |
-          docker compose --profile build --profile tracking ps -a | tee compose-e2e/ps.txt
-          for s in mlflow monitoring api dashboard; do docker compose --profile tracking logs --tail=60 "$s" > "compose-e2e/$s.log" 2>&1 || true; done
-          docker compose --profile build --profile tracking images | tee compose-e2e/images.txt || true
-      - name: Publish evidence to branch compose-e2e-${{ github.run_number }}
-        if: always()
-        run: |
-          set -e
-          sudo chown -R "$(id -u):$(id -g)" . || true
-          OUT=$(mktemp -d)
-          cp -r compose-e2e "$OUT/" || true
-          for f in artifacts/verification_report.json artifacts/promotion_decision.json artifacts/model_results.json \
-                   artifacts/monitoring/monitoring.json docs/model_card.md docs/committee_decision_pack.md logs/audit.log; do
-            [ -e "$f" ] && mkdir -p "$OUT/$(dirname $f)" && cp "$f" "$OUT/$f" || true
-          done
-          (cd "$OUT" && find . -type f ! -path './.git/*' -exec sha256sum {} + | sort -k2 > SHA256SUMS.txt)
-          [ -e artifacts/xgboost.joblib ] && sha256sum artifacts/xgboost.joblib artifacts/fairness_policy.json >> "$OUT/SHA256SUMS.txt" || true
-          cd "$OUT"
-          git init -q -b "compose-e2e-${{ github.run_number }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -q -m "Compose end-to-end evidence: run ${{ github.run_id }} from ${{ github.ref_name }}@${{ github.sha }}"
-          git push -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/compose-e2e-${{ github.run_number }}"
-      - name: Stop containers
-        if: always()
-        run: docker compose --profile build --profile tracking down -v || true
+          git commit -q -m "Independent audit output: run ${{ github.run_id }} from ${{ github.ref_name }}@${{ github.sha }}"
+          git push -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:refs/heads/audit-outputs-${{ github.run_number }}"
