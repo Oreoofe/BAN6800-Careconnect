@@ -1,0 +1,11 @@
+api-1  | INFO:     Started server process [1]
+api-1  | INFO:     Waiting for application startup.
+api-1  | INFO:     Application startup complete.
+api-1  | INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+api-1  | INFO:     127.0.0.1:56810 - "GET /health HTTP/1.1" 200 OK
+api-1  | INFO:     172.18.0.1:45506 - "GET /health HTTP/1.1" 200 OK
+api-1  | INFO:     172.18.0.1:45518 - "GET /health HTTP/1.1" 200 OK
+api-1  | INFO:     172.18.0.1:45528 - "POST /predict HTTP/1.1" 200 OK
+api-1  | INFO:     172.18.0.1:45532 - "POST /predict HTTP/1.1" 422 Unprocessable Entity
+api-1  | INFO:     172.18.0.1:42760 - "GET /health HTTP/1.1" 200 OK
+api-1  | INFO:     172.18.0.1:42772 - "GET /model_info HTTP/1.1" 200 OK

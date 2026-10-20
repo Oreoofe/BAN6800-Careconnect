@@ -1,0 +1,143 @@
+{
+ "stages": {
+  "pipeline": [
+   {
+    "check": "pipeline container produced the model, policy, monitoring and documents",
+    "status": "PASS",
+    "detail": null
+   },
+   {
+    "check": "independent verification inside the container: 0 FAIL",
+    "status": "PASS",
+    "detail": {
+     "pass": 96,
+     "fail": 0
+    }
+   },
+   {
+    "check": "container build identity recorded (model git_sha == commit)",
+    "status": "PASS",
+    "detail": [
+     "27943a1",
+     "27943a1"
+    ]
+   },
+   {
+    "check": "promotion gate in container: NOT ELIGIBLE, no automatic promotion",
+    "status": "PASS",
+    "detail": [
+     "C8 Limit holds reliably: upper 95% bound of every gap <= 0.05 (and, for randomised rules, the 95th percentile of realised gaps <= 0.05) (configured policy: Option B)",
+     "C3 F1 >= 0.55",
+     "Ethics Committee has reviewed and approved the Model Card (Module 4 s.7)"
+    ]
+   }
+  ],
+  "mlflow": [
+   {
+    "check": "MLflow server (compose service 'mlflow') answers /health",
+    "status": "PASS",
+    "detail": "OK"
+   },
+   {
+    "check": "MLflow REST API lists >= 7 runs from the pipeline container",
+    "status": "PASS",
+    "detail": [
+     "baseline_most_frequent",
+     "baseline_stratified",
+     "logistic_regression",
+     "random_forest",
+     "xgboost",
+     "xgboost_patient_grouped_split",
+     "xgboost_without_sensitive_inputs"
+    ]
+   },
+   {
+    "check": "registered model has alias 'candidate' and no 'production' alias",
+    "status": "PASS",
+    "detail": {
+     "candidate": "1"
+    }
+   }
+  ],
+  "monitoring": [
+   {
+    "check": "monitoring service (compose service 'monitoring') serves monitoring.json",
+    "status": "PASS",
+    "detail": null
+   },
+   {
+    "check": "served monitoring.json uses the governing Module 4 s.7 weekly rule",
+    "status": "PASS",
+    "detail": {
+     "halt": 7,
+     "alert": 0,
+     "ok": 0,
+     "not evaluable": 0
+    }
+   },
+   {
+    "check": "monitoring service serves the Evidently drift report",
+    "status": "PASS",
+    "detail": 4042960
+   }
+  ],
+  "api": [
+   {
+    "check": "API container healthy",
+    "status": "PASS",
+    "detail": {
+     "status": "ok",
+     "model_loaded": true,
+     "policy_loaded": true,
+     "model_version": "2.0.0"
+    }
+   },
+   {
+    "check": "API container serves the model and policy produced by the pipeline container",
+    "status": "PASS",
+    "detail": [
+     "6d60bea7544f",
+     "e18da7cd12d1"
+    ]
+   },
+   {
+    "check": "dashboard container healthy",
+    "status": "PASS",
+    "detail": null
+   }
+  ]
+ },
+ "checksums": {
+  "model": "6d60bea7544ffac64049a66af98f4d133508cb77aa464702a91075706127a385",
+  "policy": "e18da7cd12d13fc431a730af9f2afe6cbfa75e7de7928f19ded79a7364e11e1f",
+  "committee_pack": "6f6ff7da3255b256a4d66688c4e731d6a6144f29d9514272d9b62a6493584c35"
+ },
+ "verification_summary": {
+  "pass": 96,
+  "fail": 0
+ },
+ "mlflow": {
+  "experiment_id": "1",
+  "runs": [
+   "baseline_most_frequent",
+   "baseline_stratified",
+   "logistic_regression",
+   "random_forest",
+   "xgboost",
+   "xgboost_patient_grouped_split",
+   "xgboost_without_sensitive_inputs"
+  ],
+  "aliases": {
+   "candidate": "1"
+  }
+ },
+ "monitoring": {
+  "governing_status": "halt",
+  "counts": {
+   "halt": 7,
+   "alert": 0,
+   "ok": 0,
+   "not evaluable": 0
+  }
+ }
+}

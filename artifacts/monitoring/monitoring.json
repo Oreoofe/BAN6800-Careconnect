@@ -1,0 +1,5867 @@
+{
+ "generated_utc": "2026-10-20T06:36:45.447002+00:00",
+ "model_version": "2.0.0",
+ "mode": "replay of held-out appointments (not live production data)",
+ "thresholds": {
+  "psi_warn": 0.1,
+  "psi_alert": 0.2,
+  "auc_drop_alert": 0.03,
+  "eod_warn": 0.04,
+  "eod_halt": 0.05
+ },
+ "governing_rule": "module4_s7_weekly",
+ "module4_rule": {
+  "source": "Module 4 s.7 (weekly; alert > 0.04, halt > 0.05) with Module 4 s.1 attributes (Gender, age_band)",
+  "attributes": [
+   "age_band",
+   "Gender"
+  ],
+  "metric": "max(FNR gap, FPR gap) between groups, realised decisions, point estimate",
+  "alert_above": 0.04,
+  "halt_above": 0.05,
+  "minimum_group_size": null,
+  "window": "calendar week (Mon-Sun) of appointment day",
+  "supplementary_attributes": [
+   "Scholarship"
+  ],
+  "statuses": {
+   "ok": "every governing attribute evaluable and disparity <= 0.04",
+   "alert": "highest disparity > 0.04 and <= 0.05: review",
+   "halt": "any governing attribute's disparity > 0.05: suspend flagging, notify Ethics Committee",
+   "not evaluable": "an attribute has fewer than two groups with defined FNR and FPR; never a pass"
+  }
+ },
+ "fairness_rule_role": "SUPPLEMENTARY uncertainty analysis; does not replace the Module 4 s.7 rule",
+ "fairness_rule": {
+  "window": "rolling 28 days, evaluated weekly",
+  "min_no_shows_per_group": 50,
+  "min_attended_per_group": 50,
+  "bootstrap": 300,
+  "limit": 0.05,
+  "statuses": {
+   "ok": "95% interval for the gap lies wholly at or below the limit",
+   "halt": "95% interval lies wholly above the limit: suspend flagging, notify Ethics Committee",
+   "inconclusive": "interval straddles the limit: no conclusion; review at monthly audit, extend window",
+   "insufficient data": "fewer than 2 groups meet the minimum counts: no fairness conclusion is drawn"
+  }
+ },
+ "validation_auc": 0.7433905495945989,
+ "policy": "Option B - equalized odds (Fairlearn ThresholdOptimizer)",
+ "weeks_cycle1_rule": [
+  {
+   "batch": "week of 2016-04-25",
+   "n": 669,
+   "no_show_rate": 0.17787742899850523,
+   "mean_score": 0.20506075024604797,
+   "flag_rate": 0.617339312406577,
+   "auc": 0.7433919022154316,
+   "recall": 0.8823529411764706,
+   "score_psi": 0.03494757233358825,
+   "feature_psi": {
+    "Age": 0.01912960412077309,
+    "lead_time_days": 0.169525443995233,
+    "prior_appointments": 2.0953288200234557,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.03377666254382063,
+    "Scholarship": 0.000493758008073829,
+    "Gender": 0.0017082525485662354,
+    "age_band": 0.009638428904625618,
+    "Neighbourhood": 0.229786842333255
+   },
+   "max_feature_psi": 2.0953288200234557,
+   "age_eod": 0.13104013104013112,
+   "age_dpd": 0.008433734939759074,
+   "fairness_groups_scored": [
+    "adult",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "child",
+    "elderly",
+    "senior",
+    "teen"
+   ],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-02",
+   "n": 4175,
+   "no_show_rate": 0.2059880239520958,
+   "mean_score": 0.19820304214954376,
+   "flag_rate": 0.6225149700598802,
+   "auc": 0.7301311866428146,
+   "recall": 0.8441860465116279,
+   "score_psi": 0.0343290895822191,
+   "feature_psi": {
+    "Age": 0.0015194008460929392,
+    "lead_time_days": 0.019408173876668527,
+    "prior_appointments": 0.33671537516071737,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.05235573535692808,
+    "Scholarship": 0.00020867646845665967,
+    "Gender": 0.0002722722993943479,
+    "age_band": 0.000827466139266999,
+    "Neighbourhood": 0.02566836328854969
+   },
+   "max_feature_psi": 0.33671537516071737,
+   "age_eod": 0.08918688803746277,
+   "age_dpd": 0.038302154866208915,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "elderly"
+   ],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-09",
+   "n": 4382,
+   "no_show_rate": 0.20880876312186217,
+   "mean_score": 0.20912204682826996,
+   "flag_rate": 0.6131903240529438,
+   "auc": 0.7611673530760754,
+   "recall": 0.8721311475409836,
+   "score_psi": 0.007192733144696428,
+   "feature_psi": {
+    "Age": 0.002725099759629296,
+    "lead_time_days": 0.00597998228268493,
+    "prior_appointments": 0.03569113030843555,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.026879120461138134,
+    "Scholarship": 0.000192987254020011,
+    "Gender": 0.000652627856944224,
+    "age_band": 0.001518453617229393,
+    "Neighbourhood": 0.024830248230729556
+   },
+   "max_feature_psi": 0.03569113030843555,
+   "age_eod": 0.12753623188405794,
+   "age_dpd": 0.09242220691887093,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "elderly",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [],
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-16",
+   "n": 4278,
+   "no_show_rate": 0.2171575502571295,
+   "mean_score": 0.2218497097492218,
+   "flag_rate": 0.6250584385226742,
+   "auc": 0.7361993892430014,
+   "recall": 0.8665231431646933,
+   "score_psi": 0.04324277314746222,
+   "feature_psi": {
+    "Age": 0.002925891040699735,
+    "lead_time_days": 0.0012517056239310575,
+    "prior_appointments": 0.003945105927463307,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 2.731624718616652,
+    "Scholarship": 0.0006974922957015429,
+    "Gender": 0.0026394800053002442,
+    "age_band": 0.0031857726494160486,
+    "Neighbourhood": 0.017473461146216892
+   },
+   "max_feature_psi": 2.731624718616652,
+   "age_eod": 0.07044459267422643,
+   "age_dpd": 0.04586404586404591,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "elderly",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-23",
+   "n": 1606,
+   "no_show_rate": 0.2129514321295143,
+   "mean_score": 0.19699743390083313,
+   "flag_rate": 0.5940224159402242,
+   "auc": 0.7434892941742542,
+   "recall": 0.8596491228070176,
+   "score_psi": 0.01783063858743794,
+   "feature_psi": {
+    "Age": 0.012840246152070717,
+    "lead_time_days": 0.6598240965717073,
+    "prior_appointments": 0.04677595061431866,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.15410700078385747,
+    "Scholarship": 5.742003412307996e-05,
+    "Gender": 2.754818179249873e-05,
+    "age_band": 0.009589058782292513,
+    "Neighbourhood": 0.07504455187638533
+   },
+   "max_feature_psi": 0.6598240965717073,
+   "age_eod": 0.18311965811965814,
+   "age_dpd": 0.09877524709926944,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "senior",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "elderly",
+    "teen"
+   ],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-30",
+   "n": 4198,
+   "no_show_rate": 0.188423058599333,
+   "mean_score": 0.1898418664932251,
+   "flag_rate": 0.5755121486422106,
+   "auc": 0.7413843069429824,
+   "recall": 0.8268015170670038,
+   "score_psi": 0.0171292006996979,
+   "feature_psi": {
+    "Age": 0.0058164788017761385,
+    "lead_time_days": 0.0521479708312731,
+    "prior_appointments": 0.0930016379555251,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.05083377142216537,
+    "Scholarship": 0.00019175043227886572,
+    "Gender": 0.00037764951929905827,
+    "age_band": 0.00315344436873017,
+    "Neighbourhood": 0.02899979839235044
+   },
+   "max_feature_psi": 0.0930016379555251,
+   "age_eod": 0.16485439320084994,
+   "age_dpd": 0.07685996761344982,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "elderly",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [],
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-06-06",
+   "n": 2795,
+   "no_show_rate": 0.1810375670840787,
+   "mean_score": 0.18778926134109497,
+   "flag_rate": 0.5896243291592129,
+   "auc": 0.761605167867633,
+   "recall": 0.8596837944664032,
+   "score_psi": 0.04587682615426067,
+   "feature_psi": {
+    "Age": 0.0010061000238585699,
+    "lead_time_days": 0.07153005239808602,
+    "prior_appointments": 0.17019464179693478,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.10290075943140067,
+    "Scholarship": 0.00020210829699904276,
+    "Gender": 0.0008763479204136708,
+    "age_band": 0.0017303259539759534,
+    "Neighbourhood": 0.05747292236177232
+   },
+   "max_feature_psi": 0.17019464179693478,
+   "age_eod": 0.10585585585585577,
+   "age_dpd": 0.11699281254918414,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "elderly"
+   ],
+   "status": {
+    "data_drift": "warn",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  }
+ ],
+ "weeks_cycle2_rule": [
+  {
+   "batch": "week of 2016-04-25",
+   "n": 669,
+   "coverage_days": null,
+   "no_show_rate": 0.17787742899850523,
+   "flag_rate": 0.5949177877428998,
+   "auc": 0.7433919022154316,
+   "recall": 0.8739495798319328,
+   "score_psi": 0.03494757233358825,
+   "feature_psi": {
+    "Age": 0.01912960412077309,
+    "lead_time_days": 0.169525443995233,
+    "prior_appointments": 2.0953288200234557,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.03377666254382063,
+    "Scholarship": 0.000493758008073829,
+    "Gender": 0.0017082525485662354,
+    "age_band": 0.009638428904625618,
+    "Neighbourhood": 0.229786842333255
+   },
+   "max_feature_psi": 2.0953288200234557,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [],
+    "groups_not_evaluated": {
+     "adult": {
+      "n": 166,
+      "no_shows": 37,
+      "attended": 129
+     },
+     "child": {
+      "n": 140,
+      "no_shows": 17,
+      "attended": 123
+     },
+     "elderly": {
+      "n": 36,
+      "no_shows": 6,
+      "attended": 30
+     },
+     "senior": {
+      "n": 121,
+      "no_shows": 15,
+      "attended": 106
+     },
+     "teen": {
+      "n": 46,
+      "no_shows": 11,
+      "attended": 35
+     },
+     "young_adult": {
+      "n": 160,
+      "no_shows": 33,
+      "attended": 127
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 166,
+      "no_shows": 37,
+      "attended": 129
+     },
+     "child": {
+      "n": 140,
+      "no_shows": 17,
+      "attended": 123
+     },
+     "elderly": {
+      "n": 36,
+      "no_shows": 6,
+      "attended": 30
+     },
+     "senior": {
+      "n": 121,
+      "no_shows": 15,
+      "attended": 106
+     },
+     "teen": {
+      "n": 46,
+      "no_shows": 11,
+      "attended": 35
+     },
+     "young_adult": {
+      "n": 160,
+      "no_shows": 33,
+      "attended": 127
+     }
+    },
+    "status": "insufficient data",
+    "eod": null,
+    "ci95": null,
+    "reason": "Fewer than two groups reach 50 no-shows and 50 attended visits (adult 37 no-shows/129 attended, child 17 no-shows/123 attended, elderly 6 no-shows/30 attended, senior 15 no-shows/106 attended, teen 11 no-shows/35 attended, young_adult 33 no-shows/127 attended). No fairness conclusion is drawn; this is not a pass.",
+    "attribution": "insufficient sample",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": null,
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "insufficient data"
+   },
+   "start": "2016-04-29",
+   "end": "2016-04-29",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 166,
+        "no_shows": 37,
+        "attended": 129,
+        "fnr": 0.10810810810810811,
+        "fpr": 0.4883720930232558,
+        "expected_fnr": 0.12868746873688797,
+        "expected_fpr": 0.5083761689273137
+       },
+       "child": {
+        "n": 140,
+        "no_shows": 17,
+        "attended": 123,
+        "fnr": 0.0,
+        "fpr": 0.5365853658536586,
+        "expected_fnr": 0.09733127038089873,
+        "expected_fpr": 0.6217311481814569
+       },
+       "elderly": {
+        "n": 36,
+        "no_shows": 6,
+        "attended": 30,
+        "fnr": 0.0,
+        "fpr": 0.4,
+        "expected_fnr": 0.021943925122806074,
+        "expected_fpr": 0.4453807221560434
+       },
+       "senior": {
+        "n": 121,
+        "no_shows": 15,
+        "attended": 106,
+        "fnr": 0.2,
+        "fpr": 0.4811320754716981,
+        "expected_fnr": 0.20018260056127213,
+        "expected_fpr": 0.48102010342940854
+       },
+       "teen": {
+        "n": 46,
+        "no_shows": 11,
+        "attended": 35,
+        "fnr": 0.18181818181818182,
+        "fpr": 0.6857142857142857,
+        "expected_fnr": 0.14568592230237332,
+        "expected_fpr": 0.7069214194548584
+       },
+       "young_adult": {
+        "n": 160,
+        "no_shows": 33,
+        "attended": 127,
+        "fnr": 0.18181818181818182,
+        "fpr": 0.6141732283464567,
+        "expected_fnr": 0.1581732731948038,
+        "expected_fpr": 0.5972597444800977
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.2,
+      "fpr_gap": 0.2857142857142857,
+      "disparity": 0.2857142857142857,
+      "expected_disparity": 0.261540697298815,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 425,
+        "no_shows": 73,
+        "attended": 352,
+        "fnr": 0.0958904109589041,
+        "fpr": 0.5795454545454546,
+        "expected_fnr": 0.10848351679716084,
+        "expected_fpr": 0.5969027603155717
+       },
+       "M": {
+        "n": 244,
+        "no_shows": 46,
+        "attended": 198,
+        "fnr": 0.17391304347826086,
+        "fpr": 0.45454545454545453,
+        "expected_fnr": 0.18377036811865144,
+        "expected_fpr": 0.4893306830553159
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.07802263251935676,
+      "fpr_gap": 0.12500000000000006,
+      "disparity": 0.12500000000000006,
+      "expected_disparity": 0.10757207726025575,
+      "status": "halt",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 605,
+        "no_shows": 108,
+        "attended": 497,
+        "fnr": 0.12962962962962962,
+        "fpr": 0.5291750503018109,
+        "expected_fnr": 0.13663137750018128,
+        "expected_fpr": 0.5550476290250228
+       },
+       "1": {
+        "n": 64,
+        "no_shows": 11,
+        "attended": 53,
+        "fnr": 0.09090909090909091,
+        "fpr": 0.5849056603773585,
+        "expected_fnr": 0.14695862633010104,
+        "expected_fpr": 0.5875202877471215
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.03872053872053871,
+      "fpr_gap": 0.05573061007554758,
+      "disparity": 0.05573061007554758,
+      "expected_disparity": 0.0324726587220987,
+      "status": "halt",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.286 (FNR gap 0.200, FPR gap 0.286; expected 0.262) -> halt; Gender: disparity 0.125 (FNR gap 0.078, FPR gap 0.125; expected 0.108) -> halt.",
+    "attribution": "age_band: policy's expected disparity (expected 0.262 above 0.05); age_band: small subgroup(s) (child 17 no-shows, elderly 6 no-shows, senior 15 no-shows, teen 11 no-shows) - point estimate imprecise; Gender: policy's expected disparity (expected 0.108 above 0.05); concurrent data-drift alert (prior_appointments PSI 2.10)"
+   }
+  },
+  {
+   "batch": "week of 2016-05-02",
+   "n": 4175,
+   "coverage_days": null,
+   "no_show_rate": 0.2059880239520958,
+   "flag_rate": 0.6246706586826347,
+   "auc": 0.7301311866428146,
+   "recall": 0.8383720930232558,
+   "score_psi": 0.0343290895822191,
+   "feature_psi": {
+    "Age": 0.0015194008460929392,
+    "lead_time_days": 0.019408173876668527,
+    "prior_appointments": 0.33671537516071737,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.05235573535692808,
+    "Scholarship": 0.00020867646845665967,
+    "Gender": 0.0002722722993943479,
+    "age_band": 0.000827466139266999,
+    "Neighbourhood": 0.02566836328854969
+   },
+   "max_feature_psi": 0.33671537516071737,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "elderly": {
+      "n": 208,
+      "no_shows": 29,
+      "attended": 179
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 1148,
+      "no_shows": 232,
+      "attended": 916
+     },
+     "child": {
+      "n": 823,
+      "no_shows": 182,
+      "attended": 641
+     },
+     "elderly": {
+      "n": 208,
+      "no_shows": 29,
+      "attended": 179
+     },
+     "senior": {
+      "n": 826,
+      "no_shows": 134,
+      "attended": 692
+     },
+     "teen": {
+      "n": 309,
+      "no_shows": 81,
+      "attended": 228
+     },
+     "young_adult": {
+      "n": 861,
+      "no_shows": 202,
+      "attended": 659
+     }
+    },
+    "status": "halt",
+    "eod": 0.07998084291187735,
+    "ci95": [
+     0.0521834055323954,
+     0.18433335923274002
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.080, bootstrap 95% CI 0.052-0.184 lies wholly above 0.05. Expected gap 0.071 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): elderly 29 no-shows/179 attended. Data-drift status in this window: alert (prior_appointments PSI 0.34).",
+    "attribution": "policy's expected disparity (expected gap above the limit); concurrent data-drift alert (prior_appointments PSI 0.34)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.07063352140608481,
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-05-02",
+   "end": "2016-05-06",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 1148,
+        "no_shows": 232,
+        "attended": 916,
+        "fnr": 0.14224137931034483,
+        "fpr": 0.584061135371179,
+        "expected_fnr": 0.13682725384222116,
+        "expected_fpr": 0.5720842744761282
+       },
+       "child": {
+        "n": 823,
+        "no_shows": 182,
+        "attended": 641,
+        "fnr": 0.16483516483516483,
+        "fpr": 0.5553822152886115,
+        "expected_fnr": 0.16191399921850402,
+        "expected_fpr": 0.5485564503931422
+       },
+       "elderly": {
+        "n": 208,
+        "no_shows": 29,
+        "attended": 179,
+        "fnr": 0.06896551724137931,
+        "fpr": 0.5698324022346368,
+        "expected_fnr": 0.10314119909417041,
+        "expected_fpr": 0.5720187347428154
+       },
+       "senior": {
+        "n": 826,
+        "no_shows": 134,
+        "attended": 692,
+        "fnr": 0.16417910447761194,
+        "fpr": 0.5939306358381503,
+        "expected_fnr": 0.16423361210784237,
+        "expected_fpr": 0.5938593899544169
+       },
+       "teen": {
+        "n": 309,
+        "no_shows": 81,
+        "attended": 228,
+        "fnr": 0.2222222222222222,
+        "fpr": 0.543859649122807,
+        "expected_fnr": 0.20746077524830597,
+        "expected_fpr": 0.526000012903595
+       },
+       "young_adult": {
+        "n": 861,
+        "no_shows": 202,
+        "attended": 659,
+        "fnr": 0.16831683168316833,
+        "fpr": 0.5447647951441578,
+        "expected_fnr": 0.1647075546587603,
+        "expected_fpr": 0.5454699051164396
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.1532567049808429,
+      "fpr_gap": 0.05007098671534327,
+      "disparity": 0.1532567049808429,
+      "expected_disparity": 0.10431957615413556,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 2702,
+        "no_shows": 565,
+        "attended": 2137,
+        "fnr": 0.15752212389380532,
+        "fpr": 0.5835283107159569,
+        "expected_fnr": 0.14607875756659572,
+        "expected_fpr": 0.5787336566993805
+       },
+       "M": {
+        "n": 1473,
+        "no_shows": 295,
+        "attended": 1178,
+        "fnr": 0.1694915254237288,
+        "fpr": 0.5432937181663837,
+        "expected_fnr": 0.18220820459796816,
+        "expected_fpr": 0.5361925106423897
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.011969401529923485,
+      "fpr_gap": 0.04023459254957318,
+      "disparity": 0.04023459254957318,
+      "expected_disparity": 0.042541146056990775,
+      "status": "alert",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 3766,
+        "no_shows": 767,
+        "attended": 2999,
+        "fnr": 0.16688396349413298,
+        "fpr": 0.5721907302434145,
+        "expected_fnr": 0.16123981662264186,
+        "expected_fpr": 0.5652667205927918
+       },
+       "1": {
+        "n": 409,
+        "no_shows": 93,
+        "attended": 316,
+        "fnr": 0.11827956989247312,
+        "fpr": 0.5411392405063291,
+        "expected_fnr": 0.13564493582753623,
+        "expected_fpr": 0.5479547684985079
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.04860439360165986,
+      "fpr_gap": 0.03105148973708538,
+      "disparity": 0.04860439360165986,
+      "expected_disparity": 0.025594880795105635,
+      "status": "alert",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.153 (FNR gap 0.153, FPR gap 0.050; expected 0.104) -> halt; Gender: disparity 0.040 (FNR gap 0.012, FPR gap 0.040; expected 0.043) -> alert.",
+    "attribution": "age_band: policy's expected disparity (expected 0.104 above 0.05); age_band: small subgroup(s) (elderly 29 no-shows) - point estimate imprecise; Gender: policy's expected disparity (expected 0.043 above 0.04); concurrent data-drift alert (prior_appointments PSI 0.34)"
+   }
+  },
+  {
+   "batch": "week of 2016-05-09",
+   "n": 4382,
+   "coverage_days": null,
+   "no_show_rate": 0.20880876312186217,
+   "flag_rate": 0.6054313099041534,
+   "auc": 0.7611673530760754,
+   "recall": 0.8677595628415301,
+   "score_psi": 0.007192733144696428,
+   "feature_psi": {
+    "Age": 0.002725099759629296,
+    "lead_time_days": 0.00597998228268493,
+    "prior_appointments": 0.03569113030843555,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.026879120461138134,
+    "Scholarship": 0.000192987254020011,
+    "Gender": 0.000652627856944224,
+    "age_band": 0.001518453617229393,
+    "Neighbourhood": 0.024830248230729556
+   },
+   "max_feature_psi": 0.03569113030843555,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "elderly": {
+      "n": 197,
+      "no_shows": 30,
+      "attended": 167
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 1164,
+      "no_shows": 240,
+      "attended": 924
+     },
+     "child": {
+      "n": 863,
+      "no_shows": 196,
+      "attended": 667
+     },
+     "elderly": {
+      "n": 197,
+      "no_shows": 30,
+      "attended": 167
+     },
+     "senior": {
+      "n": 849,
+      "no_shows": 132,
+      "attended": 717
+     },
+     "teen": {
+      "n": 313,
+      "no_shows": 87,
+      "attended": 226
+     },
+     "young_adult": {
+      "n": 996,
+      "no_shows": 230,
+      "attended": 766
+     }
+    },
+    "status": "halt",
+    "eod": 0.08399209486166004,
+    "ci95": [
+     0.06656950868103854,
+     0.17006489886924667
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.084, bootstrap 95% CI 0.067-0.170 lies wholly above 0.05. Expected gap 0.088 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): elderly 30 no-shows/167 attended.",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.0882874819169579,
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-05-09",
+   "end": "2016-05-14",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 1164,
+        "no_shows": 240,
+        "attended": 924,
+        "fnr": 0.14166666666666666,
+        "fpr": 0.5627705627705628,
+        "expected_fnr": 0.1407080376227593,
+        "expected_fpr": 0.559518158004948
+       },
+       "child": {
+        "n": 863,
+        "no_shows": 196,
+        "attended": 667,
+        "fnr": 0.14795918367346939,
+        "fpr": 0.512743628185907,
+        "expected_fnr": 0.14879151846579408,
+        "expected_fpr": 0.534225835968935
+       },
+       "elderly": {
+        "n": 197,
+        "no_shows": 30,
+        "attended": 167,
+        "fnr": 0.03333333333333333,
+        "fpr": 0.5688622754491018,
+        "expected_fnr": 0.05369400267527302,
+        "expected_fpr": 0.5803925171075756
+       },
+       "senior": {
+        "n": 849,
+        "no_shows": 132,
+        "attended": 717,
+        "fnr": 0.06818181818181818,
+        "fpr": 0.5285913528591353,
+        "expected_fnr": 0.0682786518127958,
+        "expected_fpr": 0.5285289579672082
+       },
+       "teen": {
+        "n": 313,
+        "no_shows": 87,
+        "attended": 226,
+        "fnr": 0.14942528735632185,
+        "fpr": 0.5796460176991151,
+        "expected_fnr": 0.13003714892578344,
+        "expected_fpr": 0.6001427934072716
+       },
+       "young_adult": {
+        "n": 996,
+        "no_shows": 230,
+        "attended": 766,
+        "fnr": 0.15217391304347827,
+        "fpr": 0.5117493472584856,
+        "expected_fnr": 0.1565661337297537,
+        "expected_fpr": 0.5294761472412353
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.11884057971014494,
+      "fpr_gap": 0.06789667044062941,
+      "disparity": 0.11884057971014494,
+      "expected_disparity": 0.10287213105448068,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 2817,
+        "no_shows": 568,
+        "attended": 2249,
+        "fnr": 0.13732394366197184,
+        "fpr": 0.5549132947976878,
+        "expected_fnr": 0.13125366390956805,
+        "expected_fpr": 0.5578356027793236
+       },
+       "M": {
+        "n": 1565,
+        "no_shows": 347,
+        "attended": 1218,
+        "fnr": 0.1239193083573487,
+        "fpr": 0.5016420361247947,
+        "expected_fnr": 0.1335101740116914,
+        "expected_fpr": 0.5220385494691591
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.013404635304623144,
+      "fpr_gap": 0.05327125867289306,
+      "disparity": 0.05327125867289306,
+      "expected_disparity": 0.035797053310164584,
+      "status": "halt",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 3952,
+        "no_shows": 805,
+        "attended": 3147,
+        "fnr": 0.13043478260869565,
+        "fpr": 0.5376549094375596,
+        "expected_fnr": 0.13525386324486743,
+        "expected_fpr": 0.5445016406881875
+       },
+       "1": {
+        "n": 430,
+        "no_shows": 110,
+        "attended": 320,
+        "fnr": 0.14545454545454545,
+        "fpr": 0.521875,
+        "expected_fnr": 0.10909774155066687,
+        "expected_fpr": 0.5527142520575263
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.015019762845849799,
+      "fpr_gap": 0.01577990943755958,
+      "disparity": 0.01577990943755958,
+      "expected_disparity": 0.026156121694200563,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.119 (FNR gap 0.119, FPR gap 0.068; expected 0.103) -> halt; Gender: disparity 0.053 (FNR gap 0.013, FPR gap 0.053; expected 0.036) -> halt.",
+    "attribution": "age_band: policy's expected disparity (expected 0.103 above 0.05); Gender: random draw / sampling (expected 0.036 within 0.05)"
+   }
+  },
+  {
+   "batch": "week of 2016-05-16",
+   "n": 4278,
+   "coverage_days": null,
+   "no_show_rate": 0.2171575502571295,
+   "flag_rate": 0.6360448807854138,
+   "auc": 0.7361993892430014,
+   "recall": 0.8557588805166846,
+   "score_psi": 0.04324277314746222,
+   "feature_psi": {
+    "Age": 0.002925891040699735,
+    "lead_time_days": 0.0012517056239310575,
+    "prior_appointments": 0.003945105927463307,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 2.731624718616652,
+    "Scholarship": 0.0006974922957015429,
+    "Gender": 0.0026394800053002442,
+    "age_band": 0.0031857726494160486,
+    "Neighbourhood": 0.017473461146216892
+   },
+   "max_feature_psi": 2.731624718616652,
+   "max_psi_feature": "SMS_received",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "elderly": {
+      "n": 185,
+      "no_shows": 31,
+      "attended": 154
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 1089,
+      "no_shows": 248,
+      "attended": 841
+     },
+     "child": {
+      "n": 863,
+      "no_shows": 181,
+      "attended": 682
+     },
+     "elderly": {
+      "n": 185,
+      "no_shows": 31,
+      "attended": 154
+     },
+     "senior": {
+      "n": 873,
+      "no_shows": 167,
+      "attended": 706
+     },
+     "teen": {
+      "n": 333,
+      "no_shows": 87,
+      "attended": 246
+     },
+     "young_adult": {
+      "n": 935,
+      "no_shows": 215,
+      "attended": 720
+     }
+    },
+    "status": "halt",
+    "eod": 0.06826697148663241,
+    "ci95": [
+     0.05100790548462515,
+     0.16245419717393508
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.068, bootstrap 95% CI 0.051-0.162 lies wholly above 0.05. Expected gap 0.047 is within 0.05: the excess comes from this draw or sampling noise, or from the concurrent data drift noted below. Not evaluated (too few cases, not counted as passing): elderly 31 no-shows/154 attended. Data-drift status in this window: alert (SMS_received PSI 2.73).",
+    "attribution": "random draw / sampling (expected gap within the limit); concurrent data-drift alert (SMS_received PSI 2.73)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.04675510212843881,
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-05-16",
+   "end": "2016-05-20",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 1089,
+        "no_shows": 248,
+        "attended": 841,
+        "fnr": 0.14919354838709678,
+        "fpr": 0.5838287752675386,
+        "expected_fnr": 0.13619385717442545,
+        "expected_fpr": 0.5733772580531619
+       },
+       "child": {
+        "n": 863,
+        "no_shows": 181,
+        "attended": 682,
+        "fnr": 0.16022099447513813,
+        "fpr": 0.5615835777126099,
+        "expected_fnr": 0.1545160042165864,
+        "expected_fpr": 0.5492687136639499
+       },
+       "elderly": {
+        "n": 185,
+        "no_shows": 31,
+        "attended": 154,
+        "fnr": 0.12903225806451613,
+        "fpr": 0.6233766233766234,
+        "expected_fnr": 0.1286285467919538,
+        "expected_fpr": 0.5985351740461908
+       },
+       "senior": {
+        "n": 873,
+        "no_shows": 167,
+        "attended": 706,
+        "fnr": 0.1377245508982036,
+        "fpr": 0.5722379603399433,
+        "expected_fnr": 0.13779015589027743,
+        "expected_fpr": 0.5721965777764823
+       },
+       "teen": {
+        "n": 333,
+        "no_shows": 87,
+        "attended": 246,
+        "fnr": 0.09195402298850575,
+        "fpr": 0.5284552845528455,
+        "expected_fnr": 0.12329526922024792,
+        "expected_fpr": 0.5266221559247231
+       },
+       "young_adult": {
+        "n": 935,
+        "no_shows": 215,
+        "attended": 720,
+        "fnr": 0.15348837209302327,
+        "fpr": 0.5861111111111111,
+        "expected_fnr": 0.12553917893966648,
+        "expected_fpr": 0.5707741986068812
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.06826697148663238,
+      "fpr_gap": 0.09492133882377785,
+      "disparity": 0.09492133882377785,
+      "expected_disparity": 0.07191301812146778,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 2697,
+        "no_shows": 581,
+        "attended": 2116,
+        "fnr": 0.13253012048192772,
+        "fpr": 0.5921550094517959,
+        "expected_fnr": 0.1255213966715567,
+        "expected_fpr": 0.5824342254241052
+       },
+       "M": {
+        "n": 1581,
+        "no_shows": 348,
+        "attended": 1233,
+        "fnr": 0.16379310344827586,
+        "fpr": 0.545823195458232,
+        "expected_fnr": 0.15382642170891359,
+        "expected_fpr": 0.5361171044702859
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.031262982966348135,
+      "fpr_gap": 0.0463318139935639,
+      "disparity": 0.0463318139935639,
+      "expected_disparity": 0.046317120953819235,
+      "status": "alert",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 3874,
+        "no_shows": 826,
+        "attended": 3048,
+        "fnr": 0.15012106537530268,
+        "fpr": 0.577755905511811,
+        "expected_fnr": 0.13970972412620686,
+        "expected_fpr": 0.5678554513858481
+       },
+       "1": {
+        "n": 404,
+        "no_shows": 103,
+        "attended": 301,
+        "fnr": 0.0970873786407767,
+        "fpr": 0.5481727574750831,
+        "expected_fnr": 0.10737178730708252,
+        "expected_fpr": 0.540331544801341
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.05303368673452598,
+      "fpr_gap": 0.029583148036727902,
+      "disparity": 0.05303368673452598,
+      "expected_disparity": 0.032337936819124335,
+      "status": "halt",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.095 (FNR gap 0.068, FPR gap 0.095; expected 0.072) -> halt; Gender: disparity 0.046 (FNR gap 0.031, FPR gap 0.046; expected 0.046) -> alert.",
+    "attribution": "age_band: policy's expected disparity (expected 0.072 above 0.05); Gender: policy's expected disparity (expected 0.046 above 0.04); concurrent data-drift alert (SMS_received PSI 2.73)"
+   }
+  },
+  {
+   "batch": "week of 2016-05-23",
+   "n": 1606,
+   "coverage_days": null,
+   "no_show_rate": 0.2129514321295143,
+   "flag_rate": 0.6114570361145704,
+   "auc": 0.7434892941742542,
+   "recall": 0.8830409356725146,
+   "score_psi": 0.01783063858743794,
+   "feature_psi": {
+    "Age": 0.012840246152070717,
+    "lead_time_days": 0.6598240965717073,
+    "prior_appointments": 0.04677595061431866,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.15410700078385747,
+    "Scholarship": 5.742003412307996e-05,
+    "Gender": 2.754818179249873e-05,
+    "age_band": 0.009589058782292513,
+    "Neighbourhood": 0.07504455187638533
+   },
+   "max_feature_psi": 0.6598240965717073,
+   "max_psi_feature": "lead_time_days",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "senior",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "child": {
+      "n": 260,
+      "no_shows": 45,
+      "attended": 215
+     },
+     "elderly": {
+      "n": 81,
+      "no_shows": 23,
+      "attended": 58
+     },
+     "teen": {
+      "n": 112,
+      "no_shows": 24,
+      "attended": 88
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 489,
+      "no_shows": 104,
+      "attended": 385
+     },
+     "child": {
+      "n": 260,
+      "no_shows": 45,
+      "attended": 215
+     },
+     "elderly": {
+      "n": 81,
+      "no_shows": 23,
+      "attended": 58
+     },
+     "senior": {
+      "n": 306,
+      "no_shows": 53,
+      "attended": 253
+     },
+     "teen": {
+      "n": 112,
+      "no_shows": 24,
+      "attended": 88
+     },
+     "young_adult": {
+      "n": 358,
+      "no_shows": 93,
+      "attended": 265
+     }
+    },
+    "status": "inconclusive",
+    "eod": 0.07216261998870693,
+    "ci95": [
+     0.02874120790342068,
+     0.16139308147878223
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.072, bootstrap 95% CI 0.029-0.161 straddles 0.05. Expected gap 0.075 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): child 45 no-shows/215 attended, elderly 23 no-shows/58 attended, teen 24 no-shows/88 attended. Data-drift status in this window: alert (lead_time_days PSI 0.66).",
+    "attribution": "policy's expected disparity (expected gap above the limit); concurrent data-drift alert (lead_time_days PSI 0.66)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.07522683337088626,
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "inconclusive"
+   },
+   "start": "2016-05-24",
+   "end": "2016-05-25",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 489,
+        "no_shows": 104,
+        "attended": 385,
+        "fnr": 0.10576923076923077,
+        "fpr": 0.5662337662337662,
+        "expected_fnr": 0.12313728073005514,
+        "expected_fpr": 0.5692366316012889
+       },
+       "child": {
+        "n": 260,
+        "no_shows": 45,
+        "attended": 215,
+        "fnr": 0.13333333333333333,
+        "fpr": 0.5302325581395348,
+        "expected_fnr": 0.18503418755720968,
+        "expected_fpr": 0.49718355883398985
+       },
+       "elderly": {
+        "n": 81,
+        "no_shows": 23,
+        "attended": 58,
+        "fnr": 0.08695652173913043,
+        "fpr": 0.4827586206896552,
+        "expected_fnr": 0.10477021439011125,
+        "expected_fpr": 0.520057356618392
+       },
+       "senior": {
+        "n": 306,
+        "no_shows": 53,
+        "attended": 253,
+        "fnr": 0.1320754716981132,
+        "fpr": 0.49407114624505927,
+        "expected_fnr": 0.13214437757029152,
+        "expected_fpr": 0.49400979823040264
+       },
+       "teen": {
+        "n": 112,
+        "no_shows": 24,
+        "attended": 88,
+        "fnr": 0.08333333333333333,
+        "fpr": 0.5909090909090909,
+        "expected_fnr": 0.10648141702271996,
+        "expected_fpr": 0.5703919391156282
+       },
+       "young_adult": {
+        "n": 358,
+        "no_shows": 93,
+        "attended": 265,
+        "fnr": 0.12903225806451613,
+        "fpr": 0.539622641509434,
+        "expected_fnr": 0.13200256969384594,
+        "expected_fpr": 0.5426800142250962
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.05,
+      "fpr_gap": 0.10815047021943575,
+      "disparity": 0.10815047021943575,
+      "expected_disparity": 0.08026397316709843,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 1048,
+        "no_shows": 226,
+        "attended": 822,
+        "fnr": 0.11061946902654868,
+        "fpr": 0.5352798053527981,
+        "expected_fnr": 0.12422530410522936,
+        "expected_fpr": 0.5356499354777785
+       },
+       "M": {
+        "n": 558,
+        "no_shows": 116,
+        "attended": 442,
+        "fnr": 0.12931034482758622,
+        "fpr": 0.5429864253393665,
+        "expected_fnr": 0.14916428310766616,
+        "expected_fpr": 0.5314452972874535
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.018690875801037538,
+      "fpr_gap": 0.007706619986568408,
+      "disparity": 0.018690875801037538,
+      "expected_disparity": 0.0249389790024368,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 1438,
+        "no_shows": 308,
+        "attended": 1130,
+        "fnr": 0.1266233766233766,
+        "fpr": 0.5292035398230088,
+        "expected_fnr": 0.1371118097066687,
+        "expected_fpr": 0.5257029690015625
+       },
+       "1": {
+        "n": 168,
+        "no_shows": 34,
+        "attended": 134,
+        "fnr": 0.029411764705882353,
+        "fpr": 0.6119402985074627,
+        "expected_fnr": 0.09257465231226913,
+        "expected_fpr": 0.6056620402389764
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.09721161191749425,
+      "fpr_gap": 0.08273675868445385,
+      "disparity": 0.09721161191749425,
+      "expected_disparity": 0.07995907123741386,
+      "status": "halt",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.108 (FNR gap 0.050, FPR gap 0.108; expected 0.080) -> halt; Gender: disparity 0.019 (FNR gap 0.019, FPR gap 0.008; expected 0.025) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.080 above 0.05); age_band: small subgroup(s) (elderly 23 no-shows, teen 24 no-shows) - point estimate imprecise; concurrent data-drift alert (lead_time_days PSI 0.66)"
+   }
+  },
+  {
+   "batch": "week of 2016-05-30",
+   "n": 4198,
+   "coverage_days": null,
+   "no_show_rate": 0.188423058599333,
+   "flag_rate": 0.5793234873749404,
+   "auc": 0.7413843069429824,
+   "recall": 0.8230088495575221,
+   "score_psi": 0.0171292006996979,
+   "feature_psi": {
+    "Age": 0.0058164788017761385,
+    "lead_time_days": 0.0521479708312731,
+    "prior_appointments": 0.0930016379555251,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.05083377142216537,
+    "Scholarship": 0.00019175043227886572,
+    "Gender": 0.00037764951929905827,
+    "age_band": 0.00315344436873017,
+    "Neighbourhood": 0.02899979839235044
+   },
+   "max_feature_psi": 0.0930016379555251,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "elderly": {
+      "n": 211,
+      "no_shows": 36,
+      "attended": 175
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 1187,
+      "no_shows": 209,
+      "attended": 978
+     },
+     "child": {
+      "n": 767,
+      "no_shows": 162,
+      "attended": 605
+     },
+     "elderly": {
+      "n": 211,
+      "no_shows": 36,
+      "attended": 175
+     },
+     "senior": {
+      "n": 909,
+      "no_shows": 127,
+      "attended": 782
+     },
+     "teen": {
+      "n": 275,
+      "no_shows": 63,
+      "attended": 212
+     },
+     "young_adult": {
+      "n": 849,
+      "no_shows": 194,
+      "attended": 655
+     }
+    },
+    "status": "halt",
+    "eod": 0.19660042494688168,
+    "ci95": [
+     0.14463303938216182,
+     0.2834033292048341
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.197, bootstrap 95% CI 0.145-0.283 lies wholly above 0.05. Expected gap 0.140 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): elderly 36 no-shows/175 attended.",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.14039148849423433,
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-05-30",
+   "end": "2016-06-03",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 1187,
+        "no_shows": 209,
+        "attended": 978,
+        "fnr": 0.20574162679425836,
+        "fpr": 0.5255623721881391,
+        "expected_fnr": 0.20109934454702594,
+        "expected_fpr": 0.5186159516823348
+       },
+       "child": {
+        "n": 767,
+        "no_shows": 162,
+        "attended": 605,
+        "fnr": 0.16666666666666666,
+        "fpr": 0.5752066115702479,
+        "expected_fnr": 0.15959181744657447,
+        "expected_fpr": 0.5495283932853015
+       },
+       "elderly": {
+        "n": 211,
+        "no_shows": 36,
+        "attended": 175,
+        "fnr": 0.16666666666666666,
+        "fpr": 0.5085714285714286,
+        "expected_fnr": 0.16525387463282493,
+        "expected_fpr": 0.5275108512456547
+       },
+       "senior": {
+        "n": 909,
+        "no_shows": 127,
+        "attended": 782,
+        "fnr": 0.2283464566929134,
+        "fpr": 0.5127877237851662,
+        "expected_fnr": 0.22844710267156731,
+        "expected_fpr": 0.5127200074644898
+       },
+       "teen": {
+        "n": 275,
+        "no_shows": 63,
+        "attended": 212,
+        "fnr": 0.031746031746031744,
+        "fpr": 0.4858490566037736,
+        "expected_fnr": 0.08805561417733299,
+        "expected_fpr": 0.5225777430548704
+       },
+       "young_adult": {
+        "n": 849,
+        "no_shows": 194,
+        "attended": 655,
+        "fnr": 0.17010309278350516,
+        "fpr": 0.49770992366412214,
+        "expected_fnr": 0.15741889417888077,
+        "expected_fpr": 0.5040202871527464
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.19660042494688165,
+      "fpr_gap": 0.0893575549664743,
+      "disparity": 0.19660042494688165,
+      "expected_disparity": 0.14039148849423433,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 2711,
+        "no_shows": 502,
+        "attended": 2209,
+        "fnr": 0.18725099601593626,
+        "fpr": 0.5278406518786781,
+        "expected_fnr": 0.18676248852709842,
+        "expected_fpr": 0.5250161652585051
+       },
+       "M": {
+        "n": 1487,
+        "no_shows": 289,
+        "attended": 1198,
+        "fnr": 0.15916955017301038,
+        "fpr": 0.513355592654424,
+        "expected_fnr": 0.15632373316960446,
+        "expected_fpr": 0.5125973155632678
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.02808144584292588,
+      "fpr_gap": 0.014485059224254138,
+      "disparity": 0.02808144584292588,
+      "expected_disparity": 0.030438755357493963,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 3786,
+        "no_shows": 701,
+        "attended": 3085,
+        "fnr": 0.1825962910128388,
+        "fpr": 0.5277147487844408,
+        "expected_fnr": 0.17785729852315169,
+        "expected_fpr": 0.5252425089293704
+       },
+       "1": {
+        "n": 412,
+        "no_shows": 90,
+        "attended": 322,
+        "fnr": 0.13333333333333333,
+        "fpr": 0.4751552795031056,
+        "expected_fnr": 0.1583817984654421,
+        "expected_fpr": 0.4766433324649844
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.049262957679505476,
+      "fpr_gap": 0.0525594692813352,
+      "disparity": 0.0525594692813352,
+      "expected_disparity": 0.048599176464385996,
+      "status": "halt",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.197 (FNR gap 0.197, FPR gap 0.089; expected 0.140) -> halt; Gender: disparity 0.028 (FNR gap 0.028, FPR gap 0.014; expected 0.030) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.140 above 0.05)"
+   }
+  },
+  {
+   "batch": "week of 2016-06-06",
+   "n": 2795,
+   "coverage_days": null,
+   "no_show_rate": 0.1810375670840787,
+   "flag_rate": 0.592128801431127,
+   "auc": 0.761605167867633,
+   "recall": 0.857707509881423,
+   "score_psi": 0.04587682615426067,
+   "feature_psi": {
+    "Age": 0.0010061000238585699,
+    "lead_time_days": 0.07153005239808602,
+    "prior_appointments": 0.17019464179693478,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.10290075943140067,
+    "Scholarship": 0.00020210829699904276,
+    "Gender": 0.0008763479204136708,
+    "age_band": 0.0017303259539759534,
+    "Neighbourhood": 0.05747292236177232
+   },
+   "max_feature_psi": 0.17019464179693478,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "elderly": {
+      "n": 156,
+      "no_shows": 23,
+      "attended": 133
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 778,
+      "no_shows": 143,
+      "attended": 635
+     },
+     "child": {
+      "n": 531,
+      "no_shows": 96,
+      "attended": 435
+     },
+     "elderly": {
+      "n": 156,
+      "no_shows": 23,
+      "attended": 133
+     },
+     "senior": {
+      "n": 549,
+      "no_shows": 74,
+      "attended": 475
+     },
+     "teen": {
+      "n": 196,
+      "no_shows": 53,
+      "attended": 143
+     },
+     "young_adult": {
+      "n": 585,
+      "no_shows": 117,
+      "attended": 468
+     }
+    },
+    "status": "halt",
+    "eod": 0.1325854156042835,
+    "ci95": [
+     0.09184468304832484,
+     0.24163149350649338
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.133, bootstrap 95% CI 0.092-0.242 lies wholly above 0.05. Expected gap 0.092 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): elderly 23 no-shows/133 attended. Data-drift status in this window: warn (prior_appointments PSI 0.17).",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.09196895969014518,
+   "status": {
+    "data_drift": "warn",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-06-06",
+   "end": "2016-06-08",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 778,
+        "no_shows": 143,
+        "attended": 635,
+        "fnr": 0.17482517482517482,
+        "fpr": 0.5055118110236221,
+        "expected_fnr": 0.17619445122729616,
+        "expected_fpr": 0.49547173361814806
+       },
+       "child": {
+        "n": 531,
+        "no_shows": 96,
+        "attended": 435,
+        "fnr": 0.10416666666666667,
+        "fpr": 0.5632183908045977,
+        "expected_fnr": 0.09733127038089873,
+        "expected_fpr": 0.5534639834238909
+       },
+       "elderly": {
+        "n": 156,
+        "no_shows": 23,
+        "attended": 133,
+        "fnr": 0.17391304347826086,
+        "fpr": 0.5714285714285714,
+        "expected_fnr": 0.12201571654187748,
+        "expected_fpr": 0.5911366464052328
+       },
+       "senior": {
+        "n": 549,
+        "no_shows": 74,
+        "attended": 475,
+        "fnr": 0.1891891891891892,
+        "fpr": 0.5221052631578947,
+        "expected_fnr": 0.1893002300710439,
+        "expected_fpr": 0.521959182708877
+       },
+       "teen": {
+        "n": 196,
+        "no_shows": 53,
+        "attended": 143,
+        "fnr": 0.05660377358490566,
+        "fpr": 0.5734265734265734,
+        "expected_fnr": 0.11769841378767731,
+        "expected_fpr": 0.5823614205348795
+       },
+       "young_adult": {
+        "n": 585,
+        "no_shows": 117,
+        "attended": 468,
+        "fnr": 0.13675213675213677,
+        "fpr": 0.532051282051282,
+        "expected_fnr": 0.15338116372414057,
+        "expected_fpr": 0.5325832176163802
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.13258541560428355,
+      "fpr_gap": 0.06791476240295136,
+      "disparity": 0.13258541560428355,
+      "expected_disparity": 0.09566491278708472,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 1870,
+        "no_shows": 347,
+        "attended": 1523,
+        "fnr": 0.14121037463976946,
+        "fpr": 0.5423506237688772,
+        "expected_fnr": 0.14877612648993244,
+        "expected_fpr": 0.5348730178625124
+       },
+       "M": {
+        "n": 925,
+        "no_shows": 159,
+        "attended": 766,
+        "fnr": 0.14465408805031446,
+        "fpr": 0.5156657963446475,
+        "expected_fnr": 0.15039297598902435,
+        "expected_fpr": 0.5219950289450085
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.003443713410545002,
+      "fpr_gap": 0.02668482742422973,
+      "disparity": 0.02668482742422973,
+      "expected_disparity": 0.012877988917503913,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 2521,
+        "no_shows": 449,
+        "attended": 2072,
+        "fnr": 0.1514476614699332,
+        "fpr": 0.5352316602316602,
+        "expected_fnr": 0.15494198804845183,
+        "expected_fpr": 0.5320302192252113
+       },
+       "1": {
+        "n": 274,
+        "no_shows": 57,
+        "attended": 217,
+        "fnr": 0.07017543859649122,
+        "fpr": 0.5161290322580645,
+        "expected_fnr": 0.10471660421941276,
+        "expected_fpr": 0.516558452266567
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.08127222287344196,
+      "fpr_gap": 0.019102627973595743,
+      "disparity": 0.08127222287344196,
+      "expected_disparity": 0.05022538382903907,
+      "status": "halt",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.133 (FNR gap 0.133, FPR gap 0.068; expected 0.096) -> halt; Gender: disparity 0.027 (FNR gap 0.003, FPR gap 0.027; expected 0.013) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.096 above 0.05); age_band: small subgroup(s) (elderly 23 no-shows) - point estimate imprecise"
+   }
+  }
+ ],
+ "rolling_28d": [
+  {
+   "batch": "28 days to 2016-05-05 (partial: 7 days)",
+   "n": 4106,
+   "coverage_days": 7,
+   "no_show_rate": 0.19995129079396007,
+   "flag_rate": 0.6251826595226497,
+   "auc": 0.7381144129463086,
+   "recall": 0.8757612667478685,
+   "score_psi": 0.018369138837248118,
+   "feature_psi": {
+    "Age": 0.00243314785149985,
+    "lead_time_days": 0.007071590697075401,
+    "prior_appointments": 0.4708352151013879,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.056925021626083094,
+    "Scholarship": 1.6519389630574514e-05,
+    "Gender": 0.000409726287920533,
+    "age_band": 0.0012687976156155003,
+    "Neighbourhood": 0.03152225863074717
+   },
+   "max_feature_psi": 0.4708352151013879,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "elderly": {
+      "n": 202,
+      "no_shows": 31,
+      "attended": 171
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 1106,
+      "no_shows": 229,
+      "attended": 877
+     },
+     "child": {
+      "n": 832,
+      "no_shows": 162,
+      "attended": 670
+     },
+     "elderly": {
+      "n": 202,
+      "no_shows": 31,
+      "attended": 171
+     },
+     "senior": {
+      "n": 789,
+      "no_shows": 123,
+      "attended": 666
+     },
+     "teen": {
+      "n": 303,
+      "no_shows": 80,
+      "attended": 223
+     },
+     "young_adult": {
+      "n": 874,
+      "no_shows": 196,
+      "attended": 678
+     }
+    },
+    "status": "halt",
+    "eod": 0.07813911472448065,
+    "ci95": [
+     0.05618768076886588,
+     0.1796524553877494
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.078, bootstrap 95% CI 0.056-0.180 lies wholly above 0.05. Expected gap 0.052 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): elderly 31 no-shows/171 attended. Data-drift status in this window: alert (prior_appointments PSI 0.47).",
+    "attribution": "policy's expected disparity (expected gap above the limit); concurrent data-drift alert (prior_appointments PSI 0.47)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.05162459442174527,
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-04-29",
+   "end": "2016-05-05",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 1106,
+        "no_shows": 229,
+        "attended": 877,
+        "fnr": 0.09606986899563319,
+        "fpr": 0.5518814139110604,
+        "expected_fnr": 0.11918134076576359,
+        "expected_fpr": 0.5557272313497104
+       },
+       "child": {
+        "n": 832,
+        "no_shows": 162,
+        "attended": 670,
+        "fnr": 0.09259259259259259,
+        "fpr": 0.5701492537313433,
+        "expected_fnr": 0.1514780871406881,
+        "expected_fpr": 0.5574707182358898
+       },
+       "elderly": {
+        "n": 202,
+        "no_shows": 31,
+        "attended": 171,
+        "fnr": 0.0967741935483871,
+        "fpr": 0.5614035087719298,
+        "expected_fnr": 0.09790266528956626,
+        "expected_fpr": 0.556894153111647
+       },
+       "senior": {
+        "n": 789,
+        "no_shows": 123,
+        "attended": 666,
+        "fnr": 0.17073170731707318,
+        "fpr": 0.5735735735735735,
+        "expected_fnr": 0.17080593518750886,
+        "expected_fpr": 0.5734872084432422
+       },
+       "teen": {
+        "n": 303,
+        "no_shows": 80,
+        "attended": 223,
+        "fnr": 0.15,
+        "fpr": 0.5381165919282511,
+        "expected_fnr": 0.16575133003730413,
+        "expected_fpr": 0.5618756714270219
+       },
+       "young_adult": {
+        "n": 874,
+        "no_shows": 196,
+        "attended": 678,
+        "fnr": 0.14795918367346939,
+        "fpr": 0.5663716814159292,
+        "expected_fnr": 0.16723666690512096,
+        "expected_fpr": 0.5510303894524505
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.0781391147244806,
+      "fpr_gap": 0.035456981645322405,
+      "disparity": 0.0781391147244806,
+      "expected_disparity": 0.0729032698979426,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 2650,
+        "no_shows": 538,
+        "attended": 2112,
+        "fnr": 0.11338289962825279,
+        "fpr": 0.5857007575757576,
+        "expected_fnr": 0.13663149389126594,
+        "expected_fpr": 0.5782504863259007
+       },
+       "M": {
+        "n": 1456,
+        "no_shows": 283,
+        "attended": 1173,
+        "fnr": 0.14487632508833923,
+        "fpr": 0.5208866155157715,
+        "expected_fnr": 0.17104890179179655,
+        "expected_fpr": 0.5248775752546618
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.03149342546008643,
+      "fpr_gap": 0.06481414205998604,
+      "disparity": 0.06481414205998604,
+      "expected_disparity": 0.05337291107123887,
+      "status": "halt",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 3691,
+        "no_shows": 731,
+        "attended": 2960,
+        "fnr": 0.12311901504787962,
+        "fpr": 0.5631756756756757,
+        "expected_fnr": 0.15156971004144282,
+        "expected_fpr": 0.5603092575891925
+       },
+       "1": {
+        "n": 415,
+        "no_shows": 90,
+        "attended": 325,
+        "fnr": 0.13333333333333333,
+        "fpr": 0.556923076923077,
+        "expected_fnr": 0.12352360978094334,
+        "expected_fpr": 0.5490185244000332
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.010214318285453716,
+      "fpr_gap": 0.006252598752598759,
+      "disparity": 0.010214318285453716,
+      "expected_disparity": 0.028046100260499474,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.078 (FNR gap 0.078, FPR gap 0.035; expected 0.073) -> halt; Gender: disparity 0.065 (FNR gap 0.031, FPR gap 0.065; expected 0.053) -> halt.",
+    "attribution": "age_band: policy's expected disparity (expected 0.073 above 0.05); Gender: policy's expected disparity (expected 0.053 above 0.05); concurrent data-drift alert (prior_appointments PSI 0.47)"
+   }
+  },
+  {
+   "batch": "28 days to 2016-05-12 (partial: 14 days)",
+   "n": 8432,
+   "coverage_days": 14,
+   "no_show_rate": 0.2041034155597723,
+   "flag_rate": 0.6159867172675522,
+   "auc": 0.7414126044373193,
+   "recall": 0.8477629285299244,
+   "score_psi": 0.010610422050526204,
+   "feature_psi": {
+    "Age": 0.0008818107465409494,
+    "lead_time_days": 0.005854301776775561,
+    "prior_appointments": 0.18062572704184748,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.012736809242466675,
+    "Scholarship": 0.00018663101727182883,
+    "Gender": 0.00047200426183240384,
+    "age_band": 0.0004931785364349328,
+    "Neighbourhood": 0.01680062725780291
+   },
+   "max_feature_psi": 0.18062572704184748,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "elderly",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {},
+    "counts": {
+     "adult": {
+      "n": 2272,
+      "no_shows": 465,
+      "attended": 1807
+     },
+     "child": {
+      "n": 1673,
+      "no_shows": 367,
+      "attended": 1306
+     },
+     "elderly": {
+      "n": 403,
+      "no_shows": 60,
+      "attended": 343
+     },
+     "senior": {
+      "n": 1647,
+      "no_shows": 259,
+      "attended": 1388
+     },
+     "teen": {
+      "n": 596,
+      "no_shows": 153,
+      "attended": 443
+     },
+     "young_adult": {
+      "n": 1841,
+      "no_shows": 417,
+      "attended": 1424
+     }
+    },
+    "status": "halt",
+    "eod": 0.12038369304556351,
+    "ci95": [
+     0.07150147033385228,
+     0.18633092781002009
+    ],
+    "note": "all groups evaluated",
+    "reason": "Realised gap 0.120, bootstrap 95% CI 0.072-0.186 lies wholly above 0.05. Expected gap 0.100 is itself above 0.05, so this is not just the random draw. Data-drift status in this window: warn (prior_appointments PSI 0.18).",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.10002467748011434,
+   "status": {
+    "data_drift": "warn",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-04-29",
+   "end": "2016-05-12",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 2272,
+        "no_shows": 465,
+        "attended": 1807,
+        "fnr": 0.15698924731182795,
+        "fpr": 0.5794133923630327,
+        "expected_fnr": 0.1363017575326435,
+        "expected_fpr": 0.5633870105296807
+       },
+       "child": {
+        "n": 1673,
+        "no_shows": 367,
+        "attended": 1306,
+        "fnr": 0.14168937329700274,
+        "fpr": 0.5375191424196019,
+        "expected_fnr": 0.15254002450599424,
+        "expected_fpr": 0.5501656432251818
+       },
+       "elderly": {
+        "n": 403,
+        "no_shows": 60,
+        "attended": 343,
+        "fnr": 0.06666666666666667,
+        "fpr": 0.5597667638483965,
+        "expected_fnr": 0.077064312985199,
+        "expected_fpr": 0.5592784343689536
+       },
+       "senior": {
+        "n": 1647,
+        "no_shows": 259,
+        "attended": 1388,
+        "fnr": 0.12355212355212356,
+        "fpr": 0.5569164265129684,
+        "expected_fnr": 0.12363320102141429,
+        "expected_fpr": 0.5568427548167778
+       },
+       "teen": {
+        "n": 596,
+        "no_shows": 153,
+        "attended": 443,
+        "fnr": 0.1503267973856209,
+        "fpr": 0.5620767494356659,
+        "expected_fnr": 0.17708899046531335,
+        "expected_fpr": 0.5639689040284586
+       },
+       "young_adult": {
+        "n": 1841,
+        "no_shows": 417,
+        "attended": 1424,
+        "fnr": 0.18705035971223022,
+        "fpr": 0.5421348314606742,
+        "expected_fnr": 0.1621596843576324,
+        "expected_fpr": 0.5458054551668617
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.12038369304556355,
+      "fpr_gap": 0.04189424994343083,
+      "disparity": 0.12038369304556355,
+      "expected_disparity": 0.10002467748011434,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 5436,
+        "no_shows": 1096,
+        "attended": 4340,
+        "fnr": 0.14963503649635038,
+        "fpr": 0.5711981566820277,
+        "expected_fnr": 0.1357478020619295,
+        "expected_fpr": 0.5713699794188262
+       },
+       "M": {
+        "n": 2996,
+        "no_shows": 625,
+        "attended": 2371,
+        "fnr": 0.1568,
+        "fpr": 0.5297342893293969,
+        "expected_fnr": 0.16310876311758127,
+        "expected_fpr": 0.5266159370383686
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.007164963503649618,
+      "fpr_gap": 0.041463867352630746,
+      "disparity": 0.041463867352630746,
+      "expected_disparity": 0.04475404238045755,
+      "status": "alert",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 7604,
+        "no_shows": 1530,
+        "attended": 6074,
+        "fnr": 0.1542483660130719,
+        "fpr": 0.5569641093184063,
+        "expected_fnr": 0.1489632829412717,
+        "expected_fpr": 0.5560168987693638
+       },
+       "1": {
+        "n": 828,
+        "no_shows": 191,
+        "attended": 637,
+        "fnr": 0.13612565445026178,
+        "fpr": 0.5525902668759811,
+        "expected_fnr": 0.11941751365558795,
+        "expected_fpr": 0.5511859564687001
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.018122711562810118,
+      "fpr_gap": 0.004373842442425224,
+      "disparity": 0.018122711562810118,
+      "expected_disparity": 0.029545769285683754,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.120 (FNR gap 0.120, FPR gap 0.042; expected 0.100) -> halt; Gender: disparity 0.041 (FNR gap 0.007, FPR gap 0.041; expected 0.045) -> alert.",
+    "attribution": "age_band: policy's expected disparity (expected 0.100 above 0.05); Gender: policy's expected disparity (expected 0.045 above 0.04)"
+   }
+  },
+  {
+   "batch": "28 days to 2016-05-19 (partial: 21 days)",
+   "n": 12786,
+   "coverage_days": 21,
+   "no_show_rate": 0.20874393868293445,
+   "flag_rate": 0.6203660253402159,
+   "auc": 0.742448904208916,
+   "recall": 0.8505058074185088,
+   "score_psi": 0.005166876741637391,
+   "feature_psi": {
+    "Age": 0.0006125809866438503,
+    "lead_time_days": 0.0036104766238176335,
+    "prior_appointments": 0.06523728854545513,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.027263706442812376,
+    "Scholarship": 0.0002790106217891519,
+    "Gender": 0.0008166202641157136,
+    "age_band": 0.0008307005686149838,
+    "Neighbourhood": 0.01060906424505143
+   },
+   "max_feature_psi": 0.06523728854545513,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "elderly",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {},
+    "counts": {
+     "adult": {
+      "n": 3386,
+      "no_shows": 722,
+      "attended": 2664
+     },
+     "child": {
+      "n": 2547,
+      "no_shows": 552,
+      "attended": 1995
+     },
+     "elderly": {
+      "n": 593,
+      "no_shows": 91,
+      "attended": 502
+     },
+     "senior": {
+      "n": 2529,
+      "no_shows": 421,
+      "attended": 2108
+     },
+     "teen": {
+      "n": 936,
+      "no_shows": 242,
+      "attended": 694
+     },
+     "young_adult": {
+      "n": 2795,
+      "no_shows": 641,
+      "attended": 2154
+     }
+    },
+    "status": "inconclusive",
+    "eod": 0.07878485151212422,
+    "ci95": [
+     0.049632500728591114,
+     0.1544148213247313
+    ],
+    "note": "all groups evaluated",
+    "reason": "Realised gap 0.079, bootstrap 95% CI 0.050-0.154 straddles 0.05. Expected gap 0.062 is itself above 0.05, so this is not just the random draw.",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.06167056302175178,
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "inconclusive"
+   },
+   "start": "2016-04-29",
+   "end": "2016-05-19",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 3386,
+        "no_shows": 722,
+        "attended": 2664,
+        "fnr": 0.13988919667590027,
+        "fpr": 0.5638138138138138,
+        "expected_fnr": 0.13787734079362057,
+        "expected_fpr": 0.5643241290542874
+       },
+       "child": {
+        "n": 2547,
+        "no_shows": 552,
+        "attended": 1995,
+        "fnr": 0.1431159420289855,
+        "fpr": 0.5533834586466165,
+        "expected_fnr": 0.15564775968767952,
+        "expected_fpr": 0.5460401329591958
+       },
+       "elderly": {
+        "n": 593,
+        "no_shows": 91,
+        "attended": 502,
+        "fnr": 0.0989010989010989,
+        "fpr": 0.5657370517928287,
+        "expected_fnr": 0.09463015087541238,
+        "expected_fpr": 0.5669012048310796
+       },
+       "senior": {
+        "n": 2529,
+        "no_shows": 421,
+        "attended": 2108,
+        "fnr": 0.12826603325415678,
+        "fpr": 0.5588235294117647,
+        "expected_fnr": 0.1283397674475445,
+        "expected_fpr": 0.5587615942119024
+       },
+       "teen": {
+        "n": 936,
+        "no_shows": 242,
+        "attended": 694,
+        "fnr": 0.17768595041322313,
+        "fpr": 0.5778097982708934,
+        "expected_fnr": 0.15630071389716416,
+        "expected_fpr": 0.5614038240498558
+       },
+       "young_adult": {
+        "n": 2795,
+        "no_shows": 641,
+        "attended": 2154,
+        "fnr": 0.17628705148205928,
+        "fpr": 0.5538532961931291,
+        "expected_fnr": 0.15323841459300314,
+        "expected_fpr": 0.5486402455813487
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.07878485151212423,
+      "fpr_gap": 0.02442633962427687,
+      "disparity": 0.07878485151212423,
+      "expected_disparity": 0.06167056302175178,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 8201,
+        "no_shows": 1705,
+        "attended": 6496,
+        "fnr": 0.1372434017595308,
+        "fpr": 0.5718903940886699,
+        "expected_fnr": 0.13497533043358256,
+        "expected_fpr": 0.5709162080814046
+       },
+       "M": {
+        "n": 4585,
+        "no_shows": 964,
+        "attended": 3621,
+        "fnr": 0.17116182572614108,
+        "fpr": 0.5376967688483845,
+        "expected_fnr": 0.15977702007639272,
+        "expected_fpr": 0.5296539756018035
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.033918423966610295,
+      "fpr_gap": 0.03419362524028546,
+      "disparity": 0.03419362524028546,
+      "expected_disparity": 0.041262232479601146,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 11542,
+        "no_shows": 2369,
+        "attended": 9173,
+        "fnr": 0.15322921063739975,
+        "fpr": 0.560667175406083,
+        "expected_fnr": 0.14727032588362365,
+        "expected_fpr": 0.5572101803269343
+       },
+       "1": {
+        "n": 1244,
+        "no_shows": 300,
+        "attended": 944,
+        "fnr": 0.12,
+        "fpr": 0.5497881355932204,
+        "expected_fnr": 0.11758194574865422,
+        "expected_fpr": 0.5458260055211511
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.03322921063739975,
+      "fpr_gap": 0.010879039812862645,
+      "disparity": 0.03322921063739975,
+      "expected_disparity": 0.02968838013496944,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.079 (FNR gap 0.079, FPR gap 0.024; expected 0.062) -> halt; Gender: disparity 0.034 (FNR gap 0.034, FPR gap 0.034; expected 0.041) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.062 above 0.05)"
+   }
+  },
+  {
+   "batch": "28 days to 2016-05-26",
+   "n": 15110,
+   "coverage_days": 28,
+   "no_show_rate": 0.20946393117140966,
+   "flag_rate": 0.6184645929847783,
+   "auc": 0.7428414329235431,
+   "recall": 0.8530805687203792,
+   "score_psi": 0.005377432037164414,
+   "feature_psi": {
+    "Age": 0.00046851939062529836,
+    "lead_time_days": 0.003020680482003127,
+    "prior_appointments": 0.02937721802973343,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.01617672397150629,
+    "Scholarship": 0.00024375257302204493,
+    "Gender": 0.0008374491916383437,
+    "age_band": 0.000519236049088457,
+    "Neighbourhood": 0.008311642940711676
+   },
+   "max_feature_psi": 0.02937721802973343,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "elderly",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {},
+    "counts": {
+     "adult": {
+      "n": 4056,
+      "no_shows": 861,
+      "attended": 3195
+     },
+     "child": {
+      "n": 2949,
+      "no_shows": 621,
+      "attended": 2328
+     },
+     "elderly": {
+      "n": 707,
+      "no_shows": 119,
+      "attended": 588
+     },
+     "senior": {
+      "n": 2975,
+      "no_shows": 501,
+      "attended": 2474
+     },
+     "teen": {
+      "n": 1113,
+      "no_shows": 290,
+      "attended": 823
+     },
+     "young_adult": {
+      "n": 3310,
+      "no_shows": 773,
+      "attended": 2537
+     }
+    },
+    "status": "inconclusive",
+    "eod": 0.07825545677208079,
+    "ci95": [
+     0.04599837258364982,
+     0.135135865183035
+    ],
+    "note": "all groups evaluated",
+    "reason": "Realised gap 0.078, bootstrap 95% CI 0.046-0.135 straddles 0.05. Expected gap 0.062 is itself above 0.05, so this is not just the random draw.",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.061987481632773234,
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "inconclusive"
+   },
+   "start": "2016-04-29",
+   "end": "2016-05-25",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 4056,
+        "no_shows": 861,
+        "attended": 3195,
+        "fnr": 0.13240418118466898,
+        "fpr": 0.5705790297339594,
+        "expected_fnr": 0.13572316148583685,
+        "expected_fpr": 0.5658750786846742
+       },
+       "child": {
+        "n": 2949,
+        "no_shows": 621,
+        "attended": 2328,
+        "fnr": 0.1706924315619968,
+        "fpr": 0.5472508591065293,
+        "expected_fnr": 0.15552343361805987,
+        "expected_fpr": 0.5437809176923215
+       },
+       "elderly": {
+        "n": 707,
+        "no_shows": 119,
+        "attended": 588,
+        "fnr": 0.09243697478991597,
+        "fpr": 0.5544217687074829,
+        "expected_fnr": 0.09353595198528664,
+        "expected_fpr": 0.5697552194346777
+       },
+       "senior": {
+        "n": 2975,
+        "no_shows": 501,
+        "attended": 2474,
+        "fnr": 0.1277445109780439,
+        "fpr": 0.5537590945836701,
+        "expected_fnr": 0.12781922777457255,
+        "expected_fpr": 0.5536982031273042
+       },
+       "teen": {
+        "n": 1113,
+        "no_shows": 290,
+        "attended": 823,
+        "fnr": 0.1413793103448276,
+        "fpr": 0.5528554070473876,
+        "expected_fnr": 0.14828393906099602,
+        "expected_fpr": 0.5589867131623818
+       },
+       "young_adult": {
+        "n": 3310,
+        "no_shows": 773,
+        "attended": 2537,
+        "fnr": 0.16688227684346701,
+        "fpr": 0.5506503744580212,
+        "expected_fnr": 0.14717725390413627,
+        "expected_fpr": 0.5501233782318082
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.07825545677208082,
+      "fpr_gap": 0.02332817062743009,
+      "disparity": 0.07825545677208082,
+      "expected_disparity": 0.061987481632773234,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 9689,
+        "no_shows": 2013,
+        "attended": 7676,
+        "fnr": 0.13710879284649777,
+        "fpr": 0.5680041688379365,
+        "expected_fnr": 0.13214541780720812,
+        "expected_fpr": 0.5698503041438897
+       },
+       "M": {
+        "n": 5421,
+        "no_shows": 1152,
+        "attended": 4269,
+        "fnr": 0.1640625,
+        "fpr": 0.535254157882408,
+        "expected_fnr": 0.15570098894714124,
+        "expected_fpr": 0.5294674202970345
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.026953707153502232,
+      "fpr_gap": 0.03275001095552843,
+      "disparity": 0.03275001095552843,
+      "expected_disparity": 0.04038288384685518,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 13635,
+        "no_shows": 2814,
+        "attended": 10821,
+        "fnr": 0.1499644633972992,
+        "fpr": 0.5566953146659274,
+        "expected_fnr": 0.14390090886624207,
+        "expected_fpr": 0.5553560669739189
+       },
+       "1": {
+        "n": 1475,
+        "no_shows": 351,
+        "attended": 1124,
+        "fnr": 0.1225071225071225,
+        "fpr": 0.552491103202847,
+        "expected_fnr": 0.11521113322909393,
+        "expected_fpr": 0.5560136575905344
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.027457340890176707,
+      "fpr_gap": 0.004204211463080365,
+      "disparity": 0.027457340890176707,
+      "expected_disparity": 0.02868977563714814,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.078 (FNR gap 0.078, FPR gap 0.023; expected 0.062) -> halt; Gender: disparity 0.033 (FNR gap 0.027, FPR gap 0.033; expected 0.040) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.062 above 0.05)"
+   }
+  },
+  {
+   "batch": "28 days to 2016-06-02",
+   "n": 14387,
+   "coverage_days": 28,
+   "no_show_rate": 0.20747897407381663,
+   "flag_rate": 0.6104816848543825,
+   "auc": 0.7452261306532664,
+   "recall": 0.8532663316582915,
+   "score_psi": 0.0032371329889835628,
+   "feature_psi": {
+    "Age": 0.000950504233119939,
+    "lead_time_days": 0.000985791632452318,
+    "prior_appointments": 0.0022211733021228973,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.020753182206866467,
+    "Scholarship": 0.00036093243251997525,
+    "Gender": 0.0009356820535594327,
+    "age_band": 0.00021465571259746374,
+    "Neighbourhood": 0.007274740396392459
+   },
+   "max_feature_psi": 0.020753182206866467,
+   "max_psi_feature": "SMS_received",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "elderly",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {},
+    "counts": {
+     "adult": {
+      "n": 3896,
+      "no_shows": 803,
+      "attended": 3093
+     },
+     "child": {
+      "n": 2736,
+      "no_shows": 583,
+      "attended": 2153
+     },
+     "elderly": {
+      "n": 666,
+      "no_shows": 116,
+      "attended": 550
+     },
+     "senior": {
+      "n": 2919,
+      "no_shows": 486,
+      "attended": 2433
+     },
+     "teen": {
+      "n": 1035,
+      "no_shows": 264,
+      "attended": 771
+     },
+     "young_adult": {
+      "n": 3135,
+      "no_shows": 733,
+      "attended": 2402
+     }
+    },
+    "status": "halt",
+    "eod": 0.08536405039332817,
+    "ci95": [
+     0.05308847370025375,
+     0.14327863765810667
+    ],
+    "note": "all groups evaluated",
+    "reason": "Realised gap 0.085, bootstrap 95% CI 0.053-0.143 lies wholly above 0.05. Expected gap 0.058 is itself above 0.05, so this is not just the random draw.",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.0582449443054881,
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-05-06",
+   "end": "2016-06-02",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 3896,
+        "no_shows": 803,
+        "attended": 3093,
+        "fnr": 0.1506849315068493,
+        "fpr": 0.5570643388296153,
+        "expected_fnr": 0.15122381629504933,
+        "expected_fpr": 0.5564725483714802
+       },
+       "child": {
+        "n": 2736,
+        "no_shows": 583,
+        "attended": 2153,
+        "fnr": 0.16295025728987994,
+        "fpr": 0.5508592661402694,
+        "expected_fnr": 0.15750927881326615,
+        "expected_fpr": 0.5411719559187904
+       },
+       "elderly": {
+        "n": 666,
+        "no_shows": 116,
+        "attended": 550,
+        "fnr": 0.07758620689655173,
+        "fpr": 0.58,
+        "expected_fnr": 0.09926433450777805,
+        "expected_fpr": 0.5680508729914474
+       },
+       "senior": {
+        "n": 2919,
+        "no_shows": 486,
+        "attended": 2433,
+        "fnr": 0.13786008230452676,
+        "fpr": 0.541718043567612,
+        "expected_fnr": 0.13793522656842472,
+        "expected_fpr": 0.5416621301199557
+       },
+       "teen": {
+        "n": 1035,
+        "no_shows": 264,
+        "attended": 771,
+        "fnr": 0.125,
+        "fpr": 0.5343709468223087,
+        "expected_fnr": 0.1308448977145057,
+        "expected_fpr": 0.5439645717372593
+       },
+       "young_adult": {
+        "n": 3135,
+        "no_shows": 733,
+        "attended": 2402,
+        "fnr": 0.15416098226466576,
+        "fpr": 0.5320566194837635,
+        "expected_fnr": 0.1422548671723951,
+        "expected_fpr": 0.5386132846391982
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.08536405039332821,
+      "fpr_gap": 0.04794338051623648,
+      "disparity": 0.08536405039332821,
+      "expected_disparity": 0.0582449443054881,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 9214,
+        "no_shows": 1890,
+        "attended": 7324,
+        "fnr": 0.1492063492063492,
+        "fpr": 0.554614964500273,
+        "expected_fnr": 0.13886631956777906,
+        "expected_fpr": 0.5571137239404738
+       },
+       "M": {
+        "n": 5173,
+        "no_shows": 1095,
+        "attended": 4078,
+        "fnr": 0.14246575342465753,
+        "fpr": 0.5331044629720452,
+        "expected_fnr": 0.1535802224649393,
+        "expected_fpr": 0.5270842658916243
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.006740595781691672,
+      "fpr_gap": 0.021510501528227866,
+      "disparity": 0.021510501528227866,
+      "expected_disparity": 0.03002945804884949,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 12997,
+        "no_shows": 2653,
+        "attended": 10344,
+        "fnr": 0.15001884658876743,
+        "fpr": 0.5489172467130704,
+        "expected_fnr": 0.14805022691008063,
+        "expected_fpr": 0.5477699184775845
+       },
+       "1": {
+        "n": 1390,
+        "no_shows": 332,
+        "attended": 1058,
+        "fnr": 0.12048192771084337,
+        "fpr": 0.5274102079395085,
+        "expected_fnr": 0.11400733611375646,
+        "expected_fpr": 0.5327207123950276
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.029536918877924062,
+      "fpr_gap": 0.02150703877356186,
+      "disparity": 0.029536918877924062,
+      "expected_disparity": 0.034042890796324166,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.085 (FNR gap 0.085, FPR gap 0.048; expected 0.058) -> halt; Gender: disparity 0.022 (FNR gap 0.007, FPR gap 0.022; expected 0.030) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.058 above 0.05)"
+   }
+  },
+  {
+   "batch": "28 days to 2016-06-08",
+   "n": 14573,
+   "coverage_days": 28,
+   "no_show_rate": 0.20064502847732107,
+   "flag_rate": 0.6010430247718384,
+   "auc": 0.7471312039959515,
+   "recall": 0.8457592339261286,
+   "score_psi": 0.0011746364962878328,
+   "feature_psi": {
+    "Age": 0.0008383307699685419,
+    "lead_time_days": 0.0024832078560074414,
+    "prior_appointments": 0.041027745635585436,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.0034946304916561887,
+    "Scholarship": 0.00024795413873205383,
+    "Gender": 0.0003239640317868088,
+    "age_band": 0.00019167350739657664,
+    "Neighbourhood": 0.008552063585791697
+   },
+   "max_feature_psi": 0.041027745635585436,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "elderly",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {},
+    "counts": {
+     "adult": {
+      "n": 4003,
+      "no_shows": 801,
+      "attended": 3202
+     },
+     "child": {
+      "n": 2740,
+      "no_shows": 550,
+      "attended": 2190
+     },
+     "elderly": {
+      "n": 704,
+      "no_shows": 121,
+      "attended": 583
+     },
+     "senior": {
+      "n": 2967,
+      "no_shows": 471,
+      "attended": 2496
+     },
+     "teen": {
+      "n": 1041,
+      "no_shows": 266,
+      "attended": 775
+     },
+     "young_adult": {
+      "n": 3118,
+      "no_shows": 715,
+      "attended": 2403
+     }
+    },
+    "status": "inconclusive",
+    "eod": 0.047069262595309524,
+    "ci95": [
+     0.03764731952585231,
+     0.11614859938263349
+    ],
+    "note": "all groups evaluated",
+    "reason": "Realised gap 0.047, bootstrap 95% CI 0.038-0.116 straddles 0.05. Expected gap 0.056 is itself above 0.05, so this is not just the random draw.",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.055626638418061924,
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "inconclusive"
+   },
+   "start": "2016-05-12",
+   "end": "2016-06-08",
+   "module4_rule": {
+    "status": "alert",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 4003,
+        "no_shows": 801,
+        "attended": 3202,
+        "fnr": 0.17103620474406991,
+        "fpr": 0.5412242348532167,
+        "expected_fnr": 0.16339662758529205,
+        "expected_fpr": 0.5403540462168688
+       },
+       "child": {
+        "n": 2740,
+        "no_shows": 550,
+        "attended": 2190,
+        "fnr": 0.15454545454545454,
+        "fpr": 0.5420091324200913,
+        "expected_fnr": 0.14740505536304438,
+        "expected_fpr": 0.5455979730665518
+       },
+       "elderly": {
+        "n": 704,
+        "no_shows": 121,
+        "attended": 583,
+        "fnr": 0.12396694214876033,
+        "fpr": 0.5643224699828473,
+        "expected_fnr": 0.12667977065909475,
+        "expected_fpr": 0.569703143724553
+       },
+       "senior": {
+        "n": 2967,
+        "no_shows": 471,
+        "attended": 2496,
+        "fnr": 0.16348195329087048,
+        "fpr": 0.5296474358974359,
+        "expected_fnr": 0.1635691828583572,
+        "expected_fpr": 0.5295742786212853
+       },
+       "teen": {
+        "n": 1041,
+        "no_shows": 266,
+        "attended": 775,
+        "fnr": 0.14285714285714285,
+        "fpr": 0.552258064516129,
+        "expected_fnr": 0.10794254444029527,
+        "expected_fpr": 0.5574644608452867
+       },
+       "young_adult": {
+        "n": 3118,
+        "no_shows": 715,
+        "attended": 2403,
+        "fnr": 0.13846153846153847,
+        "fpr": 0.5355805243445693,
+        "expected_fnr": 0.143106826686492,
+        "expected_fpr": 0.534386526510278
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.04706926259530958,
+      "fpr_gap": 0.034675034085411394,
+      "disparity": 0.04706926259530958,
+      "expected_disparity": 0.055626638418061924,
+      "status": "alert",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 9421,
+        "no_shows": 1884,
+        "attended": 7537,
+        "fnr": 0.15286624203821655,
+        "fpr": 0.5499535624253682,
+        "expected_fnr": 0.14758156124590205,
+        "expected_fpr": 0.5485712225852455
+       },
+       "M": {
+        "n": 5152,
+        "no_shows": 1040,
+        "attended": 4112,
+        "fnr": 0.15673076923076923,
+        "fpr": 0.520671206225681,
+        "expected_fnr": 0.15126274330404899,
+        "expected_fpr": 0.5254406675502443
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.0038645271925526747,
+      "fpr_gap": 0.02928235619968722,
+      "disparity": 0.02928235619968722,
+      "expected_disparity": 0.023130555035001166,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 13151,
+        "no_shows": 2598,
+        "attended": 10553,
+        "fnr": 0.1585835257890685,
+        "fpr": 0.5400360087179001,
+        "expected_fnr": 0.1518784764576453,
+        "expected_fpr": 0.541481677124544
+       },
+       "1": {
+        "n": 1422,
+        "no_shows": 326,
+        "attended": 1096,
+        "fnr": 0.1196319018404908,
+        "fpr": 0.5355839416058394,
+        "expected_fnr": 0.1250816950507,
+        "expected_fpr": 0.5300521814747143
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.03895162394857771,
+      "fpr_gap": 0.004452067112060698,
+      "disparity": 0.03895162394857771,
+      "expected_disparity": 0.026796781406945303,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.047 (FNR gap 0.047, FPR gap 0.035; expected 0.056) -> alert; Gender: disparity 0.029 (FNR gap 0.004, FPR gap 0.029; expected 0.023) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.056 above 0.04)"
+   }
+  }
+ ],
+ "calendar_months": [
+  {
+   "batch": "calendar month 2016-04",
+   "n": 669,
+   "coverage_days": 1,
+   "no_show_rate": 0.17787742899850523,
+   "flag_rate": 0.6113602391629297,
+   "auc": 0.7433919022154316,
+   "recall": 0.8823529411764706,
+   "score_psi": 0.03494757233358825,
+   "feature_psi": {
+    "Age": 0.01912960412077309,
+    "lead_time_days": 0.169525443995233,
+    "prior_appointments": 2.0953288200234557,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.03377666254382063,
+    "Scholarship": 0.000493758008073829,
+    "Gender": 0.0017082525485662354,
+    "age_band": 0.009638428904625618,
+    "Neighbourhood": 0.229786842333255
+   },
+   "max_feature_psi": 2.0953288200234557,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [],
+    "groups_not_evaluated": {
+     "adult": {
+      "n": 166,
+      "no_shows": 37,
+      "attended": 129
+     },
+     "child": {
+      "n": 140,
+      "no_shows": 17,
+      "attended": 123
+     },
+     "elderly": {
+      "n": 36,
+      "no_shows": 6,
+      "attended": 30
+     },
+     "senior": {
+      "n": 121,
+      "no_shows": 15,
+      "attended": 106
+     },
+     "teen": {
+      "n": 46,
+      "no_shows": 11,
+      "attended": 35
+     },
+     "young_adult": {
+      "n": 160,
+      "no_shows": 33,
+      "attended": 127
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 166,
+      "no_shows": 37,
+      "attended": 129
+     },
+     "child": {
+      "n": 140,
+      "no_shows": 17,
+      "attended": 123
+     },
+     "elderly": {
+      "n": 36,
+      "no_shows": 6,
+      "attended": 30
+     },
+     "senior": {
+      "n": 121,
+      "no_shows": 15,
+      "attended": 106
+     },
+     "teen": {
+      "n": 46,
+      "no_shows": 11,
+      "attended": 35
+     },
+     "young_adult": {
+      "n": 160,
+      "no_shows": 33,
+      "attended": 127
+     }
+    },
+    "status": "insufficient data",
+    "eod": null,
+    "ci95": null,
+    "reason": "Fewer than two groups reach 50 no-shows and 50 attended visits (adult 37 no-shows/129 attended, child 17 no-shows/123 attended, elderly 6 no-shows/30 attended, senior 15 no-shows/106 attended, teen 11 no-shows/35 attended, young_adult 33 no-shows/127 attended). No fairness conclusion is drawn; this is not a pass.",
+    "attribution": "insufficient sample",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": null,
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "insufficient data"
+   },
+   "start": "2016-04-29",
+   "end": "2016-04-29",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 166,
+        "no_shows": 37,
+        "attended": 129,
+        "fnr": 0.13513513513513514,
+        "fpr": 0.49612403100775193,
+        "expected_fnr": 0.12868746873688797,
+        "expected_fpr": 0.5083761689273137
+       },
+       "child": {
+        "n": 140,
+        "no_shows": 17,
+        "attended": 123,
+        "fnr": 0.058823529411764705,
+        "fpr": 0.6016260162601627,
+        "expected_fnr": 0.09733127038089873,
+        "expected_fpr": 0.6217311481814569
+       },
+       "elderly": {
+        "n": 36,
+        "no_shows": 6,
+        "attended": 30,
+        "fnr": 0.0,
+        "fpr": 0.43333333333333335,
+        "expected_fnr": 0.021943925122806074,
+        "expected_fpr": 0.4453807221560434
+       },
+       "senior": {
+        "n": 121,
+        "no_shows": 15,
+        "attended": 106,
+        "fnr": 0.2,
+        "fpr": 0.4811320754716981,
+        "expected_fnr": 0.20018260056127213,
+        "expected_fpr": 0.48102010342940854
+       },
+       "teen": {
+        "n": 46,
+        "no_shows": 11,
+        "attended": 35,
+        "fnr": 0.09090909090909091,
+        "fpr": 0.7142857142857143,
+        "expected_fnr": 0.14568592230237332,
+        "expected_fpr": 0.7069214194548584
+       },
+       "young_adult": {
+        "n": 160,
+        "no_shows": 33,
+        "attended": 127,
+        "fnr": 0.12121212121212122,
+        "fpr": 0.6062992125984252,
+        "expected_fnr": 0.1581732731948038,
+        "expected_fpr": 0.5972597444800977
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.2,
+      "fpr_gap": 0.28095238095238095,
+      "disparity": 0.28095238095238095,
+      "expected_disparity": 0.261540697298815,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 425,
+        "no_shows": 73,
+        "attended": 352,
+        "fnr": 0.0821917808219178,
+        "fpr": 0.5994318181818182,
+        "expected_fnr": 0.10848351679716084,
+        "expected_fpr": 0.5969027603155717
+       },
+       "M": {
+        "n": 244,
+        "no_shows": 46,
+        "attended": 198,
+        "fnr": 0.17391304347826086,
+        "fpr": 0.4696969696969697,
+        "expected_fnr": 0.18377036811865144,
+        "expected_fpr": 0.4893306830553159
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.09172126265634306,
+      "fpr_gap": 0.1297348484848485,
+      "disparity": 0.1297348484848485,
+      "expected_disparity": 0.10757207726025575,
+      "status": "halt",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 605,
+        "no_shows": 108,
+        "attended": 497,
+        "fnr": 0.1111111111111111,
+        "fpr": 0.5492957746478874,
+        "expected_fnr": 0.13663137750018128,
+        "expected_fpr": 0.5550476290250228
+       },
+       "1": {
+        "n": 64,
+        "no_shows": 11,
+        "attended": 53,
+        "fnr": 0.18181818181818182,
+        "fpr": 0.5849056603773585,
+        "expected_fnr": 0.14695862633010104,
+        "expected_fpr": 0.5875202877471215
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.07070707070707072,
+      "fpr_gap": 0.0356098857294711,
+      "disparity": 0.07070707070707072,
+      "expected_disparity": 0.0324726587220987,
+      "status": "halt",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.281 (FNR gap 0.200, FPR gap 0.281; expected 0.262) -> halt; Gender: disparity 0.130 (FNR gap 0.092, FPR gap 0.130; expected 0.108) -> halt.",
+    "attribution": "age_band: policy's expected disparity (expected 0.262 above 0.05); age_band: small subgroup(s) (child 17 no-shows, elderly 6 no-shows, senior 15 no-shows, teen 11 no-shows) - point estimate imprecise; Gender: policy's expected disparity (expected 0.108 above 0.05); concurrent data-drift alert (prior_appointments PSI 2.10)"
+   }
+  },
+  {
+   "batch": "calendar month 2016-05",
+   "n": 16155,
+   "coverage_days": 20,
+   "no_show_rate": 0.2085422469823584,
+   "flag_rate": 0.6181367997523987,
+   "auc": 0.7440455521044487,
+   "recall": 0.8637577916295637,
+   "score_psi": 0.006880726351243789,
+   "feature_psi": {
+    "Age": 0.0005296854711219153,
+    "lead_time_days": 0.003855310928206384,
+    "prior_appointments": 0.011415372443031438,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.006667292696212482,
+    "Scholarship": 0.00018878621305334074,
+    "Gender": 0.0008455833010181672,
+    "age_band": 0.00032320536781133523,
+    "Neighbourhood": 0.0072932711334031276
+   },
+   "max_feature_psi": 0.011415372443031438,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "elderly",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {},
+    "counts": {
+     "adult": {
+      "n": 4357,
+      "no_shows": 907,
+      "attended": 3450
+     },
+     "child": {
+      "n": 3131,
+      "no_shows": 666,
+      "attended": 2465
+     },
+     "elderly": {
+      "n": 755,
+      "no_shows": 127,
+      "attended": 628
+     },
+     "senior": {
+      "n": 3202,
+      "no_shows": 537,
+      "attended": 2665
+     },
+     "teen": {
+      "n": 1180,
+      "no_shows": 305,
+      "attended": 875
+     },
+     "young_adult": {
+      "n": 3530,
+      "no_shows": 827,
+      "attended": 2703
+     }
+    },
+    "status": "inconclusive",
+    "eod": 0.05566196117377209,
+    "ci95": [
+     0.0391659670835111,
+     0.11777587834845173
+    ],
+    "note": "all groups evaluated",
+    "reason": "Realised gap 0.056, bootstrap 95% CI 0.039-0.118 straddles 0.05. Expected gap 0.066 is itself above 0.05, so this is not just the random draw.",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.06612083635624266,
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "inconclusive"
+   },
+   "start": "2016-05-02",
+   "end": "2016-05-31",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 4357,
+        "no_shows": 907,
+        "attended": 3450,
+        "fnr": 0.13340683572216097,
+        "fpr": 0.568695652173913,
+        "expected_fnr": 0.13860522320819346,
+        "expected_fpr": 0.5646169547594425
+       },
+       "child": {
+        "n": 3131,
+        "no_shows": 666,
+        "attended": 2465,
+        "fnr": 0.15015015015015015,
+        "fpr": 0.5436105476673428,
+        "expected_fnr": 0.1551470543659399,
+        "expected_fpr": 0.5405646546919562
+       },
+       "elderly": {
+        "n": 755,
+        "no_shows": 127,
+        "attended": 628,
+        "fnr": 0.09448818897637795,
+        "fpr": 0.5684713375796179,
+        "expected_fnr": 0.08902621800969723,
+        "expected_fpr": 0.5781080587750792
+       },
+       "senior": {
+        "n": 3202,
+        "no_shows": 537,
+        "attended": 2665,
+        "fnr": 0.12849162011173185,
+        "fpr": 0.5553470919324578,
+        "expected_fnr": 0.12856642853534428,
+        "expected_fpr": 0.5552891941935179
+       },
+       "teen": {
+        "n": 1180,
+        "no_shows": 305,
+        "attended": 875,
+        "fnr": 0.12459016393442623,
+        "fpr": 0.5542857142857143,
+        "expected_fnr": 0.14478099879711803,
+        "expected_fpr": 0.5460729663933542
+       },
+       "young_adult": {
+        "n": 3530,
+        "no_shows": 827,
+        "attended": 2703,
+        "fnr": 0.14389359129383314,
+        "fpr": 0.537180910099889,
+        "expected_fnr": 0.14550423084199582,
+        "expected_fpr": 0.5430779282092102
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.0556619611737722,
+      "fpr_gap": 0.03151474207402405,
+      "disparity": 0.0556619611737722,
+      "expected_disparity": 0.06612083635624266,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 10358,
+        "no_shows": 2151,
+        "attended": 8207,
+        "fnr": 0.1292422129242213,
+        "fpr": 0.5686608992323626,
+        "expected_fnr": 0.13340174210549327,
+        "expected_fpr": 0.5656143240861761
+       },
+       "M": {
+        "n": 5797,
+        "no_shows": 1218,
+        "attended": 4579,
+        "fnr": 0.14860426929392448,
+        "fpr": 0.5260974011792968,
+        "expected_fnr": 0.15347490454745039,
+        "expected_fpr": 0.5300446951169812
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.019362056369703173,
+      "fpr_gap": 0.04256349805306581,
+      "disparity": 0.04256349805306581,
+      "expected_disparity": 0.03556962896919491,
+      "status": "alert",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 14569,
+        "no_shows": 2991,
+        "attended": 11578,
+        "fnr": 0.14042126379137412,
+        "fpr": 0.5537225773017792,
+        "expected_fnr": 0.14407711797523204,
+        "expected_fpr": 0.5539828194907342
+       },
+       "1": {
+        "n": 1586,
+        "no_shows": 378,
+        "attended": 1208,
+        "fnr": 0.10317460317460317,
+        "fpr": 0.5504966887417219,
+        "expected_fnr": 0.11361090249680361,
+        "expected_fpr": 0.5422668316657135
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.037246660616770955,
+      "fpr_gap": 0.003225888560057344,
+      "disparity": 0.037246660616770955,
+      "expected_disparity": 0.030466215478428427,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.056 (FNR gap 0.056, FPR gap 0.032; expected 0.066) -> halt; Gender: disparity 0.043 (FNR gap 0.019, FPR gap 0.043; expected 0.036) -> alert.",
+    "attribution": "age_band: policy's expected disparity (expected 0.066 above 0.05); Gender: random draw / sampling (expected 0.036 within 0.04)"
+   }
+  },
+  {
+   "batch": "calendar month 2016-06",
+   "n": 5279,
+   "coverage_days": 6,
+   "no_show_rate": 0.1845046410304982,
+   "flag_rate": 0.5783292290206479,
+   "auc": 0.7482060876636928,
+   "recall": 0.8316221765913757,
+   "score_psi": 0.05601023106820972,
+   "feature_psi": {
+    "Age": 0.004364528400074688,
+    "lead_time_days": 0.017404708352564687,
+    "prior_appointments": 0.15308109773462994,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.04953149748652263,
+    "Scholarship": 0.00033770867557277235,
+    "Gender": 0.0001339846914301134,
+    "age_band": 0.0029881671549873323,
+    "Neighbourhood": 0.03218995628208812
+   },
+   "max_feature_psi": 0.15308109773462994,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "elderly": {
+      "n": 283,
+      "no_shows": 45,
+      "attended": 238
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 1498,
+      "no_shows": 269,
+      "attended": 1229
+     },
+     "child": {
+      "n": 976,
+      "no_shows": 196,
+      "attended": 780
+     },
+     "elderly": {
+      "n": 283,
+      "no_shows": 45,
+      "attended": 238
+     },
+     "senior": {
+      "n": 1110,
+      "no_shows": 150,
+      "attended": 960
+     },
+     "teen": {
+      "n": 358,
+      "no_shows": 90,
+      "attended": 268
+     },
+     "young_adult": {
+      "n": 1054,
+      "no_shows": 224,
+      "attended": 830
+     }
+    },
+    "status": "halt",
+    "eod": 0.16666666666666663,
+    "ci95": [
+     0.10031008889189355,
+     0.24529870400641327
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.167, bootstrap 95% CI 0.100-0.245 lies wholly above 0.05. Expected gap 0.133 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): elderly 45 no-shows/238 attended. Data-drift status in this window: warn (prior_appointments PSI 0.15).",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.1331355606162702,
+   "status": {
+    "data_drift": "warn",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-06-01",
+   "end": "2016-06-08",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 1498,
+        "no_shows": 269,
+        "attended": 1229,
+        "fnr": 0.1895910780669145,
+        "fpr": 0.49227013832384053,
+        "expected_fnr": 0.19928192484030127,
+        "expected_fpr": 0.5014587536848508
+       },
+       "child": {
+        "n": 976,
+        "no_shows": 196,
+        "attended": 780,
+        "fnr": 0.12755102040816327,
+        "fpr": 0.5538461538461539,
+        "expected_fnr": 0.13670999416089413,
+        "expected_fpr": 0.5515111308624786
+       },
+       "elderly": {
+        "n": 283,
+        "no_shows": 45,
+        "attended": 238,
+        "fnr": 0.15555555555555556,
+        "fpr": 0.5672268907563025,
+        "expected_fnr": 0.18773968923390216,
+        "expected_fpr": 0.5442788209749786
+       },
+       "senior": {
+        "n": 1110,
+        "no_shows": 150,
+        "attended": 960,
+        "fnr": 0.23333333333333334,
+        "fpr": 0.5083333333333333,
+        "expected_fnr": 0.23343680698472102,
+        "expected_fpr": 0.5082220611163081
+       },
+       "teen": {
+        "n": 358,
+        "no_shows": 90,
+        "attended": 268,
+        "fnr": 0.06666666666666667,
+        "fpr": 0.5522388059701493,
+        "expected_fnr": 0.10030124636845084,
+        "expected_fpr": 0.5655005012002073
+       },
+       "young_adult": {
+        "n": 1054,
+        "no_shows": 224,
+        "attended": 830,
+        "fnr": 0.17857142857142858,
+        "fpr": 0.5240963855421686,
+        "expected_fnr": 0.16384447309181027,
+        "expected_fpr": 0.5195826710905356
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.16666666666666669,
+      "fpr_gap": 0.07495675243246197,
+      "disparity": 0.16666666666666669,
+      "expected_disparity": 0.1331355606162702,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 3487,
+        "no_shows": 638,
+        "attended": 2849,
+        "fnr": 0.1724137931034483,
+        "fpr": 0.5247455247455247,
+        "expected_fnr": 0.18263693915895218,
+        "expected_fpr": 0.5252498141322615
+       },
+       "M": {
+        "n": 1792,
+        "no_shows": 336,
+        "attended": 1456,
+        "fnr": 0.16071428571428573,
+        "fpr": 0.5137362637362637,
+        "expected_fnr": 0.1579515198307282,
+        "expected_fpr": 0.5152981176367463
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.011699507389162561,
+      "fpr_gap": 0.011009261009261029,
+      "disparity": 0.011699507389162561,
+      "expected_disparity": 0.02468541932822399,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 4768,
+        "no_shows": 865,
+        "attended": 3903,
+        "fnr": 0.1699421965317919,
+        "fpr": 0.5219062259800153,
+        "expected_fnr": 0.17744881828225512,
+        "expected_fpr": 0.5232836278035778
+       },
+       "1": {
+        "n": 511,
+        "no_shows": 109,
+        "attended": 402,
+        "fnr": 0.1559633027522936,
+        "fpr": 0.5124378109452736,
+        "expected_fnr": 0.1477142204805999,
+        "expected_fpr": 0.5082954736929143
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.01397889377949832,
+      "fpr_gap": 0.009468415034741717,
+      "disparity": 0.01397889377949832,
+      "expected_disparity": 0.029734597801655216,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.167 (FNR gap 0.167, FPR gap 0.075; expected 0.133) -> halt; Gender: disparity 0.012 (FNR gap 0.012, FPR gap 0.011; expected 0.025) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.133 above 0.05)"
+   }
+  }
+ ],
+ "stress_tests": [
+  {
+   "name": "S1 data drift: lead times x1.5 + 7 days",
+   "expect": "data/prediction drift alerts",
+   "batch": "S1",
+   "n": 4000,
+   "coverage_days": null,
+   "no_show_rate": 0.2065,
+   "flag_rate": 0.888,
+   "auc": 0.628887518289492,
+   "recall": 0.8886198547215496,
+   "score_psi": 2.074018528864359,
+   "feature_psi": {
+    "Age": 0.0009779389960345264,
+    "lead_time_days": 5.390439214797031,
+    "prior_appointments": 8.797682714054396e-05,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 6.981884465369326e-05,
+    "Scholarship": 6.467954363547928e-05,
+    "Gender": 0.0008964848653119776,
+    "age_band": 0.001054257062310203,
+    "Neighbourhood": 0.019982385656543707
+   },
+   "max_feature_psi": 5.390439214797031,
+   "max_psi_feature": "lead_time_days",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "elderly": {
+      "n": 169,
+      "no_shows": 33,
+      "attended": 136
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 1110,
+      "no_shows": 208,
+      "attended": 902
+     },
+     "child": {
+      "n": 791,
+      "no_shows": 166,
+      "attended": 625
+     },
+     "elderly": {
+      "n": 169,
+      "no_shows": 33,
+      "attended": 136
+     },
+     "senior": {
+      "n": 778,
+      "no_shows": 133,
+      "attended": 645
+     },
+     "teen": {
+      "n": 290,
+      "no_shows": 80,
+      "attended": 210
+     },
+     "young_adult": {
+      "n": 862,
+      "no_shows": 206,
+      "attended": 656
+     }
+    },
+    "status": "halt",
+    "eod": 0.08975903614457836,
+    "ci95": [
+     0.06425580556036434,
+     0.1842502963667934
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.090, bootstrap 95% CI 0.064-0.184 lies wholly above 0.05. Expected gap 0.062 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): elderly 33 no-shows/136 attended. Data-drift status in this window: alert (lead_time_days PSI 5.39).",
+    "attribution": "policy's expected disparity (expected gap above the limit); concurrent data-drift alert (lead_time_days PSI 5.39)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.06239283803111251,
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "alert",
+    "performance": "alert",
+    "bias_drift": "halt"
+   },
+   "start": "2016-04-29",
+   "end": "2016-06-08",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 1110,
+        "no_shows": 208,
+        "attended": 902,
+        "fnr": 0.11057692307692307,
+        "fpr": 0.8780487804878049,
+        "expected_fnr": 0.10913898395538224,
+        "expected_fpr": 0.8912906333868088
+       },
+       "child": {
+        "n": 791,
+        "no_shows": 166,
+        "attended": 625,
+        "fnr": 0.060240963855421686,
+        "fpr": 0.9024,
+        "expected_fnr": 0.09733127038089906,
+        "expected_fpr": 0.8977543810623183
+       },
+       "elderly": {
+        "n": 169,
+        "no_shows": 33,
+        "attended": 136,
+        "fnr": 0.12121212121212122,
+        "fpr": 0.9044117647058824,
+        "expected_fnr": 0.09008275724728243,
+        "expected_fpr": 0.9033567576924248
+       },
+       "senior": {
+        "n": 778,
+        "no_shows": 133,
+        "attended": 645,
+        "fnr": 0.14285714285714285,
+        "fpr": 0.8744186046511628,
+        "expected_fnr": 0.142905195636425,
+        "expected_fpr": 0.8743520757644978
+       },
+       "teen": {
+        "n": 290,
+        "no_shows": 80,
+        "attended": 210,
+        "fnr": 0.15,
+        "fpr": 0.9333333333333333,
+        "expected_fnr": 0.0805123576053125,
+        "expected_fpr": 0.9292721841601979
+       },
+       "young_adult": {
+        "n": 862,
+        "no_shows": 206,
+        "attended": 656,
+        "fnr": 0.11650485436893204,
+        "fpr": 0.8826219512195121,
+        "expected_fnr": 0.09753271350737669,
+        "expected_fpr": 0.8976724340363279
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.08975903614457831,
+      "fpr_gap": 0.058914728682170514,
+      "disparity": 0.08975903614457831,
+      "expected_disparity": 0.06239283803111251,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 2563,
+        "no_shows": 529,
+        "attended": 2034,
+        "fnr": 0.12287334593572778,
+        "fpr": 0.8928220255653884,
+        "expected_fnr": 0.11099675957324939,
+        "expected_fpr": 0.8933936204123997
+       },
+       "M": {
+        "n": 1437,
+        "no_shows": 297,
+        "attended": 1140,
+        "fnr": 0.09090909090909091,
+        "fpr": 0.8789473684210526,
+        "expected_fnr": 0.09647294050993005,
+        "expected_fpr": 0.8936069288383975
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.03196425502663687,
+      "fpr_gap": 0.013874657144335778,
+      "disparity": 0.03196425502663687,
+      "expected_disparity": 0.014523819063319343,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 3581,
+        "no_shows": 728,
+        "attended": 2853,
+        "fnr": 0.11401098901098901,
+        "fpr": 0.8853838065194533,
+        "expected_fnr": 0.11028889822181764,
+        "expected_fpr": 0.8916803423225047
+       },
+       "1": {
+        "n": 419,
+        "no_shows": 98,
+        "attended": 321,
+        "fnr": 0.09183673469387756,
+        "fpr": 0.9096573208722741,
+        "expected_fnr": 0.07223909428790776,
+        "expected_fpr": 0.909378523827067
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.022174254317111453,
+      "fpr_gap": 0.02427351435282088,
+      "disparity": 0.02427351435282088,
+      "expected_disparity": 0.03804980393390989,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.090 (FNR gap 0.090, FPR gap 0.059; expected 0.062) -> halt; Gender: disparity 0.032 (FNR gap 0.032, FPR gap 0.014; expected 0.015) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.062 above 0.05); concurrent data-drift alert (lead_time_days PSI 5.39)"
+   },
+   "synthetic": true
+  },
+  {
+   "name": "S2 bias drift: 60% of senior/elderly flags removed (last 28 days)",
+   "expect": "fairness halt",
+   "batch": "S2",
+   "n": 14573,
+   "coverage_days": null,
+   "no_show_rate": 0.20064502847732107,
+   "flag_rate": 0.5122486790640225,
+   "auc": 0.7471312039959515,
+   "recall": 0.7411080711354309,
+   "score_psi": 0.0011746364962878328,
+   "feature_psi": {
+    "Age": 0.0008383307699685419,
+    "lead_time_days": 0.0024832078560074414,
+    "prior_appointments": 0.041027745635585436,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.0034946304916561887,
+    "Scholarship": 0.00024795413873205383,
+    "Gender": 0.0003239640317868088,
+    "age_band": 0.00019167350739657664,
+    "Neighbourhood": 0.008552063585791697
+   },
+   "max_feature_psi": 0.041027745635585436,
+   "max_psi_feature": "prior_appointments",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "elderly",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {},
+    "counts": {
+     "adult": {
+      "n": 4003,
+      "no_shows": 801,
+      "attended": 3202
+     },
+     "child": {
+      "n": 2740,
+      "no_shows": 550,
+      "attended": 2190
+     },
+     "elderly": {
+      "n": 704,
+      "no_shows": 121,
+      "attended": 583
+     },
+     "senior": {
+      "n": 2967,
+      "no_shows": 471,
+      "attended": 2496
+     },
+     "teen": {
+      "n": 1041,
+      "no_shows": 266,
+      "attended": 775
+     },
+     "young_adult": {
+      "n": 3118,
+      "no_shows": 715,
+      "attended": 2403
+     }
+    },
+    "status": "halt",
+    "eod": 0.6092400422543964,
+    "ci95": [
+     0.5491630501371901,
+     0.7065674661575291
+    ],
+    "note": "all groups evaluated",
+    "reason": "Realised gap 0.609, bootstrap 95% CI 0.549-0.707 lies wholly above 0.05. Expected gap 0.056 is itself above 0.05, so this is not just the random draw. Decisions were altered synthetically for this stress test.",
+    "attribution": "synthetic stress perturbation (decisions altered after the policy)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.055626638418061924,
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "start": "2016-05-12",
+   "end": "2016-06-08",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 4003,
+        "no_shows": 801,
+        "attended": 3202,
+        "fnr": 0.1585518102372035,
+        "fpr": 0.5343535290443473,
+        "expected_fnr": null,
+        "expected_fpr": null
+       },
+       "child": {
+        "n": 2740,
+        "no_shows": 550,
+        "attended": 2190,
+        "fnr": 0.16727272727272727,
+        "fpr": 0.5493150684931507,
+        "expected_fnr": null,
+        "expected_fpr": null
+       },
+       "elderly": {
+        "n": 704,
+        "no_shows": 121,
+        "attended": 583,
+        "fnr": 0.7107438016528925,
+        "fpr": 0.22984562607204118,
+        "expected_fnr": null,
+        "expected_fpr": null
+       },
+       "senior": {
+        "n": 2967,
+        "no_shows": 471,
+        "attended": 2496,
+        "fnr": 0.673036093418259,
+        "fpr": 0.2203525641025641,
+        "expected_fnr": null,
+        "expected_fpr": null
+       },
+       "teen": {
+        "n": 1041,
+        "no_shows": 266,
+        "attended": 775,
+        "fnr": 0.10150375939849623,
+        "fpr": 0.5548387096774193,
+        "expected_fnr": null,
+        "expected_fpr": null
+       },
+       "young_adult": {
+        "n": 3118,
+        "no_shows": 715,
+        "attended": 2403,
+        "fnr": 0.15104895104895105,
+        "fpr": 0.5285060341240116,
+        "expected_fnr": null,
+        "expected_fpr": null
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.6092400422543963,
+      "fpr_gap": 0.33448614557485523,
+      "disparity": 0.6092400422543963,
+      "expected_disparity": null,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 9421,
+        "no_shows": 1884,
+        "attended": 7537,
+        "fnr": 0.25902335456475584,
+        "fpr": 0.45561894653044976,
+        "expected_fnr": null,
+        "expected_fpr": null
+       },
+       "M": {
+        "n": 5152,
+        "no_shows": 1040,
+        "attended": 4112,
+        "fnr": 0.2586538461538462,
+        "fpr": 0.45330739299610895,
+        "expected_fnr": null,
+        "expected_fpr": null
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.000369508410909658,
+      "fpr_gap": 0.0023115535343408156,
+      "disparity": 0.0023115535343408156,
+      "expected_disparity": null,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 13151,
+        "no_shows": 2598,
+        "attended": 10553,
+        "fnr": 0.26982294072363355,
+        "fpr": 0.4502984933194352,
+        "expected_fnr": null,
+        "expected_fpr": null
+       },
+       "1": {
+        "n": 1422,
+        "no_shows": 326,
+        "attended": 1096,
+        "fnr": 0.17177914110429449,
+        "fpr": 0.4981751824817518,
+        "expected_fnr": null,
+        "expected_fpr": null
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.09804379961933907,
+      "fpr_gap": 0.04787668916231658,
+      "disparity": 0.09804379961933907,
+      "expected_disparity": null,
+      "status": "halt",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.609 -> halt; Gender: disparity 0.002 -> ok. Decisions were altered synthetically.",
+    "attribution": "synthetic stress perturbation (decisions altered after the policy)"
+   },
+   "synthetic": true
+  },
+  {
+   "name": "S3 small group: elderly reduced to 25 appointments (last 28 days)",
+   "expect": "elderly not evaluated",
+   "batch": "S3",
+   "n": 13894,
+   "coverage_days": null,
+   "no_show_rate": 0.20210162660141068,
+   "flag_rate": 0.6009788397869584,
+   "auc": 0.7481114048518884,
+   "recall": 0.8447293447293447,
+   "score_psi": 0.0008161367548941378,
+   "feature_psi": {
+    "Age": 0.024002324122819156,
+    "lead_time_days": 0.0023833116573194688,
+    "prior_appointments": 0.03958599463897196,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.002983065746426641,
+    "Scholarship": 3.133877689796415e-07,
+    "Gender": 0.0004106138175966256,
+    "age_band": 0.15126061582026262,
+    "Neighbourhood": 0.00886254104390485
+   },
+   "max_feature_psi": 0.15126061582026262,
+   "max_psi_feature": "age_band",
+   "fairness": {
+    "groups_evaluated": [
+     "adult",
+     "child",
+     "senior",
+     "teen",
+     "young_adult"
+    ],
+    "groups_not_evaluated": {
+     "elderly": {
+      "n": 25,
+      "no_shows": 5,
+      "attended": 20
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 4003,
+      "no_shows": 801,
+      "attended": 3202
+     },
+     "child": {
+      "n": 2740,
+      "no_shows": 550,
+      "attended": 2190
+     },
+     "elderly": {
+      "n": 25,
+      "no_shows": 5,
+      "attended": 20
+     },
+     "senior": {
+      "n": 2967,
+      "no_shows": 471,
+      "attended": 2496
+     },
+     "teen": {
+      "n": 1041,
+      "no_shows": 266,
+      "attended": 775
+     },
+     "young_adult": {
+      "n": 3118,
+      "no_shows": 715,
+      "attended": 2403
+     }
+    },
+    "status": "inconclusive",
+    "eod": 0.06201364835309242,
+    "ci95": [
+     0.03278183016364665,
+     0.11265610602151005
+    ],
+    "note": "not all groups evaluated",
+    "reason": "Realised gap 0.062, bootstrap 95% CI 0.033-0.113 straddles 0.05. Expected gap 0.056 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): elderly 5 no-shows/20 attended. Data-drift status in this window: warn (age_band PSI 0.15).",
+    "attribution": "policy's expected disparity (expected gap above the limit)",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": 0.055626638418061924,
+   "status": {
+    "data_drift": "warn",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "inconclusive"
+   },
+   "start": "2016-05-12",
+   "end": "2016-06-08",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 4003,
+        "no_shows": 801,
+        "attended": 3202,
+        "fnr": 0.17103620474406991,
+        "fpr": 0.5449718925671455,
+        "expected_fnr": 0.16339662758529205,
+        "expected_fpr": 0.5403540462168688
+       },
+       "child": {
+        "n": 2740,
+        "no_shows": 550,
+        "attended": 2190,
+        "fnr": 0.15636363636363637,
+        "fpr": 0.5378995433789955,
+        "expected_fnr": 0.14740505536304438,
+        "expected_fpr": 0.5455979730665518
+       },
+       "elderly": {
+        "n": 25,
+        "no_shows": 5,
+        "attended": 20,
+        "fnr": 0.0,
+        "fpr": 0.4,
+        "expected_fnr": 0.021943925122805963,
+        "expected_fpr": 0.4065546789327862
+       },
+       "senior": {
+        "n": 2967,
+        "no_shows": 471,
+        "attended": 2496,
+        "fnr": 0.16348195329087048,
+        "fpr": 0.5296474358974359,
+        "expected_fnr": 0.1635691828583572,
+        "expected_fpr": 0.5295742786212853
+       },
+       "teen": {
+        "n": 1041,
+        "no_shows": 266,
+        "attended": 775,
+        "fnr": 0.10902255639097744,
+        "fpr": 0.5445161290322581,
+        "expected_fnr": 0.10794254444029527,
+        "expected_fpr": 0.5574644608452867
+       },
+       "young_adult": {
+        "n": 3118,
+        "no_shows": 715,
+        "attended": 2403,
+        "fnr": 0.14965034965034965,
+        "fpr": 0.5422388680815647,
+        "expected_fnr": 0.143106826686492,
+        "expected_fpr": 0.534386526510278
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.17103620474406991,
+      "fpr_gap": 0.1449718925671455,
+      "disparity": 0.17103620474406991,
+      "expected_disparity": 0.15090978191250048,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 8967,
+        "no_shows": 1817,
+        "attended": 7150,
+        "fnr": 0.15905338470005503,
+        "fpr": 0.5475524475524476,
+        "expected_fnr": 0.14912743199211287,
+        "expected_fpr": 0.5464729067429244
+       },
+       "M": {
+        "n": 4927,
+        "no_shows": 991,
+        "attended": 3936,
+        "fnr": 0.14833501513622604,
+        "fpr": 0.5241361788617886,
+        "expected_fnr": 0.15052859522672535,
+        "expected_fpr": 0.524366414422493
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.010718369563828989,
+      "fpr_gap": 0.023416268690658937,
+      "disparity": 0.023416268690658937,
+      "expected_disparity": 0.02210649232043138,
+      "status": "ok",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 12475,
+        "no_shows": 2482,
+        "attended": 9993,
+        "fnr": 0.15914585012087026,
+        "fpr": 0.5397778444911439,
+        "expected_fnr": 0.15284518501725464,
+        "expected_fpr": 0.5396512310032187
+       },
+       "1": {
+        "n": 1419,
+        "no_shows": 326,
+        "attended": 1093,
+        "fnr": 0.12576687116564417,
+        "fpr": 0.5343092406221409,
+        "expected_fnr": 0.1250816950507,
+        "expected_fpr": 0.5292339789237666
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.033378978955226096,
+      "fpr_gap": 0.0054686038690029415,
+      "disparity": 0.033378978955226096,
+      "expected_disparity": 0.027763489966554644,
+      "status": "ok",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.171 (FNR gap 0.171, FPR gap 0.145; expected 0.151) -> halt; Gender: disparity 0.023 (FNR gap 0.011, FPR gap 0.023; expected 0.022) -> ok.",
+    "attribution": "age_band: policy's expected disparity (expected 0.151 above 0.05); age_band: small subgroup(s) (elderly 5 no-shows) - point estimate imprecise"
+   },
+   "synthetic": true
+  },
+  {
+   "name": "S4 tiny batch: 300 random appointments",
+   "expect": "insufficient data",
+   "batch": "S4",
+   "n": 300,
+   "coverage_days": null,
+   "no_show_rate": 0.21666666666666667,
+   "flag_rate": 0.5833333333333334,
+   "auc": 0.7799672667757774,
+   "recall": 0.8307692307692308,
+   "score_psi": 0.03816675923879367,
+   "feature_psi": {
+    "Age": 0.015569055498539354,
+    "lead_time_days": 0.02546382684915533,
+    "prior_appointments": 0.006709071605439772,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.0001646200835929419,
+    "Scholarship": 0.0021197226400619103,
+    "Gender": 0.03297123483795529,
+    "age_band": 0.00536364672966639,
+    "Neighbourhood": 0.44401871125041875
+   },
+   "max_feature_psi": 0.44401871125041875,
+   "max_psi_feature": "Neighbourhood",
+   "fairness": {
+    "groups_evaluated": [],
+    "groups_not_evaluated": {
+     "adult": {
+      "n": 86,
+      "no_shows": 19,
+      "attended": 67
+     },
+     "child": {
+      "n": 64,
+      "no_shows": 14,
+      "attended": 50
+     },
+     "elderly": {
+      "n": 13,
+      "no_shows": 4,
+      "attended": 9
+     },
+     "senior": {
+      "n": 59,
+      "no_shows": 9,
+      "attended": 50
+     },
+     "teen": {
+      "n": 19,
+      "no_shows": 6,
+      "attended": 13
+     },
+     "young_adult": {
+      "n": 59,
+      "no_shows": 13,
+      "attended": 46
+     }
+    },
+    "counts": {
+     "adult": {
+      "n": 86,
+      "no_shows": 19,
+      "attended": 67
+     },
+     "child": {
+      "n": 64,
+      "no_shows": 14,
+      "attended": 50
+     },
+     "elderly": {
+      "n": 13,
+      "no_shows": 4,
+      "attended": 9
+     },
+     "senior": {
+      "n": 59,
+      "no_shows": 9,
+      "attended": 50
+     },
+     "teen": {
+      "n": 19,
+      "no_shows": 6,
+      "attended": 13
+     },
+     "young_adult": {
+      "n": 59,
+      "no_shows": 13,
+      "attended": 46
+     }
+    },
+    "status": "insufficient data",
+    "eod": null,
+    "ci95": null,
+    "reason": "Fewer than two groups reach 50 no-shows and 50 attended visits (adult 19 no-shows/67 attended, child 14 no-shows/50 attended, elderly 4 no-shows/9 attended, senior 9 no-shows/50 attended, teen 6 no-shows/13 attended, young_adult 13 no-shows/46 attended). No fairness conclusion is drawn; this is not a pass.",
+    "attribution": "insufficient sample",
+    "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+   },
+   "expected_age_eod_evaluated_groups": null,
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "insufficient data"
+   },
+   "start": "2016-04-29",
+   "end": "2016-06-08",
+   "module4_rule": {
+    "status": "halt",
+    "attributes": {
+     "age_band": {
+      "groups": {
+       "adult": {
+        "n": 86,
+        "no_shows": 19,
+        "attended": 67,
+        "fnr": 0.05263157894736842,
+        "fpr": 0.5074626865671642,
+        "expected_fnr": 0.10107584494236943,
+        "expected_fpr": 0.5338610967905905
+       },
+       "child": {
+        "n": 64,
+        "no_shows": 14,
+        "attended": 50,
+        "fnr": 0.07142857142857142,
+        "fpr": 0.56,
+        "expected_fnr": 0.15371171713709864,
+        "expected_fpr": 0.4746486418496086
+       },
+       "elderly": {
+        "n": 13,
+        "no_shows": 4,
+        "attended": 9,
+        "fnr": 0.25,
+        "fpr": 0.2222222222222222,
+        "expected_fnr": 0.13437299812819203,
+        "expected_fpr": 0.29308604693656937
+       },
+       "senior": {
+        "n": 59,
+        "no_shows": 9,
+        "attended": 50,
+        "fnr": 0.5555555555555556,
+        "fpr": 0.54,
+        "expected_fnr": 0.5555555555555556,
+        "expected_fpr": 0.5399269597754911
+       },
+       "teen": {
+        "n": 19,
+        "no_shows": 6,
+        "attended": 13,
+        "fnr": 0.0,
+        "fpr": 0.6153846153846154,
+        "expected_fnr": 0.0681959473641992,
+        "expected_fpr": 0.603961850974295
+       },
+       "young_adult": {
+        "n": 59,
+        "no_shows": 13,
+        "attended": 46,
+        "fnr": 0.23076923076923078,
+        "fpr": 0.4782608695652174,
+        "expected_fnr": 0.08374242390396702,
+        "expected_fpr": 0.5336937011089907
+       }
+      },
+      "groups_compared": [
+       "adult",
+       "child",
+       "elderly",
+       "senior",
+       "teen",
+       "young_adult"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.5555555555555556,
+      "fpr_gap": 0.3931623931623932,
+      "disparity": 0.5555555555555556,
+      "expected_disparity": 0.4873596081913564,
+      "status": "halt",
+      "governing": true
+     },
+     "Gender": {
+      "groups": {
+       "F": {
+        "n": 170,
+        "no_shows": 38,
+        "attended": 132,
+        "fnr": 0.18421052631578946,
+        "fpr": 0.5757575757575758,
+        "expected_fnr": 0.1812129474768308,
+        "expected_fpr": 0.5742399081505979
+       },
+       "M": {
+        "n": 130,
+        "no_shows": 27,
+        "attended": 103,
+        "fnr": 0.14814814814814814,
+        "fpr": 0.4368932038834951,
+        "expected_fnr": 0.15635675100571733,
+        "expected_fpr": 0.44404848957722487
+       }
+      },
+      "groups_compared": [
+       "F",
+       "M"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.036062378167641324,
+      "fpr_gap": 0.13886437187408068,
+      "disparity": 0.13886437187408068,
+      "expected_disparity": 0.13019141857337302,
+      "status": "halt",
+      "governing": true
+     },
+     "Scholarship": {
+      "groups": {
+       "0": {
+        "n": 265,
+        "no_shows": 57,
+        "attended": 208,
+        "fnr": 0.17543859649122806,
+        "fpr": 0.5144230769230769,
+        "expected_fnr": 0.18548731968364973,
+        "expected_fpr": 0.5214534854894513
+       },
+       "1": {
+        "n": 35,
+        "no_shows": 8,
+        "attended": 27,
+        "fnr": 0.125,
+        "fpr": 0.5185185185185185,
+        "expected_fnr": 0.06686838241323878,
+        "expected_fpr": 0.4842347155750826
+       }
+      },
+      "groups_compared": [
+       "0",
+       "1"
+      ],
+      "groups_not_comparable": [],
+      "fnr_gap": 0.05043859649122806,
+      "fpr_gap": 0.004095441595441618,
+      "disparity": 0.05043859649122806,
+      "expected_disparity": 0.11861893727041095,
+      "status": "halt",
+      "governing": false
+     }
+    },
+    "worst_attribute": "age_band",
+    "reason": "age_band: disparity 0.556 (FNR gap 0.556, FPR gap 0.393; expected 0.487) -> halt; Gender: disparity 0.139 (FNR gap 0.036, FPR gap 0.139; expected 0.130) -> halt.",
+    "attribution": "age_band: policy's expected disparity (expected 0.487 above 0.05); age_band: small subgroup(s) (adult 19 no-shows, child 14 no-shows, elderly 4 no-shows, senior 9 no-shows, teen 6 no-shows, young_adult 13 no-shows) - point estimate imprecise; Gender: policy's expected disparity (expected 0.130 above 0.05); Gender: small subgroup(s) (M 27 no-shows) - point estimate imprecise; concurrent data-drift alert (Neighbourhood PSI 0.44)"
+   },
+   "synthetic": true
+  }
+ ],
+ "summary": {
+  "module4_s7_weekly": {
+   "counts": {
+    "halt": 7,
+    "alert": 0,
+    "ok": 0,
+    "not evaluable": 0
+   },
+   "windows": {
+    "halt": [
+     "week of 2016-04-25",
+     "week of 2016-05-02",
+     "week of 2016-05-09",
+     "week of 2016-05-16",
+     "week of 2016-05-23",
+     "week of 2016-05-30",
+     "week of 2016-06-06"
+    ],
+    "alert": [],
+    "ok": [],
+    "not evaluable": []
+   },
+   "governing_status": "halt",
+   "rule": {
+    "source": "Module 4 s.7 (weekly; alert > 0.04, halt > 0.05) with Module 4 s.1 attributes (Gender, age_band)",
+    "attributes": [
+     "age_band",
+     "Gender"
+    ],
+    "metric": "max(FNR gap, FPR gap) between groups, realised decisions, point estimate",
+    "alert_above": 0.04,
+    "halt_above": 0.05,
+    "minimum_group_size": null,
+    "window": "calendar week (Mon-Sun) of appointment day",
+    "supplementary_attributes": [
+     "Scholarship"
+    ],
+    "statuses": {
+     "ok": "every governing attribute evaluable and disparity <= 0.04",
+     "alert": "highest disparity > 0.04 and <= 0.05: review",
+     "halt": "any governing attribute's disparity > 0.05: suspend flagging, notify Ethics Committee",
+     "not evaluable": "an attribute has fewer than two groups with defined FNR and FPR; never a pass"
+    }
+   },
+   "role": "GOVERNING (original specification)"
+  },
+  "rolling_28d_all": {
+   "counts": {
+    "halt": 3,
+    "inconclusive": 3,
+    "ok": 0,
+    "insufficient data": 0
+   },
+   "windows": {
+    "halt": [
+     "28 days to 2016-05-05 (partial: 7 days)",
+     "28 days to 2016-05-12 (partial: 14 days)",
+     "28 days to 2016-06-02"
+    ],
+    "inconclusive": [
+     "28 days to 2016-05-19 (partial: 21 days)",
+     "28 days to 2016-05-26",
+     "28 days to 2016-06-08"
+    ],
+    "ok": [],
+    "insufficient data": []
+   },
+   "windows_with_expected_gap_above_0.05": 6.0,
+   "windows_with_expected_gap_evaluable": 6,
+   "expected_gap_range": [
+    0.05162459442174527,
+    0.10002467748011434
+   ],
+   "windows_with_any_group_not_evaluated": [
+    "28 days to 2016-05-05 (partial: 7 days)"
+   ]
+  },
+  "rolling_28d_full_windows_only": {
+   "counts": {
+    "halt": 1,
+    "inconclusive": 2,
+    "ok": 0,
+    "insufficient data": 0
+   },
+   "windows": {
+    "halt": [
+     "28 days to 2016-06-02"
+    ],
+    "inconclusive": [
+     "28 days to 2016-05-26",
+     "28 days to 2016-06-08"
+    ],
+    "ok": [],
+    "insufficient data": []
+   },
+   "windows_with_expected_gap_above_0.05": 3.0,
+   "windows_with_expected_gap_evaluable": 3,
+   "expected_gap_range": [
+    0.055626638418061924,
+    0.061987481632773234
+   ],
+   "windows_with_any_group_not_evaluated": []
+  },
+  "calendar_months": {
+   "counts": {
+    "halt": 1,
+    "inconclusive": 1,
+    "ok": 0,
+    "insufficient data": 1
+   },
+   "windows": {
+    "halt": [
+     "calendar month 2016-06"
+    ],
+    "inconclusive": [
+     "calendar month 2016-05"
+    ],
+    "ok": [],
+    "insufficient data": [
+     "calendar month 2016-04"
+    ]
+   },
+   "windows_with_expected_gap_above_0.05": 2.0,
+   "windows_with_expected_gap_evaluable": 2,
+   "expected_gap_range": [
+    0.06612083635624266,
+    0.1331355606162702
+   ],
+   "windows_with_any_group_not_evaluated": [
+    "calendar month 2016-04",
+    "calendar month 2016-06"
+   ]
+  },
+  "weeks_cycle2_rule": {
+   "counts": {
+    "halt": 5,
+    "inconclusive": 1,
+    "ok": 0,
+    "insufficient data": 1
+   },
+   "windows": {
+    "halt": [
+     "week of 2016-05-02",
+     "week of 2016-05-09",
+     "week of 2016-05-16",
+     "week of 2016-05-30",
+     "week of 2016-06-06"
+    ],
+    "inconclusive": [
+     "week of 2016-05-23"
+    ],
+    "ok": [],
+    "insufficient data": [
+     "week of 2016-04-25"
+    ]
+   },
+   "windows_with_expected_gap_above_0.05": 5.0,
+   "windows_with_expected_gap_evaluable": 6,
+   "expected_gap_range": [
+    0.04675510212843881,
+    0.14039148849423433
+   ],
+   "windows_with_any_group_not_evaluated": [
+    "week of 2016-04-25",
+    "week of 2016-05-02",
+    "week of 2016-05-09",
+    "week of 2016-05-16",
+    "week of 2016-05-23",
+    "week of 2016-05-30",
+    "week of 2016-06-06"
+   ]
+  },
+  "weeks_cycle1_rule_halts": 7,
+  "reading": "'insufficient data' and groups 'not evaluated' are reported separately and are never counted as a pass; 'inconclusive' means the 95% interval straddles 0.05 and supports no conclusion either way."
+ },
+ "evidently": "evidently>=0.7",
+ "evidently_window": "last 28 days of test appointments vs training sample",
+ "weeks": [
+  {
+   "batch": "week of 2016-04-25",
+   "n": 669,
+   "no_show_rate": 0.17787742899850523,
+   "mean_score": 0.20506075024604797,
+   "flag_rate": 0.617339312406577,
+   "auc": 0.7433919022154316,
+   "recall": 0.8823529411764706,
+   "score_psi": 0.03494757233358825,
+   "feature_psi": {
+    "Age": 0.01912960412077309,
+    "lead_time_days": 0.169525443995233,
+    "prior_appointments": 2.0953288200234557,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.03377666254382063,
+    "Scholarship": 0.000493758008073829,
+    "Gender": 0.0017082525485662354,
+    "age_band": 0.009638428904625618,
+    "Neighbourhood": 0.229786842333255
+   },
+   "max_feature_psi": 2.0953288200234557,
+   "age_eod": 0.13104013104013112,
+   "age_dpd": 0.008433734939759074,
+   "fairness_groups_scored": [
+    "adult",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "child",
+    "elderly",
+    "senior",
+    "teen"
+   ],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-02",
+   "n": 4175,
+   "no_show_rate": 0.2059880239520958,
+   "mean_score": 0.19820304214954376,
+   "flag_rate": 0.6225149700598802,
+   "auc": 0.7301311866428146,
+   "recall": 0.8441860465116279,
+   "score_psi": 0.0343290895822191,
+   "feature_psi": {
+    "Age": 0.0015194008460929392,
+    "lead_time_days": 0.019408173876668527,
+    "prior_appointments": 0.33671537516071737,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.05235573535692808,
+    "Scholarship": 0.00020867646845665967,
+    "Gender": 0.0002722722993943479,
+    "age_band": 0.000827466139266999,
+    "Neighbourhood": 0.02566836328854969
+   },
+   "max_feature_psi": 0.33671537516071737,
+   "age_eod": 0.08918688803746277,
+   "age_dpd": 0.038302154866208915,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "elderly"
+   ],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-09",
+   "n": 4382,
+   "no_show_rate": 0.20880876312186217,
+   "mean_score": 0.20912204682826996,
+   "flag_rate": 0.6131903240529438,
+   "auc": 0.7611673530760754,
+   "recall": 0.8721311475409836,
+   "score_psi": 0.007192733144696428,
+   "feature_psi": {
+    "Age": 0.002725099759629296,
+    "lead_time_days": 0.00597998228268493,
+    "prior_appointments": 0.03569113030843555,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.026879120461138134,
+    "Scholarship": 0.000192987254020011,
+    "Gender": 0.000652627856944224,
+    "age_band": 0.001518453617229393,
+    "Neighbourhood": 0.024830248230729556
+   },
+   "max_feature_psi": 0.03569113030843555,
+   "age_eod": 0.12753623188405794,
+   "age_dpd": 0.09242220691887093,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "elderly",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [],
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-16",
+   "n": 4278,
+   "no_show_rate": 0.2171575502571295,
+   "mean_score": 0.2218497097492218,
+   "flag_rate": 0.6250584385226742,
+   "auc": 0.7361993892430014,
+   "recall": 0.8665231431646933,
+   "score_psi": 0.04324277314746222,
+   "feature_psi": {
+    "Age": 0.002925891040699735,
+    "lead_time_days": 0.0012517056239310575,
+    "prior_appointments": 0.003945105927463307,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 2.731624718616652,
+    "Scholarship": 0.0006974922957015429,
+    "Gender": 0.0026394800053002442,
+    "age_band": 0.0031857726494160486,
+    "Neighbourhood": 0.017473461146216892
+   },
+   "max_feature_psi": 2.731624718616652,
+   "age_eod": 0.07044459267422643,
+   "age_dpd": 0.04586404586404591,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "elderly",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-23",
+   "n": 1606,
+   "no_show_rate": 0.2129514321295143,
+   "mean_score": 0.19699743390083313,
+   "flag_rate": 0.5940224159402242,
+   "auc": 0.7434892941742542,
+   "recall": 0.8596491228070176,
+   "score_psi": 0.01783063858743794,
+   "feature_psi": {
+    "Age": 0.012840246152070717,
+    "lead_time_days": 0.6598240965717073,
+    "prior_appointments": 0.04677595061431866,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.15410700078385747,
+    "Scholarship": 5.742003412307996e-05,
+    "Gender": 2.754818179249873e-05,
+    "age_band": 0.009589058782292513,
+    "Neighbourhood": 0.07504455187638533
+   },
+   "max_feature_psi": 0.6598240965717073,
+   "age_eod": 0.18311965811965814,
+   "age_dpd": 0.09877524709926944,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "senior",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "elderly",
+    "teen"
+   ],
+   "status": {
+    "data_drift": "alert",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Retraining review (PSI >= 0.20)",
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-05-30",
+   "n": 4198,
+   "no_show_rate": 0.188423058599333,
+   "mean_score": 0.1898418664932251,
+   "flag_rate": 0.5755121486422106,
+   "auc": 0.7413843069429824,
+   "recall": 0.8268015170670038,
+   "score_psi": 0.0171292006996979,
+   "feature_psi": {
+    "Age": 0.0058164788017761385,
+    "lead_time_days": 0.0521479708312731,
+    "prior_appointments": 0.0930016379555251,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.05083377142216537,
+    "Scholarship": 0.00019175043227886572,
+    "Gender": 0.00037764951929905827,
+    "age_band": 0.00315344436873017,
+    "Neighbourhood": 0.02899979839235044
+   },
+   "max_feature_psi": 0.0930016379555251,
+   "age_eod": 0.16485439320084994,
+   "age_dpd": 0.07685996761344982,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "elderly",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [],
+   "status": {
+    "data_drift": "ok",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  },
+  {
+   "batch": "week of 2016-06-06",
+   "n": 2795,
+   "no_show_rate": 0.1810375670840787,
+   "mean_score": 0.18778926134109497,
+   "flag_rate": 0.5896243291592129,
+   "auc": 0.761605167867633,
+   "recall": 0.8596837944664032,
+   "score_psi": 0.04587682615426067,
+   "feature_psi": {
+    "Age": 0.0010061000238585699,
+    "lead_time_days": 0.07153005239808602,
+    "prior_appointments": 0.17019464179693478,
+    "prior_noShow_rate": 0.0,
+    "SMS_received": 0.10290075943140067,
+    "Scholarship": 0.00020210829699904276,
+    "Gender": 0.0008763479204136708,
+    "age_band": 0.0017303259539759534,
+    "Neighbourhood": 0.05747292236177232
+   },
+   "max_feature_psi": 0.17019464179693478,
+   "age_eod": 0.10585585585585577,
+   "age_dpd": 0.11699281254918414,
+   "fairness_groups_scored": [
+    "adult",
+    "child",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "fairness_groups_skipped_small": [
+    "elderly"
+   ],
+   "status": {
+    "data_drift": "warn",
+    "prediction_drift": "ok",
+    "performance": "ok",
+    "bias_drift": "halt"
+   },
+   "concept_drift_suspected": false,
+   "actions": [
+    "Fairness halt: suspend flagging, notify Ethics Committee within 24h"
+   ]
+  }
+ ],
+ "stress_test": {
+  "name": "S1 data drift: lead times x1.5 + 7 days",
+  "expect": "data/prediction drift alerts",
+  "batch": "S1",
+  "n": 4000,
+  "coverage_days": null,
+  "no_show_rate": 0.2065,
+  "flag_rate": 0.888,
+  "auc": 0.628887518289492,
+  "recall": 0.8886198547215496,
+  "score_psi": 2.074018528864359,
+  "feature_psi": {
+   "Age": 0.0009779389960345264,
+   "lead_time_days": 5.390439214797031,
+   "prior_appointments": 8.797682714054396e-05,
+   "prior_noShow_rate": 0.0,
+   "SMS_received": 6.981884465369326e-05,
+   "Scholarship": 6.467954363547928e-05,
+   "Gender": 0.0008964848653119776,
+   "age_band": 0.001054257062310203,
+   "Neighbourhood": 0.019982385656543707
+  },
+  "max_feature_psi": 5.390439214797031,
+  "max_psi_feature": "lead_time_days",
+  "fairness": {
+   "groups_evaluated": [
+    "adult",
+    "child",
+    "senior",
+    "teen",
+    "young_adult"
+   ],
+   "groups_not_evaluated": {
+    "elderly": {
+     "n": 169,
+     "no_shows": 33,
+     "attended": 136
+    }
+   },
+   "counts": {
+    "adult": {
+     "n": 1110,
+     "no_shows": 208,
+     "attended": 902
+    },
+    "child": {
+     "n": 791,
+     "no_shows": 166,
+     "attended": 625
+    },
+    "elderly": {
+     "n": 169,
+     "no_shows": 33,
+     "attended": 136
+    },
+    "senior": {
+     "n": 778,
+     "no_shows": 133,
+     "attended": 645
+    },
+    "teen": {
+     "n": 290,
+     "no_shows": 80,
+     "attended": 210
+    },
+    "young_adult": {
+     "n": 862,
+     "no_shows": 206,
+     "attended": 656
+    }
+   },
+   "status": "halt",
+   "eod": 0.08975903614457836,
+   "ci95": [
+    0.06425580556036434,
+    0.1842502963667934
+   ],
+   "note": "not all groups evaluated",
+   "reason": "Realised gap 0.090, bootstrap 95% CI 0.064-0.184 lies wholly above 0.05. Expected gap 0.062 is itself above 0.05, so this is not just the random draw. Not evaluated (too few cases, not counted as passing): elderly 33 no-shows/136 attended. Data-drift status in this window: alert (lead_time_days PSI 5.39).",
+   "attribution": "policy's expected disparity (expected gap above the limit); concurrent data-drift alert (lead_time_days PSI 5.39)",
+   "ci_method": "percentile bootstrap, 300 resamples of the window's appointments, realised decisions"
+  },
+  "expected_age_eod_evaluated_groups": 0.06239283803111251,
+  "status": {
+   "data_drift": "alert",
+   "prediction_drift": "alert",
+   "performance": "alert",
+   "bias_drift": "halt"
+  },
+  "start": "2016-04-29",
+  "end": "2016-06-08",
+  "module4_rule": {
+   "status": "halt",
+   "attributes": {
+    "age_band": {
+     "groups": {
+      "adult": {
+       "n": 1110,
+       "no_shows": 208,
+       "attended": 902,
+       "fnr": 0.11057692307692307,
+       "fpr": 0.8780487804878049,
+       "expected_fnr": 0.10913898395538224,
+       "expected_fpr": 0.8912906333868088
+      },
+      "child": {
+       "n": 791,
+       "no_shows": 166,
+       "attended": 625,
+       "fnr": 0.060240963855421686,
+       "fpr": 0.9024,
+       "expected_fnr": 0.09733127038089906,
+       "expected_fpr": 0.8977543810623183
+      },
+      "elderly": {
+       "n": 169,
+       "no_shows": 33,
+       "attended": 136,
+       "fnr": 0.12121212121212122,
+       "fpr": 0.9044117647058824,
+       "expected_fnr": 0.09008275724728243,
+       "expected_fpr": 0.9033567576924248
+      },
+      "senior": {
+       "n": 778,
+       "no_shows": 133,
+       "attended": 645,
+       "fnr": 0.14285714285714285,
+       "fpr": 0.8744186046511628,
+       "expected_fnr": 0.142905195636425,
+       "expected_fpr": 0.8743520757644978
+      },
+      "teen": {
+       "n": 290,
+       "no_shows": 80,
+       "attended": 210,
+       "fnr": 0.15,
+       "fpr": 0.9333333333333333,
+       "expected_fnr": 0.0805123576053125,
+       "expected_fpr": 0.9292721841601979
+      },
+      "young_adult": {
+       "n": 862,
+       "no_shows": 206,
+       "attended": 656,
+       "fnr": 0.11650485436893204,
+       "fpr": 0.8826219512195121,
+       "expected_fnr": 0.09753271350737669,
+       "expected_fpr": 0.8976724340363279
+      }
+     },
+     "groups_compared": [
+      "adult",
+      "child",
+      "elderly",
+      "senior",
+      "teen",
+      "young_adult"
+     ],
+     "groups_not_comparable": [],
+     "fnr_gap": 0.08975903614457831,
+     "fpr_gap": 0.058914728682170514,
+     "disparity": 0.08975903614457831,
+     "expected_disparity": 0.06239283803111251,
+     "status": "halt",
+     "governing": true
+    },
+    "Gender": {
+     "groups": {
+      "F": {
+       "n": 2563,
+       "no_shows": 529,
+       "attended": 2034,
+       "fnr": 0.12287334593572778,
+       "fpr": 0.8928220255653884,
+       "expected_fnr": 0.11099675957324939,
+       "expected_fpr": 0.8933936204123997
+      },
+      "M": {
+       "n": 1437,
+       "no_shows": 297,
+       "attended": 1140,
+       "fnr": 0.09090909090909091,
+       "fpr": 0.8789473684210526,
+       "expected_fnr": 0.09647294050993005,
+       "expected_fpr": 0.8936069288383975
+      }
+     },
+     "groups_compared": [
+      "F",
+      "M"
+     ],
+     "groups_not_comparable": [],
+     "fnr_gap": 0.03196425502663687,
+     "fpr_gap": 0.013874657144335778,
+     "disparity": 0.03196425502663687,
+     "expected_disparity": 0.014523819063319343,
+     "status": "ok",
+     "governing": true
+    },
+    "Scholarship": {
+     "groups": {
+      "0": {
+       "n": 3581,
+       "no_shows": 728,
+       "attended": 2853,
+       "fnr": 0.11401098901098901,
+       "fpr": 0.8853838065194533,
+       "expected_fnr": 0.11028889822181764,
+       "expected_fpr": 0.8916803423225047
+      },
+      "1": {
+       "n": 419,
+       "no_shows": 98,
+       "attended": 321,
+       "fnr": 0.09183673469387756,
+       "fpr": 0.9096573208722741,
+       "expected_fnr": 0.07223909428790776,
+       "expected_fpr": 0.909378523827067
+      }
+     },
+     "groups_compared": [
+      "0",
+      "1"
+     ],
+     "groups_not_comparable": [],
+     "fnr_gap": 0.022174254317111453,
+     "fpr_gap": 0.02427351435282088,
+     "disparity": 0.02427351435282088,
+     "expected_disparity": 0.03804980393390989,
+     "status": "ok",
+     "governing": false
+    }
+   },
+   "worst_attribute": "age_band",
+   "reason": "age_band: disparity 0.090 (FNR gap 0.090, FPR gap 0.059; expected 0.062) -> halt; Gender: disparity 0.032 (FNR gap 0.032, FPR gap 0.014; expected 0.015) -> ok.",
+   "attribution": "age_band: policy's expected disparity (expected 0.062 above 0.05); concurrent data-drift alert (lead_time_days PSI 5.39)"
+  },
+  "synthetic": true
+ }
+}

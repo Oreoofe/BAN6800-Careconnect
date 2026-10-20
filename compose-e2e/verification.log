@@ -1,0 +1,118 @@
+PASS  train/test rows disjoint  
+PASS  test share is 20%  0.2
+PASS  stratification: train/test no-show rates within 0.002  
+PASS  model input schema == config.FEATURES  
+PASS  no target, identifier or raw date among model inputs  []
+PASS  prior-visit features use only outcomes known at booking (500-row recount)  0 mismatches
+PASS  cut-off is the largest grid value reaching OOF recall >= 0.65  (0.6551, 0.6465)
+PASS  reported roc_auc matches recomputation  (0.7455058393445996, 0.7455058393445996)
+PASS  reported recall matches recomputation  (0.6557597489914836, 0.6557597489914836)
+PASS  reported precision matches recomputation  (0.3427835051546392, 0.3427835051546392)
+PASS  reported f1 matches recomputation  (0.4502231112478843, 0.4502231112478843)
+PASS  reported flag_rate matches recomputation  (0.3861919196489164, 0.3861919196489164)
+PASS  reported confusion matrix matches  
+PASS  XGBoost beats both baselines on ROC-AUC by > 0.2  
+PASS  single-cut-off fairness matches mitigation.json (age EOD)  
+PASS  exported Option B rule reproduces Fairlearn's probabilities  0.0
+PASS  Option B age_band: EXPECTED equalized-odds gap <= 0.05  0.0408
+PASS  Option B age_band: expected gap matches mitigation.json  (0.0408, 0.0408)
+INFO  INFO Option B age_band: one realised draw (numpy seed 42) gap  0.0557
+INFO  INFO Option B age_band: realised gap over 50 draws min/mean/max  (0.0229, 0.0479, 0.0842)
+PASS  Option B Gender: EXPECTED equalized-odds gap <= 0.05  0.0312
+PASS  Option B Gender: expected gap matches mitigation.json  (0.0312, 0.0312)
+INFO  INFO Option B Gender: one realised draw (numpy seed 42) gap  0.0304
+INFO  INFO Option B Gender: realised gap over 50 draws min/mean/max  (0.0217, 0.0311, 0.0431)
+PASS  Option B Scholarship: EXPECTED equalized-odds gap <= 0.05  0.0293
+PASS  Option B Scholarship: expected gap matches mitigation.json  (0.0293, 0.0293)
+INFO  INFO Option B Scholarship: one realised draw (numpy seed 42) gap  0.0432
+INFO  INFO Option B Scholarship: realised gap over 50 draws min/mean/max  (0.0126, 0.0306, 0.0567)
+PASS  SHAP additivity: contributions sum to the model's log-odds (300 rows)  6.67572021484375e-06
+PASS  SHAP explains the deployed model: sigmoid(margin) == predict_proba  
+PASS  analysis.json produced by model version 2.0.0  
+PASS  example 'high' is genuinely in its score tier  0.4515
+PASS  example 'medium' is genuinely in its score tier  0.3136
+PASS  example 'low' is genuinely in its score tier  0.0664
+PASS  LIME [cycle1_training_distribution] cycle1_high: explains the v2 model's score  0.6017
+INFO  INFO LIME [cycle1_training_distribution] cycle1_high: R2 / |error| / top-3 overlap / fidelity  (0.686, 0.529, 2, 'weak')
+PASS  LIME [cycle1_training_distribution] cycle1_medium: explains the v2 model's score  0.2449
+INFO  INFO LIME [cycle1_training_distribution] cycle1_medium: R2 / |error| / top-3 overlap / fidelity  (0.072, 0.091, 2, 'weak')
+PASS  LIME [cycle1_training_distribution] cycle1_low: explains the v2 model's score  0.0098
+INFO  INFO LIME [cycle1_training_distribution] cycle1_low: R2 / |error| / top-3 overlap / fidelity  (0.657, 0.006, 1, 'adequate')
+PASS  LIME [cycle1_training_distribution] high: explains the v2 model's score  0.4515
+INFO  INFO LIME [cycle1_training_distribution] high: R2 / |error| / top-3 overlap / fidelity  (0.122, 0.094, 1, 'weak')
+PASS  LIME [cycle1_training_distribution] medium: explains the v2 model's score  0.3136
+INFO  INFO LIME [cycle1_training_distribution] medium: R2 / |error| / top-3 overlap / fidelity  (0.313, 0.04, 2, 'weak')
+PASS  LIME [cycle1_training_distribution] low: explains the v2 model's score  0.0664
+INFO  INFO LIME [cycle1_training_distribution] low: R2 / |error| / top-3 overlap / fidelity  (0.674, 0.014, 2, 'adequate')
+PASS  LIME [local_sampling] cycle1_high: explains the v2 model's score  0.6017
+INFO  INFO LIME [local_sampling] cycle1_high: R2 / |error| / top-3 overlap / fidelity  (0.409, 0.296, 2, 'weak')
+PASS  LIME [local_sampling] cycle1_medium: explains the v2 model's score  0.2449
+INFO  INFO LIME [local_sampling] cycle1_medium: R2 / |error| / top-3 overlap / fidelity  (0.467, 0.098, 2, 'weak')
+PASS  LIME [local_sampling] cycle1_low: explains the v2 model's score  0.0098
+INFO  INFO LIME [local_sampling] cycle1_low: R2 / |error| / top-3 overlap / fidelity  (0.524, 0.158, 3, 'weak')
+PASS  LIME [local_sampling] high: explains the v2 model's score  0.4515
+INFO  INFO LIME [local_sampling] high: R2 / |error| / top-3 overlap / fidelity  (0.58, 0.157, 1, 'weak')
+PASS  LIME [local_sampling] medium: explains the v2 model's score  0.3136
+INFO  INFO LIME [local_sampling] medium: R2 / |error| / top-3 overlap / fidelity  (0.221, 0.027, 2, 'weak')
+PASS  LIME [local_sampling] low: explains the v2 model's score  0.0664
+INFO  INFO LIME [local_sampling] low: R2 / |error| / top-3 overlap / fidelity  (0.632, 0.071, 2, 'weak')
+PASS  counterfactual high: original policy flag probability re-computed  0.9027
+INFO  INFO counterfactual high: none found  lowest reachable flag probability 0.113
+PASS  counterfactual medium: original policy flag probability re-computed  0.9163
+INFO  INFO counterfactual medium: none found  lowest reachable flag probability 0.098
+PASS  counterfactual low: original policy flag probability re-computed  0.0975
+INFO  INFO counterfactual low: none found  lowest reachable flag probability 0.098
+PASS  policy P1_equal_opportunity_tpr65: recall and age EOD reproduce from stored cut-offs  (0.6643, 0.0644)
+PASS  policy P1_equal_opportunity_tpr75: recall and age EOD reproduce from stored cut-offs  (0.768, 0.0829)
+PASS  policy P1_equal_opportunity_tpr85: recall and age EOD reproduce from stored cut-offs  (0.8635, 0.0998)
+PASS  policy P2_minimax_per_group: recall and age EOD reproduce from stored cut-offs  (0.7817, 0.0885)
+PASS  policy comparison Option B equals mitigation.json Option B (age EOD, expected)  
+PASS  acceptance matrix for P0_single_cutoff reproduces  C1C2------
+PASS  acceptance matrix for P1_equal_opportunity_tpr65 reproduces  C1C2---C6--
+PASS  acceptance matrix for P1_equal_opportunity_tpr75 reproduces  C1C2---C6--
+PASS  acceptance matrix for P1_equal_opportunity_tpr85 reproduces  C1C2---C6--
+PASS  acceptance matrix for P2_minimax_per_group reproduces  C1C2---C6--
+PASS  acceptance matrix for P3_tpr_parity_randomised reproduces  C1C2---C6C7-
+PASS  acceptance matrix for P4_option_B_equalized_odds reproduces  C1C2-C4C5C6C7-
+PASS  acceptance matrix for P5_unaware_model_no_age reproduces  C1C2------
+PASS  statement 'no evaluated policy reliably meets the 0.05 equalized-odds limit across all required groups' is supported  
+PASS  Option B adult: lowest-score appointment's flag probability = p_ignore x x_best  (0.0012, 0.0582)
+PASS  Option B child: lowest-score appointment's flag probability = p_ignore x x_best  (0.0059, 0.1133)
+PASS  Option B elderly: lowest-score appointment's flag probability = p_ignore x x_best  (0.0067, 0.0256)
+PASS  Option B senior: lowest-score appointment's flag probability = p_ignore x x_best  (0.0021, 0.0)
+PASS  Option B teen: lowest-score appointment's flag probability = p_ignore x x_best  (0.014, 0.0794)
+PASS  Option B young_adult: lowest-score appointment's flag probability = p_ignore x x_best  (0.0051, 0.0975)
+PASS  Option B share of flags unrelated to risk reproduces  0.1078
+PASS  docs/governance.md discloses the measured findings  
+PASS  docs/algorithmic_impact_assessment.md discloses the measured findings  
+PASS  docs/public_trust_statement.md discloses the measured findings  
+PASS  docs/model_card.md discloses the measured findings  
+PASS  docs/committee_decision_pack.md discloses the measured findings  
+PASS  model trained from the commit being built (GITHUB_SHA)  ('27943a1', '27943a1')
+PASS  every pipeline audit event stamped with the commit being built  ['27943a1']
+PASS  MLflow: >= 7 runs logged (2 baselines, 3 models, 2 robustness)  7
+PASS  MLflow: candidate version comes from the xgboost run  
+PASS  MLflow: no 'production' alias set automatically  
+PASS  promotion gate ran and did not auto-promote  NOT ELIGIBLE under the original acceptance criteria; evidence package prepared for an Ethics Committee decision
+PASS  gate: C3 (F1 >= 0.55) is blocking (reviewer decision) and recomputed  0.4502
+PASS  gate: Ethics Committee approval (Module 4 s.7) is blocking and not recorded as passed  
+PASS  gate: every failed blocking criterion is listed and the decision is NOT ELIGIBLE  3
+PASS  Evidently HTML report written  evidently>=0.7
+PASS  S1 stress test (lead-time shift) raises data-drift alert  
+PASS  S2 stress test (older patients' flags removed) raises fairness halt  halt
+PASS  S3 stress test (25 elderly appointments) leaves elderly unevaluated  
+PASS  S4 stress test (300 appointments) returns 'insufficient data'  insufficient data
+PASS  monitoring: every window's status follows its interval; insufficient data never scored  
+PASS  monitoring: no halt attributed to random variation where the expected gap itself exceeds 0.05  
+PASS  monitoring: every halt/inconclusive window with a data-drift alert names the drift in its attribution  
+PASS  monitoring: expected Option B age gap > 0.05 in every evaluable window (rolling + months)  ([0.05162459442174527, 0.10002467748011434], [0.06612083635624266, 0.1331355606162702])
+PASS  latest rolling window: realised age gap reproduces  0.0471
+PASS  monitoring: governing rule is the original Module 4 s.7 weekly rule with unchanged thresholds  Module 4 s.7 (weekly; alert > 0.04, halt > 0.05) with Module 4 s.1 attributes (Gender, age_band)
+PASS  Module 4 rule: every calendar week in the test period is evaluated (no size filter)  7
+PASS  Module 4 rule: realised and expected weekly disparities reproduce (Fairlearn, recomputed decisions)  
+PASS  Module 4 rule: each week's status follows > 0.04 alert / > 0.05 halt; overall = worst of Gender and age_band  
+PASS  Module 4 rule: 'not evaluable' is never reported as ok  
+PASS  Module 4 rule: no breach attributed to random variation where the expected disparity itself breaches  
+PASS  Module 4 rule: summary counts and governing status match the weekly rows  {'halt': 7, 'alert': 0, 'ok': 0, 'not evaluable': 0}
+PASS  S2 stress test also halts under the Module 4 s.7 rule  halt
+{"pass": 96, "fail": 0}

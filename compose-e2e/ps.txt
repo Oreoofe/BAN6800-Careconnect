@@ -1,0 +1,5 @@
+NAME                               IMAGE                           COMMAND                  SERVICE      CREATED          STATUS                            PORTS
+ban6800-careconnect-api-1          ban6800-careconnect-api         "uvicorn src.api.mai…"   api          35 seconds ago   Up 34 seconds (healthy)           0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+ban6800-careconnect-dashboard-1    ban6800-careconnect-dashboard   "streamlit run src/a…"   dashboard    35 seconds ago   Up 3 seconds (health: starting)   0.0.0.0:8501->8501/tcp, [::]:8501->8501/tcp
+ban6800-careconnect-mlflow-1       ban6800-careconnect-mlflow      "mlflow server --bac…"   mlflow       51 seconds ago   Up 50 seconds                     0.0.0.0:5000->5000/tcp, [::]:5000->5000/tcp
+ban6800-careconnect-monitoring-1   python:3.12-slim                "python -m http.serv…"   monitoring   40 seconds ago   Up 39 seconds                     0.0.0.0:8090->8090/tcp, [::]:8090->8090/tcp
