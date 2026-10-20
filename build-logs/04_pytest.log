@@ -1,0 +1,143 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.7.0
+rootdir: /home/runner/work/BAN6800-Careconnect/BAN6800-Careconnect
+configfile: pytest.ini
+testpaths: tests
+plugins: Faker-40.43.0, anyio-4.15.1
+collected 36 items
+
+tests/test_api.py .........                                              [ 25%]
+tests/test_dashboard.py ........                                         [ 47%]
+tests/test_fairness_monitoring.py ............                           [ 80%]
+tests/test_pipeline.py .......                                           [100%]
+
+=============================== warnings summary ===============================
+tests/test_api.py::test_health_and_info
+  /opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+==================================== PASSES ====================================
+___________________________ test_every_page_renders ____________________________
+----------------------------- Captured stderr call -----------------------------
+2026-10-20 14:18:15.206 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-20 14:18:15.414 
+'server.enableCORS=false' tells Streamlit not to limit cross-origin access.
+Streamlit sends the header 'Access-Control-Allow-Origin: *', except on the file
+upload routes, which stay pinned to the app address and still require a valid
+XSRF token.
+Streamlit also accepts a WebSocket connection from any origin.
+Streamlit does not set 'server.enableCORS' to 'true' for you.
+'server.enableXsrfProtection=true' does not stop a cross-origin WebSocket
+connection, because Streamlit does not need a valid XSRF token to open one.
+
+To limit cross-origin access, do these steps:
+  1. Set 'server.enableCORS=true'.
+  2. Put the origins that you trust in 'server.corsAllowedOrigins'.
+
+'server.allowedHosts' can also limit the hostnames that Streamlit accepts on a
+WebSocket connection.
+
+2026-10-20 14:18:16.556 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+------------------------------ Captured log call -------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:508 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.deprecation_util:deprecation_util.py:81 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+____________________ test_overview_numbers_match_artifacts _____________________
+----------------------------- Captured stderr call -----------------------------
+2026-10-20 14:18:16.560 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+------------------------------ Captured log call -------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:508 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+________________ test_fairness_page_matches_mitigation_artifact ________________
+----------------------------- Captured stderr call -----------------------------
+2026-10-20 14:18:16.839 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+------------------------------ Captured log call -------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:508 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+___________________ test_monitoring_page_shows_replay_label ____________________
+----------------------------- Captured stderr call -----------------------------
+2026-10-20 14:18:17.223 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-20 14:18:17.603 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+------------------------------ Captured log call -------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:508 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.deprecation_util:deprecation_util.py:81 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+_____________________ test_build_identity_and_new_sections _____________________
+----------------------------- Captured stderr call -----------------------------
+2026-10-20 14:18:17.614 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+------------------------------ Captured log call -------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:508 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+_____________________ test_committee_disclosures_rendered ______________________
+----------------------------- Captured stderr call -----------------------------
+2026-10-20 14:18:18.250 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-20 14:18:18.844 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+------------------------------ Captured log call -------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:508 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.deprecation_util:deprecation_util.py:81 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+______________ test_recommendation_and_deployment_status_rendered ______________
+----------------------------- Captured stderr call -----------------------------
+2026-10-20 14:18:18.855 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+------------------------------ Captured log call -------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:508 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+______________ test_monitoring_page_shows_governing_module4_rule _______________
+----------------------------- Captured stderr call -----------------------------
+2026-10-20 14:18:19.139 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+2026-10-20 14:18:19.523 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+------------------------------ Captured log call -------------------------------
+WARNING  streamlit.runtime.scriptrunner_utils.script_run_context:script_run_context.py:508 Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+WARNING  streamlit.deprecation_util:deprecation_util.py:81 Please replace `st.components.v1.html` with `st.iframe`.
+
+`st.components.v1.html` will be removed after 2026-06-01.
+__________________________ test_no_direct_identifiers __________________________
+---------------------------- Captured stdout setup -----------------------------
+Sample written: /home/runner/work/BAN6800-Careconnect/BAN6800-Careconnect/data/raw/sample_no_show.csv (3000 rows)
+- generated xml file: /home/runner/work/BAN6800-Careconnect/BAN6800-Careconnect/test-results.xml -
+=========================== short test summary info ============================
+PASSED tests/test_api.py::test_health_and_info
+PASSED tests/test_api.py::test_predict_and_explanation_store
+PASSED tests/test_api.py::test_invalid_inputs_rejected[bad0]
+PASSED tests/test_api.py::test_invalid_inputs_rejected[bad1]
+PASSED tests/test_api.py::test_invalid_inputs_rejected[bad2]
+PASSED tests/test_api.py::test_invalid_inputs_rejected[bad3]
+PASSED tests/test_api.py::test_invalid_inputs_rejected[bad4]
+PASSED tests/test_api.py::test_invalid_inputs_rejected[bad5]
+PASSED tests/test_api.py::test_api_key_enforced
+PASSED tests/test_dashboard.py::test_every_page_renders
+PASSED tests/test_dashboard.py::test_overview_numbers_match_artifacts
+PASSED tests/test_dashboard.py::test_fairness_page_matches_mitigation_artifact
+PASSED tests/test_dashboard.py::test_monitoring_page_shows_replay_label
+PASSED tests/test_dashboard.py::test_build_identity_and_new_sections
+PASSED tests/test_dashboard.py::test_committee_disclosures_rendered
+PASSED tests/test_dashboard.py::test_recommendation_and_deployment_status_rendered
+PASSED tests/test_dashboard.py::test_monitoring_page_shows_governing_module4_rule
+PASSED tests/test_fairness_monitoring.py::test_metric_definitions
+PASSED tests/test_fairness_monitoring.py::test_matches_fairlearn
+PASSED tests/test_fairness_monitoring.py::test_policy_rules
+PASSED tests/test_fairness_monitoring.py::test_randomised_decisions_are_reproducible
+PASSED tests/test_fairness_monitoring.py::test_psi
+PASSED tests/test_fairness_monitoring.py::test_fairness_rule_outcomes
+PASSED tests/test_fairness_monitoring.py::test_small_group_is_not_counted_as_passing
+PASSED tests/test_fairness_monitoring.py::test_equal_opportunity_cutoffs_equalise_tpr
+PASSED tests/test_fairness_monitoring.py::test_module4_rule_thresholds
+PASSED tests/test_fairness_monitoring.py::test_module4_rule_any_governing_attribute_halts_and_undefined_is_not_a_pass
+PASSED tests/test_fairness_monitoring.py::test_module4_rule_attribution_does_not_blame_chance_when_expected_gap_breaches
+PASSED tests/test_fairness_monitoring.py::test_randomised_interval_is_bootstrap_of_expected_values
+PASSED tests/test_pipeline.py::test_no_direct_identifiers
+PASSED tests/test_pipeline.py::test_pseudonym_is_deterministic_and_salted
+PASSED tests/test_pipeline.py::test_cleaning_rules
+PASSED tests/test_pipeline.py::test_history_uses_only_known_outcomes
+PASSED tests/test_pipeline.py::test_validation_gate_halts_on_bad_schema
+PASSED tests/test_pipeline.py::test_bias_gate_reports_small_subgroups
+PASSED tests/test_pipeline.py::test_no_data_files_tracked
+======================== 36 passed, 1 warning in 9.89s =========================
