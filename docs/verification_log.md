@@ -78,3 +78,22 @@ artifacts (outputs on `build-outputs-10`).
   `CARECONNECT_GIT_SHA` because `.git` is not copied into images. Nothing is deployed or publicly reachable.
 - Run identifiers and results are recorded on the build-outputs and compose-e2e branches for the commit and in the evidence
   package, not in this file, so the verified commit is the final commit.
+
+## Cycle 6 - audit remediation (independent audit of commit 27943a1, branches `audit-27943a1` / `audit-outputs-16`)
+
+The independent audit matched 139 of 141 checks. Its two mismatches, and its report findings, are remediated here. The audit
+branches are preserved unchanged as evidence. Change log:
+
+| Finding (audit) | Change | Files |
+| --- | --- | --- |
+| Randomised-policy interval bootstrapped ONE random realisation, not the expected-value gap it was printed beside | Interval now bootstraps the expected-value gap (resampling test appointments, 300 resamples, seed 0); the superseded single-draw interval is still reported, labelled; `ci_method` recorded per attribute | `careconnect/fairness/policy_comparison.py`, `committee_pack.py`, `src/app.py`, `tests/test_fairness_monitoring.py` |
+| 200-draw realised-gap figures were sensitive to the simulation (38.5% with the project seeds vs 46.2% with 1,000 independent draws) | 1,000 documented draws (numpy `default_rng(20000)`..`default_rng(20999)`), Monte Carlo standard error reported, first-200 figures kept for continuity; `mitigation.py` uses the same draws so every document reports one distribution | `policy_comparison.py`, `mitigation.py` |
+| Gender halts under-reported in the report; partial weeks and small groups not disclosed | Monitoring records appointment days per week, the smallest age group's no-shows, and s.7 status counts by attribute; the committee pack and Model Card print them | `careconnect/monitoring/monitor.py`, `committee_pack.py`, `model_card.py` |
+| Model Card precision ambiguous | Model Card states both precisions and how each is computed | `model_card.py` |
+| Fairness measures and Charter P2 wording; monitoring cadence | Definitions and the cadence hierarchy recorded | `docs/governance.md` |
+| Independent verification only outside the build; raw logs not retrievable; LR/RF, TPR-parity, no-age model and LIME not independently checked | `scripts/independent_audit.py` runs inside every build after the tests, compares its own recomputation with the build's artifacts (not with typed numbers), re-scores LR and RF, re-fits the TPR-parity rule, re-trains the no-age model, re-runs LIME for reproducibility; each step's raw output is saved to `build-logs/` and published with the audit output | `scripts/independent_audit.py`, `.github/workflows/build.yml` |
+| Checklist out of date | Rechecked: original code supplied in an archive (notebook malformed), two Module 2 versions, APA 7 confirmed by the student, AI Disclosure Form left for the student, board screenshot to retake | `docs/submission_checklist.md` |
+
+Acceptance criteria C1-C8 and the Ethics Committee gate are unchanged. Run identifiers and results for this cycle are recorded
+on the `build-outputs-<run>` branch of the final commit and in the remediation report, not in this file, so the verified commit is
+the final commit.

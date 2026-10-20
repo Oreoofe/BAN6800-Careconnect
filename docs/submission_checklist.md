@@ -1,6 +1,6 @@
 # Submission checklist (BAN 6800 capstone)
 
-Rechecked in cycle 4 against the capstone brief ("Your Task" sections 1-8, "Deliverable & Submission Criteria" and
+Rechecked in cycle 6 (20 Oct 2026) against the capstone brief ("Your Task" sections 1-8, "Deliverable & Submission Criteria" and
 "Technical Requirements") and against the repository on branch `capstone-verify`.
 
 Status key:
@@ -16,19 +16,19 @@ as absent in the report. Headless dashboard tests are not evidence of a live v2 
 
 | Requirement (source) | Evidence | Status | Next action |
 | --- | --- | --- | --- |
-| Report, 2,500-3,000 words, visuals embedded (Deliverables) | Not started, by instruction | INCOMPLETE | Start only after reviewer authorisation |
-| 2-3 key visuals that support decisions (s.6) | Candidate figures exist (`artifacts/figures/`, dashboard pages); not yet selected or placed in a report | INCOMPLETE | Choose in the report stage |
-| AI Disclosure Form, official NXU form (Deliverables) | Not supplied | **AWAITING USER MATERIAL** | Student supplies the form; substantial AI involvement must be disclosed |
-| Project Board screenshots showing Module 2 sprint completion (s.2) | None found in any repository or upload | **AWAITING USER MATERIAL** | Student supplies them, or records them as unavailable |
-| NXU-formatted references (Deliverables) | NXU referencing guide not supplied; APA 7 used in the modules | **AWAITING USER MATERIAL** | Student supplies the guide so the format can be checked |
+| Report, 2,500-3,000 words, visuals embedded (Deliverables) | Final report rewritten in cycle 6 (Claude Doc + Word export); body counted including in-body tables, excluding title block, figures and captions, references and appendices | COMPLETE subject to the counting rule | Student confirms Nexford's counting convention |
+| 2-3 key visuals that support decisions (s.6) | Three decision figures (SHAP drivers, policy comparison, weekly s.7 monitoring) plus a pipeline diagram and MLflow screenshots from the final build | COMPLETE | - |
+| AI Disclosure Form, official NXU form (Deliverables) | The student holds the official form and completes it personally; it was deliberately not filled in, drafted or replaced | **AWAITING STUDENT ACTION** | Student completes and attaches the form; the report lists the AI-assisted activities to help an accurate declaration |
+| Project Board screenshots showing Module 2 sprint completion (s.2) | No Module 2-era screenshot exists. A board was reconstructed on 20 Oct 2026 (24 issues, CC-101..CC-604). The first board screenshot showed partial item CC-603 in Done (moved by GitHub automation) | **AWAITING STUDENT ACTION** | Move CC-501, CC-601, CC-603 to In Progress, show labels, retake; caption as reconstructed, never as historical |
+| NXU-formatted references (Deliverables) | Student confirmed that Nexford requires APA 7th edition; references and citations reformatted and each source checked | COMPLETE | Student checks against any Nexford template if one exists |
 
 ## Sections 1-8 of the brief
 
 | Requirement (source) | Evidence | Status | Next action |
 | --- | --- | --- | --- |
 | 1. Business problem from Module 1 Vision Document; Ethical AI Charter | Module 1 Vision Document (.docx upload) | COMPLETE (source material) | Synthesise in report |
-| 2. Module 2 overview: objectives, sources, timeline, stakeholders, milestones | Module 2 .docx upload; contains unrelated ED wait-time / churn template text | INCOMPLETE | Exclude template text when synthesising |
-| 2. GitHub repository link with all Modules 2-5 code | `Oreoofe/BAN6800-Careconnect`; Modules 3-4 code is a **rebuild** (original code was not available); Module 5 scripts in `legacy/`; no notebooks; v2 work only on `capstone-verify` | INCOMPLETE | Merge decision; disclose the rebuild in the report |
+| 2. Module 2 overview: objectives, sources, timeline, stakeholders, milestones | Two Module 2 report versions exist: the first upload contains ED wait-time / churn template text; the version in the 20 Oct archive does not. Which was submitted cannot be established from the evidence | PARTIAL | Student confirms which version was submitted; the report uses only no-show content common to both |
+| 2. GitHub repository link with all Modules 2-5 code | `Oreoofe/BAN6800-Careconnect`; final results come from the AI-assisted rebuild in `careconnect/` (v2). The student's original Module 3-5 code was supplied on 20 Oct 2026 in an archive (not in the repository); its one notebook (`careconnect_mod4/notebooks/shap_analysis.ipynb`) is malformed JSON and does not open. Module 5 scripts in `legacy/`; v2 only on `capstone-verify` | PARTIAL | Student decides whether to add the original code to the repository as an archive; merge decision |
 | 3. Pipeline: collection, cleaning, transformation, storage, quality, visuals | `careconnect/pipeline/`, `artifacts/pipeline/*.json` | COMPLETE | Pipeline diagram to be drawn for the report |
 | 3. Data Governance & Privacy documentation; bias detection results | `docs/data_governance_privacy.md`; `artifacts/pipeline/bias_report.json` | COMPLETE | - |
 | 4. Model development, algorithm choice, validation, metrics, limitations | `careconnect/modeling/`, `model_results.json`, `verification_report.json` | COMPLETE | Report must state that no policy meets F1 >= 0.55 (C3, blocking) |
