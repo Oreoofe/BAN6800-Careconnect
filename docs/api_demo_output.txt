@@ -1,0 +1,106 @@
+GET /health
+{
+  "status": "ok",
+  "model_loaded": true,
+  "policy_loaded": true,
+  "model_version": "2.0.0"
+}
+
+GET /model_info
+{
+  "model_name": "careconnect_noshow_xgb",
+  "model_version": "2.0.0",
+  "model_type": "XGBoost classifier in an sklearn pipeline",
+  "target": "noshow_flag",
+  "operating_point": {
+    "flag_threshold": 0.25,
+    "high_threshold": 0.4,
+    "model_version": "2.0.0",
+    "note": "flag_threshold chosen on training-set out-of-fold predictions to reach recall >= 0.65; never tuned on the test set"
+  },
+  "fairness_policy": "Option B - equalized odds (Fairlearn ThresholdOptimizer)",
+  "policy_status": "configured for evaluation only - NOT approved; fails the original acceptance criterion C8; any use requires an AI Ethics Committee decision",
+  "model_sha256": "6d60bea7544ffac64049a66af98f4d133508cb77aa464702a91075706127a385",
+  "policy_sha256": "e18da7cd12d13fc431a730af9f2afe6cbfa75e7de7928f19ded79a7364e11e1f",
+  "intended_use": "Identify appointments at higher risk of a missed visit so a person can offer support",
+  "non_intended_use": "Deny care, penalise patients, or automate scheduling without human review",
+  "fairness_constraint": "Equalized-odds gap <= 0.05 across age groups, gender and scholarship (Charter Principle 2)"
+}
+
+POST /predict [A - long lead time, past misses]
+{
+  "request_id": "demo-1",
+  "no_show_probability": 0.243,
+  "score_tier": "low",
+  "flagged_for_outreach": true,
+  "flag_probability": 0.9163,
+  "decision_randomised": true,
+  "decision_explanation": "Score tier 'low'. In this age group the policy flags this score with probability 92%; the logged draw fell inside that probability.",
+  "policy": "Option B - equalized odds (Fairlearn ThresholdOptimizer)",
+  "reason_codes": [
+    "Days between booking and appointment: raises risk",
+    "Neighbourhood: lowers risk",
+    "Patient age: raises risk"
+  ],
+  "model_version": "2.0.0",
+  "note": "Decision support only. A human coordinator decides what, if anything, to offer."
+}
+
+POST /predict [B - mid lead time, one past miss]
+{
+  "request_id": "demo-2",
+  "no_show_probability": 0.2515,
+  "score_tier": "medium",
+  "flagged_for_outreach": true,
+  "flag_probability": 0.95,
+  "decision_randomised": true,
+  "decision_explanation": "Score tier 'medium'. In this age group the policy flags this score with probability 95%; the logged draw fell inside that probability.",
+  "policy": "Option B - equalized odds (Fairlearn ThresholdOptimizer)",
+  "reason_codes": [
+    "Days between booking and appointment: raises risk",
+    "Neighbourhood: lowers risk",
+    "Share of past appointments missed: raises risk"
+  ],
+  "model_version": "2.0.0",
+  "note": "Decision support only. A human coordinator decides what, if anything, to offer."
+}
+
+POST /predict [C - same-day booking, reliable]
+{
+  "request_id": "demo-3",
+  "no_show_probability": 0.0132,
+  "score_tier": "low",
+  "flagged_for_outreach": false,
+  "flag_probability": 0.0,
+  "decision_randomised": false,
+  "decision_explanation": "Score tier 'low'. The policy never flags this score in this age group.",
+  "policy": "Option B - equalized odds (Fairlearn ThresholdOptimizer)",
+  "reason_codes": [
+    "Days between booking and appointment: lowers risk",
+    "Patient age: lowers risk",
+    "Neighbourhood: lowers risk"
+  ],
+  "model_version": "2.0.0",
+  "note": "Decision support only. A human coordinator decides what, if anything, to offer."
+}
+
+POST /predict with missing fields -> HTTP 422
+[
+  "Gender",
+  "Neighbourhood",
+  "Scholarship",
+  "SMS_received",
+  "lead_time_days",
+  "appointment_dow"
+]
+
+POST /predict with impossible values (age -5, 3 misses of 1 visit) -> HTTP 422
+[
+  "Input should be greater than or equal to 0"
+]
+
+GET /metrics
+careconnect_predictions_total 3.0
+careconnect_flags_total 2.0
+careconnect_latency_seconds_sum 0.052160024642944336
+
