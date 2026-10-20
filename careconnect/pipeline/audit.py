@@ -1,6 +1,7 @@
 """Append-only JSONL audit log and table I/O helpers shared by every pipeline stage."""
 import hashlib
 import json
+import os
 import subprocess
 from datetime import datetime, timezone
 
@@ -10,11 +11,13 @@ from careconnect import config
 
 
 def git_sha() -> str:
+    """Short commit SHA of the code being run. Inside a container the .git directory is excluded from the build
+    context, so the commit is passed in as CARECONNECT_GIT_SHA (set by docker compose / CI); 'unknown' otherwise."""
     try:
         return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=config.ROOT,
                                        stderr=subprocess.DEVNULL).decode().strip()
     except Exception:
-        return "unknown"
+        return os.environ.get("CARECONNECT_GIT_SHA", "")[:7] or "unknown"
 
 
 def config_hash() -> str:

@@ -5,7 +5,7 @@
 * before  - single cut-off chosen for recall >= 0.65 (training OOF predictions)
 * A       - one cut-off per age group, each set for recall >= 0.65 on training OOF predictions
 * B       - Fairlearn ThresholdOptimizer, equalized-odds constraint, fitted on training OOF scores
-            (ADOPTED for the capstone; exported to artifacts/fairness_policy.json)
+            (CONFIGURED for evaluation, NOT approved; exported to artifacts/fairness_policy.json)
 * C       - ThresholdOptimizer with a demographic-parity constraint (for comparison only)
 
 All rules are fitted on training data only and evaluated once on the test set.
@@ -54,6 +54,44 @@ def summary(y, yh, te):
     return d
 
 
+ATTRS = ["age_band", "Gender", "Scholarship"]
+N_SEEDS = 1000   # same draws as policy_comparison (seeds 20,000 .. 20,999) so every document reports one distribution
+
+
+def expected_summary(y, pmf, te):
+    """Fairness of a randomised rule in expectation: group TPR/FPR/selection = mean flag probability.
+    This is the quantity the rule is designed to equalise; any single realisation scatters around it."""
+    d = {"recall": float((pmf * y).sum() / y.sum()), "precision": float((pmf * y).sum() / pmf.sum()),
+         "flag_rate": float(pmf.mean())}
+    for a in ATTRS:
+        g = te[a].astype(str).values
+        rows = {}
+        for v in sorted(np.unique(g)):
+            k = g == v
+            rows[v] = {"n": int(k.sum()), "selection": float(pmf[k].mean()), "tpr": float(pmf[k & (y == 1)].mean()),
+                       "fpr": float(pmf[k & (y == 0)].mean())}
+        sel = [r["selection"] for r in rows.values()]
+        tpr_gap = max(r["tpr"] for r in rows.values()) - min(r["tpr"] for r in rows.values())
+        fpr_gap = max(r["fpr"] for r in rows.values()) - min(r["fpr"] for r in rows.values())
+        d[a] = {"dpd": max(sel) - min(sel), "eod": max(tpr_gap, fpr_gap), "di_ratio": min(sel) / max(sel),
+                "tpr_gap": tpr_gap, "fpr_gap": fpr_gap, "groups": rows}
+    return d
+
+
+def seed_distribution(y, pmf, te, n=N_SEEDS):
+    """Equalized-odds gap of n independent realisations of the randomised rule."""
+    out = {a: [] for a in ATTRS}
+    for s in range(n):
+        yh = (np.random.default_rng(20_000 + s).random(len(pmf)) < pmf).astype(int)
+        for a in ATTRS:
+            out[a].append(fairness_report(y, yh, te[a].astype(str).values)["eod"])
+    return {a: {"mean": float(np.mean(v)), "p05": float(np.percentile(v, 5)), "p50": float(np.median(v)),
+                "p95": float(np.percentile(v, 95)), "max": float(np.max(v)),
+                "share_above_limit": float(np.mean(np.array(v) > config.FAIRNESS_LIMIT)), "n_seeds": n,
+                "seeds": f"numpy default_rng(20000) .. default_rng({20_000 + n - 1})"}
+            for a, v in out.items()}
+
+
 def main():
     from fairlearn.postprocessing import ThresholdOptimizer
     m = joblib.load(config.ARTIFACTS / "xgboost.joblib")
@@ -85,7 +123,14 @@ def main():
         to.fit(pd.DataFrame({"p": oof.astype("float64")}), ytr, sensitive_features=gtr)
         Xp = pd.DataFrame({"p": pte.astype("float64")})
         yh = to.predict(Xp, sensitive_features=gte, random_state=config.RANDOM_STATE).astype(int)
-        res[key] = summary(yte, yh, te)
+        pmf = to._pmf_predict(Xp, sensitive_features=gte)[:, 1]
+        # headline numbers = expected values (deterministic); one realisation and the spread are kept beside them
+        res[key] = expected_summary(yte, pmf, te)
+        res[key]["evaluation"] = "expected value over the rule's randomisation"
+        res[key]["single_realisation_fairlearn_seed42"] = summary(yte, yh, te)
+        res[key]["realisation_spread"] = seed_distribution(yte, pmf, te)
+        res[key]["age_groups"] = {g: {"flag_rate": r["selection"], "tpr": r["tpr"], "fpr": r["fpr"], "n": r["n"]}
+                                  for g, r in res[key]["age_band"]["groups"].items()}
         if key == "B_equalized_odds":
             pol = export_threshold_optimizer(to, sorted(np.unique(gtr)), T)
             lib_pmf = to._pmf_predict(Xp, sensitive_features=gte)[:, 1]
@@ -94,11 +139,12 @@ def main():
                                    "share_randomised": float(((our_pmf > 0) & (our_pmf < 1)).mean())}
             pol["expected_test_metrics"] = {"recall": float((our_pmf * yte).sum() / yte.sum()),
                                             "flag_rate": float(our_pmf.mean())}
-            pol["status"] = "adopted for the capstone; production use requires Ethics Committee approval"
+            pol["status"] = ("configured for evaluation only - NOT approved; fails the original acceptance criterion C8; "
+                             "any use requires an AI Ethics Committee decision")
             json.dump(pol, open(POLICY_PATH, "w"), indent=1)
-            res[key]["policy_realisation_seed42"] = summary(yte, our_yh, te)
+            res[key]["policy_realisation_numpy_seed42"] = summary(yte, our_yh, te)
             print("policy export check, max |pmf diff| =", pol["verification"]["max_abs_diff_vs_fairlearn_pmf"])
-    res["adopted"] = "B_equalized_odds"
+    res["configured"] = "B_equalized_odds"   # configured for evaluation; not an approved policy
     json.dump(res, open(config.ARTIFACTS / "mitigation.json", "w"), indent=1, default=float)
     for k, v in res.items():
         if isinstance(v, dict):

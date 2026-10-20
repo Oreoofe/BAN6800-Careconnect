@@ -9,6 +9,8 @@ services:
     environment:
       - CARECONNECT_SALT=${CARECONNECT_SALT:-change-me}
       - CARECONNECT_CV_FOLDS=${CARECONNECT_CV_FOLDS:-5}
+      - CARECONNECT_GIT_SHA=${CARECONNECT_GIT_SHA:-}     # commit being built (.git is not copied into the image)
+      - GITHUB_SHA=${GITHUB_SHA:-}                       # lets scripts/verify_results.py check build identity
     volumes:
       - ./data:/app/data
       - ./artifacts:/app/artifacts

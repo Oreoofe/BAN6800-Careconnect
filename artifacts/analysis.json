@@ -1,235 +1,410 @@
 {
  "model_results": {
+  "git_sha": "ce819fe",
   "n_train": 88411,
   "n_test": 22103,
   "pos_rate": 0.20188392420869755,
+  "cv_folds": 5,
+  "tuning_rows": 88411,
+  "model_version": "2.0.0",
+  "mlflow": true,
   "baselines": {
    "most_frequent": {
+    "threshold": 0.5,
     "accuracy": 0.7981269510926119,
     "precision": 0.0,
     "recall": 0.0,
     "f1": 0.0,
-    "roc_auc": 0.5
+    "roc_auc": 0.5,
+    "pr_auc": 0.20187304890738814,
+    "brier": 0.20187304890738814,
+    "flag_rate": 0.0
    },
    "stratified": {
+    "threshold": 0.5,
     "accuracy": 0.679862462109216,
     "precision": 0.20825892857142858,
     "recall": 0.20909905871806364,
     "f1": 0.20867814806530977,
-    "roc_auc": 0.5040166797473319
+    "roc_auc": 0.5040166797473319,
+    "pr_auc": 0.2032083303342258,
+    "brier": 0.32013753789078403,
+    "flag_rate": 0.20268741799755688
    }
   },
   "models": {
    "logistic_regression": {
-    "metrics": {
-     "accuracy": 0.6609510021264082,
-     "precision": 0.32054924242424243,
-     "recall": 0.6069027341999104,
-     "f1": 0.4195197521301317,
-     "roc_auc": 0.6899020635961451
-    },
     "best_params": {
      "C": 0.01,
      "class_weight": "balanced"
     },
-    "cv_auc_subsample": 0.681710231400873,
-    "secs": 5
-   },
-   "xgboost": {
+    "cv_auc": 0.6784346002018664,
+    "oof_auc": 0.6783612076008335,
+    "at_default_0_5": {
+     "threshold": 0.5,
+     "accuracy": 0.6567434284938696,
+     "precision": 0.31585150265173834,
+     "recall": 0.6006275212909009,
+     "f1": 0.4139955201977292,
+     "roc_auc": 0.6803239245115572,
+     "pr_auc": 0.3166008606797922,
+     "brier": 0.22751686457998158,
+     "flag_rate": 0.38388454056010496
+    },
+    "at_recall_target": {
+     "threshold": 0.48,
+     "accuracy": 0.6299597339727638,
+     "precision": 0.3051273985530041,
+     "recall": 0.6521739130434783,
+     "f1": 0.4157439817129795,
+     "roc_auc": 0.6803239245115572,
+     "pr_auc": 0.3166008606797922,
+     "brier": 0.22751686457998158,
+     "flag_rate": 0.4314798896077456
+    },
+    "secs": 18,
     "metrics": {
-     "accuracy": 0.8034203501787087,
-     "precision": 0.6833855799373041,
-     "recall": 0.04885701479157328,
-     "f1": 0.09119431081363731,
-     "roc_auc": 0.7516095837009822
+     "threshold": 0.5,
+     "accuracy": 0.6567434284938696,
+     "precision": 0.31585150265173834,
+     "recall": 0.6006275212909009,
+     "f1": 0.4139955201977292,
+     "roc_auc": 0.6803239245115572,
+     "pr_auc": 0.3166008606797922,
+     "brier": 0.22751686457998158,
+     "flag_rate": 0.38388454056010496
     },
-    "best_params": {
-     "learning_rate": 0.05,
-     "max_depth": 4,
-     "n_estimators": 100,
-     "scale_pos_weight": 1
-    },
-    "cv_auc_subsample": 0.744856135454317,
-    "secs": 52
+    "mlflow": {
+     "run_id": "20ba17e6539649a4b6d66f229f7c4874"
+    }
    },
    "random_forest": {
-    "metrics": {
-     "accuracy": 0.8027869519974664,
-     "precision": 0.6943396226415094,
-     "recall": 0.041237113402061855,
-     "f1": 0.07785064522953247,
-     "roc_auc": 0.7545310472926199
-    },
     "best_params": {
      "class_weight": null,
      "max_depth": null,
      "min_samples_leaf": 5,
      "n_estimators": 200
     },
-    "cv_auc_subsample": 0.7435359459031353,
-    "secs": 153
+    "cv_auc": 0.744979263951506,
+    "oof_auc": 0.7449209127562617,
+    "at_default_0_5": {
+     "threshold": 0.5,
+     "accuracy": 0.7991675338189386,
+     "precision": 0.5966386554621849,
+     "recall": 0.01591214701927387,
+     "f1": 0.030997598777559483,
+     "roc_auc": 0.7426706563097645,
+     "pr_auc": 0.38544385609391696,
+     "brier": 0.14204165278982037,
+     "flag_rate": 0.005383884540560105
+    },
+    "at_recall_target": {
+     "threshold": 0.255,
+     "accuracy": 0.6801791611998371,
+     "precision": 0.3447659878528046,
+     "recall": 0.6488121918422233,
+     "f1": 0.4502682945796718,
+     "roc_auc": 0.7426706563097645,
+     "pr_auc": 0.38544385609391696,
+     "brier": 0.14204165278982037,
+     "flag_rate": 0.3799031805637244
+    },
+    "secs": 392,
+    "metrics": {
+     "threshold": 0.5,
+     "accuracy": 0.7991675338189386,
+     "precision": 0.5966386554621849,
+     "recall": 0.01591214701927387,
+     "f1": 0.030997598777559483,
+     "roc_auc": 0.7426706563097645,
+     "pr_auc": 0.38544385609391696,
+     "brier": 0.14204165278982037,
+     "flag_rate": 0.005383884540560105
+    },
+    "mlflow": {
+     "run_id": "1d9fc27e366346cfaf1dfda34a513539"
+    }
+   },
+   "xgboost": {
+    "best_params": {
+     "learning_rate": 0.05,
+     "max_depth": 8,
+     "n_estimators": 300,
+     "scale_pos_weight": 1
+    },
+    "cv_auc": 0.7433905495945989,
+    "oof_auc": 0.7433220265824511,
+    "at_default_0_5": {
+     "threshold": 0.5,
+     "accuracy": 0.8027869519974664,
+     "precision": 0.6079664570230608,
+     "recall": 0.06499327655759748,
+     "f1": 0.11743267867989471,
+     "roc_auc": 0.7455058393445996,
+     "pr_auc": 0.39857384161423515,
+     "brier": 0.14119991660118103,
+     "flag_rate": 0.021580780889472018
+    },
+    "at_recall_target": {
+     "threshold": 0.25,
+     "accuracy": 0.6766954712030041,
+     "precision": 0.3427835051546392,
+     "recall": 0.6557597489914836,
+     "f1": 0.4502231112478843,
+     "roc_auc": 0.7455058393445996,
+     "pr_auc": 0.39857384161423515,
+     "brier": 0.14119991660118103,
+     "flag_rate": 0.3861919196489164
+    },
+    "secs": 111,
+    "metrics": {
+     "threshold": 0.5,
+     "accuracy": 0.8027869519974664,
+     "precision": 0.6079664570230608,
+     "recall": 0.06499327655759748,
+     "f1": 0.11743267867989471,
+     "roc_auc": 0.7455058393445996,
+     "pr_auc": 0.39857384161423515,
+     "brier": 0.14119991660118103,
+     "flag_rate": 0.021580780889472018
+    },
+    "mlflow": {
+     "run_id": "e156c6e2a0794f0db13ab03fcaf29dd6",
+     "registered_version": 1
+    }
    }
   },
-  "best_by_auc": "random_forest"
+  "best_by_auc": "xgboost",
+  "deployed": "xgboost",
+  "robustness_patient_grouped": {
+   "threshold": 0.25,
+   "accuracy": 0.6756954277622984,
+   "precision": 0.34879705306780245,
+   "recall": 0.6773977196512407,
+   "f1": 0.46048632218844987,
+   "roc_auc": 0.74627683822029,
+   "pr_auc": 0.3852801797410125,
+   "brier": 0.142958864569664,
+   "flag_rate": 0.39679349563787514
+  },
+  "ablation_no_sensitive_inputs": {
+   "features": [
+    "Age",
+    "Neighbourhood",
+    "SMS_received",
+    "lead_time_days",
+    "appointment_dow",
+    "appointment_month",
+    "prior_appointments",
+    "prior_noShows",
+    "prior_noShow_rate"
+   ],
+   "removed": [
+    "Gender",
+    "Scholarship",
+    "Hipertension",
+    "Diabetes",
+    "Alcoholism",
+    "Handcap",
+    "age_band"
+   ],
+   "threshold": 0.25,
+   "accuracy": 0.6771478984753201,
+   "precision": 0.3432590855803048,
+   "recall": 0.6562079784849844,
+   "f1": 0.45073891625615764,
+   "roc_auc": 0.7420517903885683,
+   "pr_auc": 0.3876096446101208,
+   "brier": 0.14201310276985168,
+   "flag_rate": 0.38592046328552687
+  },
+  "total_secs": 551
  },
+ "model_version": "2.0.0",
+ "threshold": 0.25,
  "operating": {
   "logistic_regression": {
    "at_default_0_5": {
     "threshold": 0.5,
-    "accuracy": 0.6609510021264082,
-    "precision": 0.32054924242424243,
-    "recall": 0.6069027341999104,
-    "f1": 0.4195197521301317,
-    "roc_auc": 0.6899020635961451,
-    "flag_rate": 0.38221055965253586
+    "accuracy": 0.6567434284938696,
+    "precision": 0.31585150265173834,
+    "recall": 0.6006275212909009,
+    "f1": 0.4139955201977292,
+    "roc_auc": 0.6803239245115572,
+    "pr_auc": 0.3166008606797922,
+    "brier": 0.22751686457998158,
+    "flag_rate": 0.38388454056010496
    },
    "at_recall_target": {
-    "threshold": 0.4799999999999999,
-    "accuracy": 0.6364294439668823,
-    "precision": 0.30948827292110875,
-    "recall": 0.6506051098162259,
-    "f1": 0.419448056639214,
-    "roc_auc": 0.6899020635961451,
-    "flag_rate": 0.4243767814323847
-   }
-  },
-  "xgboost": {
-   "at_default_0_5": {
-    "threshold": 0.5,
-    "accuracy": 0.8034203501787087,
-    "precision": 0.6833855799373041,
-    "recall": 0.04885701479157328,
-    "f1": 0.09119431081363731,
-    "roc_auc": 0.7516095837009822,
-    "flag_rate": 0.01443242998687961
-   },
-   "at_recall_target": {
-    "threshold": 0.25249999999999995,
-    "accuracy": 0.6801791611998371,
-    "precision": 0.34946298648804713,
-    "recall": 0.6781712236665173,
-    "f1": 0.4612453319106775,
-    "roc_auc": 0.7516095837009822,
-    "flag_rate": 0.39175677509840295
+    "threshold": 0.48,
+    "accuracy": 0.6299597339727638,
+    "precision": 0.3051273985530041,
+    "recall": 0.6521739130434783,
+    "f1": 0.4157439817129795,
+    "roc_auc": 0.6803239245115572,
+    "pr_auc": 0.3166008606797922,
+    "brier": 0.22751686457998158,
+    "flag_rate": 0.4314798896077456
    }
   },
   "random_forest": {
    "at_default_0_5": {
     "threshold": 0.5,
-    "accuracy": 0.8027869519974664,
-    "precision": 0.6943396226415094,
-    "recall": 0.041237113402061855,
-    "f1": 0.07785064522953247,
-    "roc_auc": 0.7545310472926199,
-    "flag_rate": 0.011989322716373343
+    "accuracy": 0.7991675338189386,
+    "precision": 0.5966386554621849,
+    "recall": 0.01591214701927387,
+    "f1": 0.030997598777559483,
+    "roc_auc": 0.7426706563097645,
+    "pr_auc": 0.38544385609391696,
+    "brier": 0.14204165278982037,
+    "flag_rate": 0.005383884540560105
    },
    "at_recall_target": {
-    "threshold": 0.24999999999999994,
-    "accuracy": 0.6850653757408497,
-    "precision": 0.35172659309362764,
-    "recall": 0.6642761093679964,
-    "f1": 0.45992706959422763,
-    "roc_auc": 0.7545310472926199,
-    "flag_rate": 0.3812604623806723
+    "threshold": 0.255,
+    "accuracy": 0.6801791611998371,
+    "precision": 0.3447659878528046,
+    "recall": 0.6488121918422233,
+    "f1": 0.4502682945796718,
+    "roc_auc": 0.7426706563097645,
+    "pr_auc": 0.38544385609391696,
+    "brier": 0.14204165278982037,
+    "flag_rate": 0.3799031805637244
+   }
+  },
+  "xgboost": {
+   "at_default_0_5": {
+    "threshold": 0.5,
+    "accuracy": 0.8027869519974664,
+    "precision": 0.6079664570230608,
+    "recall": 0.06499327655759748,
+    "f1": 0.11743267867989471,
+    "roc_auc": 0.7455058393445996,
+    "pr_auc": 0.39857384161423515,
+    "brier": 0.14119991660118103,
+    "flag_rate": 0.021580780889472018
+   },
+   "at_recall_target": {
+    "threshold": 0.25,
+    "accuracy": 0.6766954712030041,
+    "precision": 0.3427835051546392,
+    "recall": 0.6557597489914836,
+    "f1": 0.4502231112478843,
+    "roc_auc": 0.7455058393445996,
+    "pr_auc": 0.39857384161423515,
+    "brier": 0.14119991660118103,
+    "flag_rate": 0.3861919196489164
    }
   }
  },
- "threshold": 0.25249999999999995,
  "confusion": {
-  "tn": 12008,
-  "fp": 5633,
-  "fn": 1436,
-  "tp": 3026
+  "tn": 12031,
+  "fp": 5610,
+  "fn": 1536,
+  "tp": 2926
  },
  "deciles": [
   {
    "d": 0,
-   "actual": 0.020805065581184983,
-   "pred": 0.031247546896338463,
+   "actual": 0.018995929443690638,
+   "pred": 0.018296819180250168,
    "n": 2211
   },
   {
    "d": 1,
-   "actual": 0.02895927601809955,
-   "pred": 0.03599292039871216,
+   "actual": 0.025791855203619908,
+   "pred": 0.030206747353076935,
    "n": 2210
   },
   {
    "d": 2,
-   "actual": 0.045701357466063346,
-   "pred": 0.045568399131298065,
+   "actual": 0.04343891402714932,
+   "pred": 0.045013975352048874,
    "n": 2210
   },
   {
    "d": 3,
-   "actual": 0.1330316742081448,
-   "pred": 0.1394187957048416,
+   "actual": 0.1407239819004525,
+   "pred": 0.11787835508584976,
    "n": 2210
   },
   {
    "d": 4,
-   "actual": 0.17729534147444595,
-   "pred": 0.20553524792194366,
+   "actual": 0.19855269109000453,
+   "pred": 0.18820200860500336,
    "n": 2211
   },
   {
    "d": 5,
-   "actual": 0.2244343891402715,
-   "pred": 0.2351289987564087,
+   "actual": 0.22986425339366515,
+   "pred": 0.22665247321128845,
    "n": 2210
   },
   {
    "d": 6,
-   "actual": 0.2656108597285068,
-   "pred": 0.26397955417633057,
+   "actual": 0.25882352941176473,
+   "pred": 0.2647218108177185,
    "n": 2210
   },
   {
    "d": 7,
-   "actual": 0.31312217194570136,
-   "pred": 0.298200398683548,
+   "actual": 0.31176470588235294,
+   "pred": 0.30781063437461853,
    "n": 2210
   },
   {
    "d": 8,
-   "actual": 0.34705882352941175,
-   "pred": 0.3384634852409363,
+   "actual": 0.3389140271493213,
+   "pred": 0.3580476939678192,
    "n": 2210
   },
   {
    "d": 9,
-   "actual": 0.4626865671641791,
-   "pred": 0.4301256239414215,
+   "actual": 0.451831750339213,
+   "pred": 0.4647364318370819,
    "n": 2211
   }
  ],
  "base_rate": 0.20187304890738814,
+ "tiers": {
+  "low": {
+   "share": 0.6138080803510836,
+   "no_show_rate": 0.11321589150143731
+  },
+  "medium": {
+   "share": 0.2976519024566801,
+   "no_show_rate": 0.3065815473476212
+  },
+  "high": {
+   "share": 0.08854001719223635,
+   "no_show_rate": 0.46448645886561063
+  }
+ },
  "fairness": {
   "Gender": {
    "groups": {
     "F": {
-     "n": 14391,
-     "no_show_rate": 0.20068098116878605,
-     "flag_rate": 0.39531651726773676,
-     "tpr": 0.6772853185595568,
-     "fpr": 0.32452403720768497,
-     "precision": 0.34382140973809105
+     "n": 14270,
+     "no_show_rate": 0.20056061667834618,
+     "flag_rate": 0.391520672740014,
+     "tpr": 0.6600279524807827,
+     "fpr": 0.3241584852734923,
+     "precision": 0.3381063182387686
     },
     "M": {
-     "n": 7712,
-     "no_show_rate": 0.20409751037344398,
-     "flag_rate": 0.38511410788381745,
-     "tpr": 0.6797966963151207,
-     "fpr": 0.3095470837406321,
-     "precision": 0.3602693602693603
+     "n": 7833,
+     "no_show_rate": 0.20426401123452062,
+     "flag_rate": 0.3764841057066258,
+     "tpr": 0.648125,
+     "fpr": 0.30675437189154503,
+     "precision": 0.35164462529671076
     }
    },
-   "dpd": 0.010202409383919309,
-   "eod": 0.014976953467052856,
-   "tpr_gap": 0.0025113777555639816,
-   "fpr_gap": 0.014976953467052856,
-   "di_ratio": 0.9741917958439124,
-   "base_rate_gap": 0.003416529204657931,
+   "dpd": 0.015036567033388182,
+   "tpr_gap": 0.011902952480782769,
+   "fpr_gap": 0.01740411338194725,
+   "di_ratio": 0.9615944493348041,
+   "base_rate_gap": 0.0037033945561744386,
+   "eod": 0.01740411338194725,
    "pass_dpd": true,
    "pass_eod": true,
    "pass_di": true
@@ -237,60 +412,60 @@
   "age_band": {
    "groups": {
     "adult": {
-     "n": 6025,
-     "no_show_rate": 0.19717842323651452,
-     "flag_rate": 0.3795850622406639,
-     "tpr": 0.6456228956228957,
-     "fpr": 0.3142443663427745,
-     "precision": 0.3353738522081329
+     "n": 6021,
+     "no_show_rate": 0.201461551237336,
+     "flag_rate": 0.3692077727952167,
+     "tpr": 0.6009892827699918,
+     "fpr": 0.31073211314475874,
+     "precision": 0.32793522267206476
     },
     "child": {
-     "n": 4217,
-     "no_show_rate": 0.21176191605406688,
-     "flag_rate": 0.49466445340289306,
-     "tpr": 0.7905935050391937,
-     "fpr": 0.4151624548736462,
-     "precision": 0.33844678811121764
+     "n": 4247,
+     "no_show_rate": 0.20696962561808335,
+     "flag_rate": 0.444549093477749,
+     "tpr": 0.7440273037542662,
+     "fpr": 0.3663895486935867,
+     "precision": 0.3463983050847458
     },
     "elderly": {
-     "n": 1115,
-     "no_show_rate": 0.14349775784753363,
-     "flag_rate": 0.12914798206278028,
-     "tpr": 0.26875,
-     "fpr": 0.10575916230366492,
-     "precision": 0.2986111111111111
+     "n": 1074,
+     "no_show_rate": 0.16573556797020483,
+     "flag_rate": 0.17783985102420857,
+     "tpr": 0.3707865168539326,
+     "fpr": 0.13950892857142858,
+     "precision": 0.34554973821989526
     },
     "senior": {
-     "n": 4412,
-     "no_show_rate": 0.149818676337262,
-     "flag_rate": 0.08567543064369901,
-     "tpr": 0.2027231467473525,
-     "fpr": 0.065049320181285,
-     "precision": 0.3544973544973545
+     "n": 4433,
+     "no_show_rate": 0.15835777126099707,
+     "flag_rate": 0.12429505977893075,
+     "tpr": 0.254985754985755,
+     "fpr": 0.09970517287590458,
+     "precision": 0.3248638838475499
     },
     "teen": {
-     "n": 1542,
-     "no_show_rate": 0.2717250324254215,
-     "flag_rate": 0.606355382619974,
-     "tpr": 0.8902147971360382,
-     "fpr": 0.5004452359750667,
-     "precision": 0.39893048128342246
+     "n": 1584,
+     "no_show_rate": 0.2563131313131313,
+     "flag_rate": 0.6180555555555556,
+     "tpr": 0.8842364532019704,
+     "fpr": 0.5263157894736842,
+     "precision": 0.36670071501532175
     },
     "young_adult": {
-     "n": 4792,
-     "no_show_rate": 0.23810517529215358,
-     "flag_rate": 0.5903589315525877,
-     "tpr": 0.8790534618755478,
-     "fpr": 0.5001369487811559,
-     "precision": 0.35454224107458465
+     "n": 4744,
+     "no_show_rate": 0.22849915682967958,
+     "flag_rate": 0.5699831365935919,
+     "tpr": 0.8662361623616236,
+     "fpr": 0.4822404371584699,
+     "precision": 0.34726331360946744
     }
    },
-   "dpd": 0.520679951976275,
-   "eod": 0.6874916503886858,
-   "tpr_gap": 0.6874916503886858,
-   "fpr_gap": 0.43539591579378173,
-   "di_ratio": 0.14129573695463515,
-   "base_rate_gap": 0.12822727457788788,
+   "dpd": 0.49376049577662484,
+   "tpr_gap": 0.6292506982162154,
+   "fpr_gap": 0.4266106165977796,
+   "di_ratio": 0.20110661357489917,
+   "base_rate_gap": 0.09795536005213426,
+   "eod": 0.6292506982162154,
    "pass_dpd": false,
    "pass_eod": false,
    "pass_di": false
@@ -298,28 +473,28 @@
   "Scholarship_grp": {
    "groups": {
     "Bolsa Familia scholarship": {
-     "n": 2156,
-     "no_show_rate": 0.22912801484230055,
-     "flag_rate": 0.5282931354359925,
-     "tpr": 0.854251012145749,
-     "fpr": 0.4314079422382672,
-     "precision": 0.37050043898156276
+     "n": 2161,
+     "no_show_rate": 0.23044886626561778,
+     "flag_rate": 0.5284590467376215,
+     "tpr": 0.8413654618473896,
+     "fpr": 0.43475646422128683,
+     "precision": 0.36690017513134854
     },
     "No scholarship": {
-     "n": 19947,
-     "no_show_rate": 0.1989271569659598,
-     "flag_rate": 0.3769990474758109,
-     "tpr": 0.65625,
-     "fpr": 0.30765379560673384,
-     "precision": 0.34627659574468084
+     "n": 19942,
+     "no_show_rate": 0.1987764517099589,
+     "flag_rate": 0.37077524821983754,
+     "tpr": 0.6324419778002018,
+     "fpr": 0.3058580548253849,
+     "precision": 0.33905869624019475
     }
    },
-   "dpd": 0.15129408796018162,
-   "eod": 0.19800101214574894,
-   "tpr_gap": 0.19800101214574894,
-   "fpr_gap": 0.12375414663153333,
-   "di_ratio": 0.7136171609814297,
-   "base_rate_gap": 0.030200857876340748,
+   "dpd": 0.1576837985177839,
+   "tpr_gap": 0.20892348404718775,
+   "fpr_gap": 0.12889840939590191,
+   "di_ratio": 0.7016158593722145,
+   "base_rate_gap": 0.03167241455565889,
+   "eod": 0.20892348404718775,
    "pass_dpd": false,
    "pass_eod": false,
    "pass_di": false
@@ -327,116 +502,79 @@
  },
  "shap": {
   "importance": {
-   "lead_time_days": 0.8982802629470825,
-   "Age": 0.1533874124288559,
-   "prior_noShow_rate": 0.13262981176376343,
-   "SMS_received": 0.05477364361286163,
-   "prior_appointments": 0.04266708716750145,
-   "appointment_month": 0.03803476691246033,
-   "Neighbourhood": 0.03518696874380112,
-   "prior_noShows": 0.030921226367354393,
-   "age_band": 0.028970275074243546,
-   "Scholarship": 0.020155254751443863,
-   "Gender": 0.01327050942927599,
-   "Alcoholism": 0.007895964197814465,
-   "appointment_dow": 0.0053374613635241985,
-   "Diabetes": 0.0017883111722767353,
-   "Hipertension": 0.0006361650885082781,
-   "Handcap": 0.00021980309975333512
+   "lead_time_days": 0.9502436518669128,
+   "Age": 0.2297300100326538,
+   "Neighbourhood": 0.12772826850414276,
+   "SMS_received": 0.07195506244897842,
+   "prior_noShow_rate": 0.05698346719145775,
+   "prior_appointments": 0.048172663897275925,
+   "appointment_month": 0.04714269936084747,
+   "appointment_dow": 0.04008366912603378,
+   "Gender": 0.03445083647966385,
+   "Scholarship": 0.03178766742348671,
+   "age_band": 0.021881649270653725,
+   "Alcoholism": 0.014402764849364758,
+   "Hipertension": 0.013960113748908043,
+   "prior_noShows": 0.01211849320679903,
+   "Diabetes": 0.007663642056286335,
+   "Handcap": 0.0036848525051027536
   },
   "share": {
-   "lead_time_days": 0.6135144909522846,
-   "Age": 0.10476173654983377,
-   "prior_noShow_rate": 0.09058454783630948,
-   "SMS_received": 0.037409732201503676,
-   "prior_appointments": 0.02914110143988378,
-   "appointment_month": 0.025977283063338942,
-   "Neighbourhood": 0.02403227156097364,
-   "prior_noShows": 0.021118821415655825,
-   "age_band": 0.019786345418088335,
-   "Scholarship": 0.013765793782751909,
-   "Gender": 0.009063596488771317,
-   "Alcoholism": 0.005392847483374999,
-   "appointment_dow": 0.0036454211747641864,
-   "Diabetes": 0.0012213947737469968,
-   "Hipertension": 0.0004344930157513253,
-   "Handcap": 0.0001501228429671573
+   "lead_time_days": 0.5550522804260254,
+   "Age": 0.13418890535831451,
+   "Neighbourhood": 0.07460808753967285,
+   "SMS_received": 0.04203008487820625,
+   "prior_noShow_rate": 0.03328493982553482,
+   "prior_appointments": 0.028138410300016403,
+   "appointment_month": 0.027536792680621147,
+   "appointment_dow": 0.02341350167989731,
+   "Gender": 0.020123274996876717,
+   "Scholarship": 0.018567675724625587,
+   "age_band": 0.01278141513466835,
+   "Alcoholism": 0.008412881754338741,
+   "Hipertension": 0.008154322393238544,
+   "prior_noShows": 0.007078602444380522,
+   "Diabetes": 0.004476453643292189,
+   "Handcap": 0.0021523803006857634
   },
   "direction": {
-   "Age": -0.8156818169608934,
-   "lead_time_days": 0.5815577867880198,
-   "prior_appointments": -0.6015746059838579,
-   "prior_noShows": 0.8418354089047708,
-   "prior_noShow_rate": 0.954881076643115,
-   "Scholarship": 0.11022424697875977,
-   "Hipertension": -0.0005342074437066913,
-   "Diabetes": 0.011616160161793232,
-   "Alcoholism": 0.1407995969057083,
-   "Handcap": 0.7055253579552885,
-   "SMS_received": -0.1133466362953186,
-   "appointment_dow": 0.4210145346791569,
-   "appointment_month": -0.885315084800494
-  }
+   "Age": -0.7157945465431172,
+   "lead_time_days": 0.5728707778449731,
+   "prior_appointments": -0.8086652562228178,
+   "prior_noShows": 0.6367933132999807,
+   "prior_noShow_rate": 0.8062781275599252,
+   "Scholarship": 0.16905370354652405,
+   "Hipertension": -0.023888057097792625,
+   "Diabetes": 0.04234505817294121,
+   "Alcoholism": 0.2326749712228775,
+   "Handcap": 0.33557669459663303,
+   "SMS_received": -0.1492213010787964,
+   "appointment_dow": 0.04372210403568378,
+   "appointment_month": -0.6076245847927908
+  },
+  "method": "exact TreeSHAP (XGBoost pred_contribs), one-hot columns summed per feature",
+  "n_sample": 4000
  },
  "samples": [
   {
    "tier": "high",
-   "prob": 0.5489028692245483,
+   "score_tier": "high",
+   "prob": 0.45151135325431824,
+   "single_cutoff_flag": true,
    "features": {
     "Gender": "F",
-    "Age": 27,
-    "Neighbourhood": "SANTA MARTHA",
-    "Scholarship": 0,
+    "Age": 2,
+    "Neighbourhood": "ILHA DO PR\u00cdNCIPE",
+    "Scholarship": 1,
     "Hipertension": 0,
     "Diabetes": 0,
     "Alcoholism": 0,
     "Handcap": 0,
     "SMS_received": 0,
-    "lead_time_days": 27,
-    "appointment_dow": 2,
-    "appointment_month": 6,
-    "age_band": "young_adult",
-    "prior_appointments": 3,
-    "prior_noShows": 2,
-    "prior_noShow_rate": 0.6666666666666666
-   },
-   "top": [
-    [
-     "lead_time_days",
-     0.7956315279006958
-    ],
-    [
-     "prior_noShow_rate",
-     0.6258018612861633
-    ],
-    [
-     "SMS_received",
-     0.16966213285923004
-    ],
-    [
-     "appointment_month",
-     -0.14932574331760406
-    ]
-   ],
-   "actual": 1
-  },
-  {
-   "tier": "medium",
-   "prob": 0.3203386664390564,
-   "features": {
-    "Gender": "F",
-    "Age": 39,
-    "Neighbourhood": "MONTE BELO",
-    "Scholarship": 0,
-    "Hipertension": 0,
-    "Diabetes": 0,
-    "Alcoholism": 0,
-    "Handcap": 0,
-    "SMS_received": 1,
-    "lead_time_days": 45,
-    "appointment_dow": 4,
-    "appointment_month": 4,
-    "age_band": "adult",
+    "lead_time_days": 12,
+    "appointment_dow": 0,
+    "appointment_month": 5,
+    "age_band": "child",
     "prior_appointments": 0,
     "prior_noShows": 0,
     "prior_noShow_rate": 0.0
@@ -444,71 +582,253 @@
    "top": [
     [
      "lead_time_days",
-     0.6917927265167236
+     0.7442390322685242
     ],
     [
-     "Age",
-     0.08691657334566116
-    ],
-    [
-     "prior_noShow_rate",
-     -0.08638571947813034
+     "Neighbourhood",
+     0.1425679326057434
     ],
     [
      "SMS_received",
-     -0.08073484152555466
+     0.12200982123613358
+    ],
+    [
+     "Age",
+     0.0868179127573967
     ]
    ],
-   "actual": 0
+   "actual": 1,
+   "test_row": 18077
   },
   {
-   "tier": "low",
-   "prob": 0.0341477245092392,
+   "tier": "medium",
+   "score_tier": "medium",
+   "prob": 0.31355366110801697,
+   "single_cutoff_flag": true,
    "features": {
     "Gender": "F",
-    "Age": 60,
-    "Neighbourhood": "MARU\u00cdPE",
+    "Age": 32,
+    "Neighbourhood": "MARIA ORTIZ",
     "Scholarship": 0,
-    "Hipertension": 1,
-    "Diabetes": 1,
+    "Hipertension": 0,
+    "Diabetes": 0,
     "Alcoholism": 0,
     "Handcap": 0,
-    "SMS_received": 0,
-    "lead_time_days": 0,
-    "appointment_dow": 0,
-    "appointment_month": 5,
-    "age_band": "senior",
-    "prior_appointments": 2,
+    "SMS_received": 1,
+    "lead_time_days": 27,
+    "appointment_dow": 2,
+    "appointment_month": 6,
+    "age_band": "young_adult",
+    "prior_appointments": 0,
     "prior_noShows": 0,
     "prior_noShow_rate": 0.0
    },
    "top": [
     [
      "lead_time_days",
-     -1.623265027999878
+     0.6741583347320557
     ],
     [
      "Age",
-     -0.17351466417312622
+     0.16009055078029633
+    ],
+    [
+     "appointment_month",
+     -0.11624179035425186
+    ],
+    [
+     "SMS_received",
+     -0.10105571150779724
+    ]
+   ],
+   "actual": 0,
+   "test_row": 15872
+  },
+  {
+   "tier": "low",
+   "score_tier": "low",
+   "prob": 0.06639333069324493,
+   "single_cutoff_flag": false,
+   "features": {
+    "Gender": "F",
+    "Age": 35,
+    "Neighbourhood": "JARDIM DA PENHA",
+    "Scholarship": 0,
+    "Hipertension": 0,
+    "Diabetes": 0,
+    "Alcoholism": 0,
+    "Handcap": 0,
+    "SMS_received": 0,
+    "lead_time_days": 0,
+    "appointment_dow": 1,
+    "appointment_month": 5,
+    "age_band": "young_adult",
+    "prior_appointments": 0,
+    "prior_noShows": 0,
+    "prior_noShow_rate": 0.0
+   },
+   "top": [
+    [
+     "lead_time_days",
+     -1.7371352910995483
+    ],
+    [
+     "Age",
+     0.3786153495311737
+    ],
+    [
+     "appointment_month",
+     0.07842220366001129
+    ],
+    [
+     "Neighbourhood",
+     0.07366423308849335
+    ]
+   ],
+   "actual": 0,
+   "test_row": 10548
+  }
+ ],
+ "samples_documented_cycle1": [
+  {
+   "tier": "cycle1_high",
+   "score_tier": "high",
+   "prob": 0.6016988754272461,
+   "single_cutoff_flag": true,
+   "features": {
+    "Gender": "F",
+    "Age": 17,
+    "Neighbourhood": "JOANA D\u00b4ARC",
+    "Scholarship": 1,
+    "Hipertension": 0,
+    "Diabetes": 0,
+    "Alcoholism": 0,
+    "Handcap": 0,
+    "SMS_received": 0,
+    "lead_time_days": 0,
+    "appointment_dow": 2,
+    "appointment_month": 6,
+    "age_band": "teen",
+    "prior_appointments": 5,
+    "prior_noShows": 4,
+    "prior_noShow_rate": 0.8
+   },
+   "top": [
+    [
+     "prior_noShows",
+     1.0865651369094849
+    ],
+    [
+     "lead_time_days",
+     -0.8824439644813538
+    ],
+    [
+     "Age",
+     0.6798334121704102
     ],
     [
      "prior_noShow_rate",
-     -0.08379967510700226
-    ],
-    [
-     "age_band",
-     -0.04148442191944923
+     0.6705611348152161
     ]
    ],
-   "actual": 0
+   "actual": 0,
+   "test_row": 14074
+  },
+  {
+   "tier": "cycle1_medium",
+   "score_tier": "low",
+   "prob": 0.24492233991622925,
+   "single_cutoff_flag": false,
+   "features": {
+    "Gender": "M",
+    "Age": 68,
+    "Neighbourhood": "MARU\u00cdPE",
+    "Scholarship": 0,
+    "Hipertension": 1,
+    "Diabetes": 0,
+    "Alcoholism": 0,
+    "Handcap": 0,
+    "SMS_received": 0,
+    "lead_time_days": 4,
+    "appointment_dow": 0,
+    "appointment_month": 5,
+    "age_band": "senior",
+    "prior_appointments": 2,
+    "prior_noShows": 1,
+    "prior_noShow_rate": 0.5
+   },
+   "top": [
+    [
+     "prior_noShow_rate",
+     0.3022556006908417
+    ],
+    [
+     "lead_time_days",
+     0.26794105768203735
+    ],
+    [
+     "Age",
+     -0.19547975063323975
+    ],
+    [
+     "Gender",
+     -0.071897953748703
+    ]
+   ],
+   "actual": 0,
+   "test_row": 20762
+  },
+  {
+   "tier": "cycle1_low",
+   "score_tier": "low",
+   "prob": 0.009800909087061882,
+   "single_cutoff_flag": false,
+   "features": {
+    "Gender": "F",
+    "Age": 52,
+    "Neighbourhood": "BENTO FERREIRA",
+    "Scholarship": 0,
+    "Hipertension": 0,
+    "Diabetes": 0,
+    "Alcoholism": 0,
+    "Handcap": 0,
+    "SMS_received": 0,
+    "lead_time_days": 0,
+    "appointment_dow": 0,
+    "appointment_month": 5,
+    "age_band": "adult",
+    "prior_appointments": 23,
+    "prior_noShows": 0,
+    "prior_noShow_rate": 0.0
+   },
+   "top": [
+    [
+     "lead_time_days",
+     -2.0451345443725586
+    ],
+    [
+     "prior_appointments",
+     -0.5931057929992676
+    ],
+    [
+     "Age",
+     -0.45584848523139954
+    ],
+    [
+     "appointment_month",
+     -0.12487325817346573
+    ]
+   ],
+   "actual": 0,
+   "test_row": 5547
   }
  ],
  "whatif_avg_pp": {
-  "Booked 7 days ahead at most (lead time capped at 7 days)": -1.9045052528381348,
-  "Booked 14 days ahead at most (lead time capped at 14 days)": -0.4220758080482483,
-  "Everyone marked as SMS received": -0.845051109790802,
-  "Nobody marked as SMS received": 1.1029067039489746,
-  "No prior missed appointments on record": -1.4401034116744995
+  "Booked 7 days ahead at most (lead time capped at 7 days)": -1.8331947326660156,
+  "Booked 14 days ahead at most (lead time capped at 14 days)": -0.5013464093208313,
+  "Everyone marked as SMS received": -1.3194499015808105,
+  "Nobody marked as SMS received": 1.4431071281433105,
+  "No prior missed appointments on record": -0.5311858654022217
  },
  "descriptive": {
   "lead_time": [
@@ -590,23 +910,23 @@
   "prior": [
    {
     "prior_noShows": 0,
-    "mean": 0.1898373590462984,
-    "size": 93027
+    "mean": 0.20059243355002881,
+    "size": 100602
    },
    {
     "prior_noShows": 1,
-    "mean": 0.250622277535781,
-    "size": 12856
+    "mean": 0.19649884651920208,
+    "size": 7369
    },
    {
     "prior_noShows": 2,
-    "mean": 0.26962913464751087,
-    "size": 2993
+    "mean": 0.2200488997555012,
+    "size": 1636
    },
    {
     "prior_noShows": 3,
-    "mean": 0.3797313797313797,
-    "size": 1638
+    "mean": 0.35611907386990077,
+    "size": 907
    }
   ],
   "scholarship": [
@@ -637,7 +957,7 @@
    {
     "bucket": "Same day",
     "0": 0.046473029045643155,
-    "1": null
+    "1": NaN
    },
    {
     "bucket": "1-3 days",

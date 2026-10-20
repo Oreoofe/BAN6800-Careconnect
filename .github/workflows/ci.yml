@@ -21,7 +21,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - name: Install dependencies
-        run: scripts/run_logged.sh pip install -r requirements-build.txt
+        run: scripts/run_logged.sh pip install -r requirements-build.txt -r requirements.txt
       - name: Lint (syntax errors, undefined names)
         run: scripts/run_logged.sh ruff check .
       - name: Verify no data files committed (Module 1 no-PII rule)

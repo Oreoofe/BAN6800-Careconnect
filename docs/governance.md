@@ -7,10 +7,10 @@ Status: capstone design document (October 2026). Controls marked **implemented**
 | Principle | Charter wording (Module 1) | Refinement from later evidence | Control | Status |
 | --- | --- | --- | --- | --- |
 | P1 Do no harm | Never used to deny care, penalise or restrict access | Unchanged | API returns support-only flags; prohibited uses in Model Card and `/model_info` | Implemented |
-| P2 Fairness by design | Error-rate disparity between groups must not exceed 5%; automatic halt if breached | The Charter text mixed demographic parity with error-rate parity. Age groups have different true no-show rates (15.5%-26.1%), so the limit is applied to the **equalized-odds gap** (largest TPR or FPR difference). Parity and disparate impact are reported, not enforced. | Fairness gate in `careconnect/run_all.py`; Option B post-processing; weekly bias-drift check | Implemented (gate, policy, replay); designed (production halt) |
+| P2 Fairness by design | Error-rate disparity between groups must not exceed 5%; automatic halt if breached | The Charter text mixed demographic parity with error-rate parity. Age groups have different true no-show rates (15.5%-26.1%), so the limit is applied to the **equalized-odds gap** (largest TPR or FPR difference). Parity and disparate impact are reported, not enforced. | Fairness gate in `careconnect/run_all.py`; Option B post-processing configured **pending committee decision**: it meets the limit in expectation only (a single realised set of decisions exceeds 0.05 in a large share of simulated draws, reported with its seeds and simulation error in the committee pack); deterministic alternatives compared in `artifacts/policy_comparison.json`; governing monitoring rule: the original Module 4 s.7 weekly rule (alert > 0.04, halt > 0.05); rolling 28-day confidence-interval analysis as supplementary evidence | Implemented (gate, policy, comparison, replay); designed (production halt) |
 | P3 Transparency | Black-box models prohibited | XGBoost is retained as a **documented exception**: exact TreeSHAP reason codes per prediction, LIME second opinion, logistic regression kept as an interpretable fallback (AUC below target). Exception requires Ethics Committee sign-off. | Reason codes in every API response; XAI dashboard page | Implemented; sign-off pending |
 | P4 Human accountability | No automated decisions | Under Option B some flags are randomised; the coordinator still decides every action, and each draw is logged | Explanation store with request id, draw and reasons | Implemented |
-| P5 Continuous monitoring | Monthly bias audits; immediate suspension if harm detected | Weekly fairness check added because group gaps move faster than monthly audits catch | `careconnect/monitoring/monitor.py`; monthly `build-and-retrain` workflow | Implemented (replay); designed (live) |
+| P5 Continuous monitoring | Monthly bias audits; immediate suspension if harm detected | **The governing monitoring rule is the original Module 4 s.7 rule**, implemented as written: subgroup error-rate disparity (larger of the FNR and FPR gaps) for Gender and age_band, tracked weekly; alert above 0.04, halt above 0.05; no minimum group size; an attribute without two comparable groups is 'not evaluable' (never a pass). A **supplementary** rolling 28-day analysis (minimum 50 no-shows and 50 attended per group, bootstrap 95% interval; halt / inconclusive / insufficient data) shows how much of a weekly result could be sampling noise. It does not replace or override the s.7 rule (reviewer decision, cycle 5) | `careconnect/monitoring/monitor.py`; monthly `build-and-retrain` workflow | Implemented (replay); designed (live) |
 
 ## 2. Governance structure
 
@@ -27,20 +27,20 @@ Status: capstone design document (October 2026). Controls marked **implemented**
 
 ## 3. Retraining, approval and rollback
 
-1. **Triggers:** monthly schedule (`.github/workflows/build.yml`), any input PSI >= 0.20, AUC more than 0.03 below validation, or a fairness warning on two consecutive weeks.
+1. **Triggers:** monthly schedule (`.github/workflows/build.yml`), any input PSI >= 0.20 that is not a known artefact (e.g. the data-window cold start for prior visits), AUC more than 0.03 below validation, a Module 4 s.7 weekly fairness 'halt' or 'alert', or (supplementary) 'inconclusive' in two consecutive rolling windows.
 2. **Run:** `python -m careconnect.run_all` - same pipeline, data contract, bias gate, training, fairness mitigation, explanations, monitoring and Model Card generation.
-3. **Automated gate** (`artifacts/promotion_decision.json`): data contract and bias gate pass; ROC-AUC >= 0.70; recall >= 0.65; adopted-policy equalized-odds gap <= 0.05 for age, gender and scholarship; patient-grouped AUC within 0.02. F1 is reported but non-blocking (it is not in the Module 4 acceptance criteria).
-4. **Human approval:** Ethics Committee reviews the Model Card and gate output; approval recorded in the MLflow version tags (approver, date, decision).
+3. **Automated gate** (`artifacts/promotion_decision.json`): data contract and bias gate pass; patient-grouped AUC within 0.02; the original criteria C1-C8 for the configured policy (Module 4 s.1 and s.7 plus the Charter halt rule, including reliability C8); and the s.7 condition that the Ethics Committee has reviewed and approved the Model Card. **F1 >= 0.55 (C3) is blocking.** Source of the ambiguity: Module 4 s.1 states "The acceptance threshold is: ROC-AUC >= 0.70, Recall >= 0.65, F1 >= 0.55", while the s.7 list ("The model is accepted for staging if") names ROC-AUC, recall, fairness and Ethics Committee approval but not F1; the capstone brief sets no numeric threshold and no marking rubric was available. The reviewer decided (cycle 4) to treat C3 as blocking unless the rubric clearly establishes otherwise. No threshold was changed.
+4. **Human approval:** Ethics Committee reviews the Model Card, the gate output, the committee decision pack and the policy comparison; approval recorded in the MLflow version tags (approver, date, decision).
 5. **Release:** API image rebuilt with the approved artifacts; previous version kept for rollback.
-6. **Post-release:** first four weeks monitored weekly with a lowered warning threshold (gap > 0.03).
+6. **Post-release:** the Module 4 s.7 weekly rule is evaluated every week (governing); the supplementary rolling 28-day analysis is reviewed alongside it; groups that are 'not evaluated' (too few cases) are reviewed by hand rather than assumed fair.
 
 ## 4. Ethical incident response
 
 | Severity | Example | First response | Owner | Time limit |
 | --- | --- | --- | --- | --- |
-| S1 Critical | Fairness gap > 0.05 in live monitoring; flags used to deny or delay care; data breach | Suspend flagging (API returns scores to Data Science only); notify Ethics Committee and Privacy Officer | Model owner | Suspend within 4 h; committee within 24 h |
-| S2 High | Gap 0.04-0.05 two weeks running; input PSI >= 0.20; AUC below alert line | Root-cause review; retraining review; increased human review of flags | Model owner | 5 working days |
-| S3 Moderate | Patient complaint about outreach; unexplained reason codes; single-week warning | Log, respond to patient, check explanation store record | Product owner | 10 working days |
+| S1 Critical | Module 4 s.7 weekly rule returns 'halt' (disparity > 0.05 for Gender or age_band); supplementary rolling analysis returns 'halt' (whole 95% interval above 0.05); flags used to deny or delay care; data breach | Suspend flagging (API returns scores to Data Science only); notify Ethics Committee and Privacy Officer | Model owner | Suspend within 4 h; committee within 24 h |
+| S2 High | Module 4 s.7 weekly 'alert' (disparity > 0.04) or 'not evaluable'; supplementary 'inconclusive' in two consecutive windows, or a group repeatedly 'not evaluated'; input PSI >= 0.20; AUC below alert line | Root-cause review; retraining review; increased human review of flags | Model owner | 5 working days |
+| S3 Moderate | Patient complaint about outreach; unexplained reason codes; a single 'inconclusive' window | Log, respond to patient, check explanation store record | Product owner | 10 working days |
 | S4 Low | Documentation or dashboard error | Correct and note in change log | Product owner | Next sprint |
 
 Every incident is logged with the affected request ids (from the explanation store), actions taken, and the committee's decision. Post-incident review within 30 days updates the risk register.
@@ -55,3 +55,55 @@ Triggers: G3 failure metric worsens for two consecutive quarters (Module 1 termi
 4. **Revoke access:** API keys, service accounts, dashboard access and data-zone permissions removed; raw-zone data deleted per the 30-day rule.
 5. **Retire artifacts:** MLflow versions archived with tag `decommissioned` and reason; container images removed from the registry.
 6. **Review impact:** compare attendance and equity metrics in the three months after withdrawal; report to the committee.
+
+## 6. Fairness evidence for the committee decision (verification cycles 1-6)
+
+Figures are generated in `docs/committee_decision_pack.md` and `docs/model_card.md` from the build artifacts; the points below
+summarise them and must be read with those files.
+
+- **No evaluated policy reliably met the 0.05 equalized-odds limit across all required groups** (age band, gender, scholarship as
+  the G3 stand-in). Eight policies were tested against the original acceptance criteria C1-C8; the criteria were not changed after
+  the results were seen. No policy meets F1 >= 0.55 (C3, blocking) either.
+- **Recommendation: do not deploy until a better model or sufficient additional evidence is available.** Option B remains
+  configured for evaluation only and is not approved for operational use. Deterministic equal opportunity at TPR 0.85 is
+  documented as an alternative assessed, not as a compliant solution. The original fairness criteria are unchanged.
+- **Deployment status.** Nothing is deployed: no public API exists (the API runs locally and in Docker only), and the hosted
+  dashboard deploys from `main` and still shows the v1 results. The v2 dashboard has been tested headlessly only.
+- **Option B (configured, not approved) creates flags unrelated to predicted risk.** Fairlearn's equalized-odds post-processing
+  equalises error rates by ignoring the score for a share of appointments in every age group whose ROC curve lies above the lowest
+  group's (senior), and flagging those at the common false-positive rate. In the verified build this is a score-independent flag
+  probability between 0 (senior) and about 0.11 (child) depending on age group, roughly 11% of all Option B flags. It also lowers decision quality for
+  the groups the model predicts best, prevents counterfactual "what would remove this flag" answers in those groups, and means
+  SHAP reason codes do not explain those flags. For exact equalized odds by post-processing this randomisation is unavoidable when
+  the groups' ROC curves differ (Hardt et al., 2016).
+- **The expected Option B age-group gap exceeds 0.05 in every monitored time window** used by the supplementary rolling analysis (all rolling
+  28-day windows and both evaluable calendar months; April 2016 had insufficient data), although it is within 0.05 on the pooled
+  test set. Monitoring outcomes are recorded separately as halt, inconclusive and insufficient data; insufficient data and
+  unevaluated groups are never treated as a pass.
+  In the supplementary weekly windows, which leave out groups below the minimum size, the expected gap exceeds 0.05 in 5 of 6
+  evaluable weeks (16-20 May: 0.047 with the elderly group left out). Under the governing s.7 rule, which includes every group,
+  the expected age gap exceeds 0.05 in all seven weeks; three of the seven weeks are partial (1-3 appointment days) and the
+  smallest weekly age group had only 6-36 no-shows, so weekly point estimates are imprecise.
+- **The governing monitoring rule is the original Module 4 s.7 weekly rule** ("subgroup error-rate disparity tracked weekly;
+  alert at >4%, halt at >5%"), applied to Gender and age_band as Module 4 s.1 specifies, with no minimum group size. Its weekly
+  results, reasons and attributions are in `docs/committee_decision_pack.md` s.6.1 and `artifacts/monitoring/monitoring.json`
+  (`summary.module4_s7_weekly`). The rolling 28-day bootstrap analysis is **supplementary**: it quantifies sampling uncertainty
+  and persistence, cannot clear a s.7 alert or halt, and any disagreement is reported with the s.7 result standing. The cycle-1
+  weekly rule (age only; groups under 30 no-shows skipped) was an approximation of s.7 and is kept for audit only.
+- **Fairness measures are defined precisely and are not interchangeable.** *Demographic parity difference* = largest gap in
+  flag (selection) rate between groups. *Equal opportunity* = equal true-positive rates. *Equalized odds difference* = the larger
+  of the true-positive-rate gap and the false-positive-rate gap (equivalently the false-negative and false-positive gaps). Charter
+  P2 says "demographic parity is enforced" but defines the limit as an *error-rate* disparity of 5%; the project applies the
+  stated error-rate definition (equalized odds, C4/C7) as the binding limit and also tests parity (C5) and disparate impact (C6)
+  because Module 4 s.7 requires "all fairness metrics PASS". The wording conflict in the Charter is recorded for the committee.
+- **Interval method corrected (cycle 6).** For randomised rules the 95% interval is now a bootstrap of the expected-value gap
+  (resampling test appointments); until cycle 5 it bootstrapped one random realisation. Draw-to-draw variation is reported
+  separately from 1,000 seeded realisations. C8 is unchanged and still fails.
+- **Monitoring cadence.** Module 4 s.7 (weekly tracking, alert > 4%, halt > 5%) is the operational monitoring specification
+  and governs the halt decision. Module 1 P5's monthly bias audits and quarterly committee reviews remain the review cadence
+  that reads those weekly results; the two are complementary, not alternatives.
+- **Deterministic equal opportunity at TPR 0.85 is presented as an alternative, not as compliant.** Equal opportunity equalises
+  only the true-positive rate; equalized odds (the Charter requirement) also requires equal false-positive rates. This policy
+  equalises catch rates closely but leaves age-group false-positive and scholarship gaps above 0.05, so it fails C4, C5, C7 and C8.
+- **Decision rights.** Choosing between not piloting, piloting either policy with disclosure, or formally amending the Charter
+  criterion belongs to the AI Ethics Committee. Amending the criterion is a separate ethics decision and is not proposed here.
