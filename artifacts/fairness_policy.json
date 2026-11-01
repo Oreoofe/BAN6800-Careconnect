@@ -1,0 +1,100 @@
+{
+ "name": "Option B - equalized odds (Fairlearn ThresholdOptimizer)",
+ "sensitive_feature": "age_band",
+ "fallback_threshold": 0.25,
+ "groups": {
+  "adult": {
+   "p0": 0.08831864904552149,
+   "op0": [
+    ">",
+    0.19897428154945374
+   ],
+   "p1": 0.9116813509544786,
+   "op1": [
+    ">",
+    0.16666167229413986
+   ],
+   "p_ignore": 0.10821285913963322,
+   "prediction_constant": 0.538
+  },
+  "child": {
+   "p0": 0.7782505219206663,
+   "op0": [
+    ">",
+    0.11137167364358902
+   ],
+   "p1": 0.22174947807933365,
+   "op1": [
+    ">",
+    0.07624419778585434
+   ],
+   "p_ignore": 0.2106737454132007,
+   "prediction_constant": 0.538
+  },
+  "elderly": {
+   "p0": 0.47214193548387035,
+   "op0": [
+    ">",
+    0.15379176288843155
+   ],
+   "p1": 0.5278580645161297,
+   "op1": [
+    ">",
+    0.11596797779202461
+   ],
+   "p_ignore": 0.04749767342598718,
+   "prediction_constant": 0.538
+  },
+  "senior": {
+   "p0": 0.0009130028063610016,
+   "op0": [
+    ">",
+    0.16795707494020462
+   ],
+   "p1": 0.999086997193639,
+   "op1": [
+    ">",
+    0.1484854891896248
+   ],
+   "p_ignore": 0.0,
+   "prediction_constant": 0.538
+  },
+  "teen": {
+   "p0": 0.07797084548104852,
+   "op0": [
+    ">",
+    0.2636745274066925
+   ],
+   "p1": 0.9220291545189515,
+   "op1": [
+    ">",
+    0.1659400388598442
+   ],
+   "p_ignore": 0.14761027568008478,
+   "prediction_constant": 0.538
+  },
+  "young_adult": {
+   "p0": 0.4939448275862058,
+   "op0": [
+    ">",
+    0.22242747247219086
+   ],
+   "p1": 0.5060551724137943,
+   "op1": [
+    ">",
+    0.16583196073770523
+   ],
+   "p_ignore": 0.18126065780079453,
+   "prediction_constant": 0.538
+  }
+ },
+ "verification": {
+  "max_abs_diff_vs_fairlearn_pmf": 0.0,
+  "share_randomised": 0.8158621001673981
+ },
+ "expected_test_metrics": {
+  "recall": 0.8521186928476249,
+  "flag_rate": 0.6073805841207056
+ },
+ "status": "configured for evaluation only - NOT approved; fails the original acceptance criterion C8; any use requires an AI Ethics Committee decision"
+}
