@@ -1,0 +1,2 @@
+monitoring-1  | 172.18.0.1 - - [01/Nov/2026 13:25:41] "GET /monitoring.json HTTP/1.1" 200 -
+monitoring-1  | 172.18.0.1 - - [01/Nov/2026 13:25:41] "GET /evidently_drift_report.html HTTP/1.1" 200 -
